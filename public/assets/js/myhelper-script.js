@@ -144,3 +144,46 @@ function multiple_errors_ajax_handling(errors){
     toast($_html, "Error!", 'error');
     return false;
 }
+
+function run_ajax(href, ele){
+    $("#loading-wrapper").fadeIn();
+    // page_loader('show');
+    // btn_loader('show');
+    $.ajax({
+        url: href,
+        dataType: "json",
+        complete: function () {
+            // page_loader('hide');
+            // btn_loader('hide');
+            $("#loading-wrapper").fadeOut();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            ajaxErrorHandling(jqXHR, errorThrown);
+        },
+        success: function (data) {
+            if (data['error'] !== undefined) {
+                toast(data['error'], "Error!", 'error');
+            } else if (data['success'] !== undefined) {
+                toast(data['success'], "Success!", 'success', 1200);
+            } else if (data['info'] !== undefined) {
+                toast(data['info'], "Info", 'info');
+            }
+
+            if (data['errors'] !== undefined) {
+                multiple_errors_ajax_handling(data['errors']);
+            }
+
+            if (data['reload'] !== undefined) {
+                setTimeout(function () {
+                    window.location.reload(true);
+                }, 400);
+            }
+
+            if (data['redirect'] !== undefined) {
+                setTimeout(function () {
+                    window.location = data['redirect'];
+                }, 400);
+            }
+        }
+    });
+}
