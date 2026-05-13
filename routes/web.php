@@ -4,7 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ZoneController;
+use App\Http\Controllers\CircleController;
+
 
 
 use App\Events\MessageSent;
@@ -44,7 +48,9 @@ Route::middleware(['auth','role:super-admin|admin'])->group(function () {
     Route::get('/permission/destroy/{id}', [PermissionsController::class, 'destroy'])->name('permission.destroy');
     Route::post('/permission/store', [PermissionsController::class, 'store'])->name('permission.store');
 
-    
+
+    Route::resource('zones', ZoneController::class);
+    Route::resource('circles', CircleController::class);
 
 });
 require __DIR__.'/auth.php';
