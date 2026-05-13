@@ -5,11 +5,8 @@
                 <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
                 <div class="app-sidebar">
                     <div class="side-header">
-                        <a class="header-brand1" href="index.html">
-                            <img src="../assets/images/brand/logo-white.png" class="header-brand-img desktop-logo" alt="logo">
-                            <img src="../assets/images/brand/icon-white.png" class="header-brand-img toggle-logo" alt="logo">
-                            <img src="../assets/images/brand/icon-dark.png" class="header-brand-img light-logo" alt="logo">
-                            <img src="../assets/images/brand/logo-dark.png" class="header-brand-img light-logo1" alt="logo">
+                        <a class="header-brand1" href="{{ route('dashboard') }}">
+                            <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #000 !important;">ABIANA</h3>
                         </a>
                         <!-- LOGO -->
                     </div>
@@ -47,12 +44,12 @@
                                                 <div class="tab-pane active">
                                                     <ul class="sidemenu-list">
                                                         <li><a href="{{ route('zones.index') }}" class="slide-item">Zone Management</a></li>
-                                                        <li><a href="{{ route('circles.index') }}" class="slide-item">Circle</a></li>
-                                                        <li><a href="#" class="slide-item">Division</a></li>
-                                                        <li><a href="#" class="slide-item">Sub-Division</a></li>
-                                                        <li><a href="#" class="slide-item">District</a></li>
-                                                        <li><a href="#" class="slide-item">Taluka</a></li>
-                                                        <li><a href="#" class="slide-item">Deh</a></li>
+                                                        <li><a href="{{ route('circles.index') }}" class="slide-item">Circle Management</a></li>
+                                                        <li><a href="{{ route('divisions.index') }}" class="slide-item">Division Management</a></li>
+                                                        <li><a href="{{ route('sub_divisions.index') }}" class="slide-item">Sub-Division Management</a></li>
+                                                        <li><a href="#" class="slide-item">District Management</a></li>
+                                                        <li><a href="#" class="slide-item">Taluka Management</a></li>
+                                                        <li><a href="#" class="slide-item">Deh Management</a></li>
                                                     </ul>
                                                 </div>
                                             </div>

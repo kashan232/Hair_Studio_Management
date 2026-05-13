@@ -15,11 +15,8 @@
                             </svg>
                         </a>
                         <!-- sidebar-toggle-->
-                        <a class="logo-horizontal " href="index.html">
-                            <img src="../assets/images/brand/logo-white.png" class="header-brand-img desktop-logo"
-                                alt="logo">
-                            <img src="../assets/images/brand/logo-dark.png" class="header-brand-img light-logo1"
-                                alt="logo">
+                        <a class="logo-horizontal" href="{{ route('dashboard') }}">
+                            <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #000 !important;">ABIANA</h3>
                         </a>
                         <!-- LOGO -->
                         <div class="main-header-center ms-3 d-none d-lg-block">

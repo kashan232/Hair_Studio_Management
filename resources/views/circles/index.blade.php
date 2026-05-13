@@ -1,8 +1,4 @@
 @extends('layouts.main')
-@section('css')
-<link rel="stylesheet" href="{{asset('')}}assets/plugins/datatables/dataTables.bootstrap4.min.css">
-@endsection
-
 @section('content')
 <div class="main-content app-content mt-0">
     <div class="side-app">
@@ -54,8 +50,6 @@
 @endsection
 
 @section('JScript')
-<script src="{{asset('')}}assets/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="{{asset('')}}assets/plugins/datatables/dataTables.bootstrap4.min.js"></script>
 <script>
 $(function () {
     var table = $('#circles-table').DataTable({

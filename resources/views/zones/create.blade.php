@@ -77,37 +77,7 @@
 @section('JScript')
 <script>
 $(document).ready(function() {
-    $('.ajaxForm').on('submit', function(e) {
-        e.preventDefault();
-        var form = $(this);
-        var url = form.attr('action');
-        var method = form.find('input[name="_method"]').val() || 'POST';
-        var formData = form.serialize();
-
-        $.ajax({
-            url: url,
-            type: method,
-            data: formData,
-            beforeSend: function() {
-                $("#global-loader").fadeIn();
-            },
-            complete: function() {
-                $("#global-loader").fadeOut();
-            },
-            success: function(response) {
-                if (response.errors) {
-                    Swal.fire("Error!", "Please check your inputs", "error");
-                } else {
-                    Swal.fire("Success!", response.success, "success").then(() => {
-                        window.location.href = response.redirect;
-                    });
-                }
-            },
-            error: function() {
-                Swal.fire("Error!", "Something went wrong", "error");
-            }
-        });
-    });
+    // Other scripts if needed
 });
 </script>
 @endsection

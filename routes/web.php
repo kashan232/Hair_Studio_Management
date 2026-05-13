@@ -8,6 +8,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\CircleController;
+use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\SubDivisionController;
 
 
 
@@ -51,6 +53,10 @@ Route::middleware(['auth','role:super-admin|admin'])->group(function () {
 
     Route::resource('zones', ZoneController::class);
     Route::resource('circles', CircleController::class);
+    Route::resource('divisions', DivisionController::class);
+    Route::resource('sub_divisions', SubDivisionController::class);
+    Route::get('get-circles/{zone_id}', [DivisionController::class, 'getCircles']);
+    Route::get('get-divisions/{circle_id}', [SubDivisionController::class, 'getDivisions']);
 
 });
 require __DIR__.'/auth.php';
