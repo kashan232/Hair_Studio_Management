@@ -54,13 +54,15 @@
                                         <!-- FULL-SCREEN -->
                                         <div class="dropdown d-flex profile-1">
                                             <a href="javascript:void(0)" data-bs-toggle="dropdown" class="nav-link user-dropdown">
-                                                <img src="../assets/images/profiles/5.jpg" alt="profile-user" class="profile-user avatar  cover-image">
+                                                <span class="avatar avatar-md brround bg-primary-transparent text-primary">
+                                                    <i class="fe fe-user"></i>
+                                                </span>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <div class="drop-heading">
                                                     <div class="text-center">
-                                                        <h5 class="text-dark mb-0 fs-14 fw-semibold">Aashvi Monroe</h5>
-                                                        <small class="text-muted">Super Admin</small>
+                                                        <h5 class="text-dark mb-0 fs-14 fw-semibold">{{ Auth::user()->name }}</h5>
+                                                        <small class="text-muted text-capitalize">{{ Auth::user()->roles->first()->name ?? 'User' }}</small>
                                                     </div>
                                                 </div>
                                                 <div class="dropdown-divider m-0"></div>

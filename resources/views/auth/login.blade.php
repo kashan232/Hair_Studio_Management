@@ -65,10 +65,10 @@
         }
 
         .login-wrap-main {
-            background: rgba(255, 255, 255, 0.9) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px !important;
+            border-radius: 0 !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
         }
@@ -77,19 +77,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 25px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .auth-logo-container img {
-            max-height: 55px;
+            max-height: 80px;
             width: auto;
             object-fit: contain;
+            mix-blend-mode: multiply;
+            filter: contrast(1.1);
         }
 
         .project-title {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .project-title h1 {
@@ -110,8 +112,8 @@
         .login-form-title {
             font-weight: 700 !important;
             color: #1f2937 !important;
-            font-size: 1.4rem !important;
-            padding-bottom: 20px !important;
+            font-size: 1.2rem !important;
+            padding-bottom: 15px !important;
         }
 
         .login100-form-btn {
@@ -145,11 +147,11 @@
 
         .footer-note {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 15px;
             font-size: 0.75rem;
             color: #6b7280;
             border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
+            padding-top: 10px;
         }
     </style>
 </head>
@@ -201,11 +203,11 @@
 
     <div class="page auth-page">
         <div class="login-container">
-            <div class="card login-wrap-main p-6">
+            <div class="card login-wrap-main p-4">
                 
                 <div class="auth-logo-container">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQi5ueEUcsB3jj5hxnLTHXUY4ZpVE87aON_Q&s" alt="Gov of Sindh">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Sindh_Irrigation_And_Drainage_Authority.png" alt="SIDA">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThQvNSJVCfq0OJK34GPAfdPponLvA_lC5Hzw&s" alt="SIDA">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLbY1OsztKQ05-7knkY0ksVtFGJP_0PmGVzg&s" alt="NCAWB">
                 </div>
 
@@ -239,7 +241,7 @@
                                         <input class="input100 border-start-0 form-control ms-0" name="password" type="password" placeholder="Password" id="password" required>
                                     </div>
 
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="user-checkbox">
                                             <label class="form-check-label text-muted" for="user-checkbox" style="font-size: 0.85rem;">
@@ -259,8 +261,9 @@
                     </div>
 
                     <div class="footer-note">
-                        &copy; {{ date('Y') }} <strong>Nara Canal Area Water Board</strong><br>
-                        Sindh Irrigation & Drainage Authority (SIDA)
+                        &copy; 2026 <strong>Nara Canal Area Water Board</strong><br>
+                        Sindh Irrigation & Drainage Authority (SIDA)<br>
+                        <small class="fw-bold text-uppercase mt-2 d-block" style="letter-spacing: 1px;">Powered by XCL TECHNOLOGIES</small>
                     </div>
                 </form>
             </div>
@@ -276,8 +279,6 @@
     <script src="{{ asset('assets/js/plugins/p-scroll/perfect-scrollbar.js') }}"></script>
     <!-- Color Theme js -->
     <script src="{{ asset('assets/js/themeColors.js') }}"></script>
-    <!-- Show Password js -->
-    <script src="{{ asset('assets/js/show-password.min.js') }}"></script>
     <!-- Custom-switcher -->
     <script src="{{ asset('assets/js/custom-swicher.js') }}"></script>
     <!-- Switcher js -->
@@ -306,7 +307,8 @@
             });
 
             // Password toggle logic for this template
-            $('.toggle-password').click(function() {
+            $(document).on('click', '.toggle-password', function(e) {
+                e.preventDefault();
                 const input = $('#password');
                 const icon = $(this).find('i');
                 if (input.attr('type') === 'password') {
