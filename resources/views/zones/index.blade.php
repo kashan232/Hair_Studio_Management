@@ -29,11 +29,8 @@
                                 <table id="zones-table" class="table table-bordered text-nowrap border-bottom">
                                     <thead>
                                         <tr>
-                                            <th>Region/Zone Name</th>
+                                            <th>Region / Zone Name</th>
                                             <th>Code</th>
-                                            <th>Full Name</th>
-                                            <th>Job Title</th>
-                                            <th>Cell No</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -58,9 +55,6 @@ $(function () {
         columns: [
             { data: 'name', name: 'name' },
             { data: 'code', name: 'code' },
-            { data: 'full_name', name: 'full_name' },
-            { data: 'job_title', name: 'job_title' },
-            { data: 'cell_no', name: 'cell_no' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
     });

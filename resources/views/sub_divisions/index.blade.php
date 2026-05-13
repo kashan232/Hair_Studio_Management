@@ -33,8 +33,6 @@
                                             <th>Circle</th>
                                             <th>Zone</th>
                                             <th>Code</th>
-                                            <th>Full Name</th>
-                                            <th>Cell No</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -62,8 +60,6 @@ $(function () {
             { data: 'circle_name', name: 'division.circle.name' },
             { data: 'zone_name', name: 'division.circle.zone.name' },
             { data: 'code', name: 'code' },
-            { data: 'full_name', name: 'full_name' },
-            { data: 'cell_no', name: 'cell_no' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
     });

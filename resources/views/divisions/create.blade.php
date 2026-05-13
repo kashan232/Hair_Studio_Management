@@ -58,26 +58,6 @@
                                     <input type="text" class="form-control" name="code" value="{{ $division->code ?? '' }}">
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" name="full_name" value="{{ $division->full_name ?? '' }}">
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Job Title</label>
-                                    <input type="text" class="form-control" name="job_title" value="{{ $division->job_title ?? '' }}">
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Cell No</label>
-                                    <input type="text" class="form-control" name="cell_no" value="{{ $division->cell_no ?? '' }}">
-                                </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <label class="form-label">Full Address</label>
-                                    <textarea class="form-control" name="full_address" rows="3">{{ $division->full_address ?? '' }}</textarea>
-                                </div>
-
                                 <div class="col-md-12 mt-3">
                                     <button type="submit" class="btn btn-primary">Save Division</button>
                                     <a href="{{ route('divisions.index') }}" class="btn btn-light">Cancel</a>

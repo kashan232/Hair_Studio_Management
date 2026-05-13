@@ -30,11 +30,8 @@
                                     <thead>
                                         <tr>
                                             <th>Circle Name</th>
-                                            <th>Region / Zone</th>
+                                            <th>Zone</th>
                                             <th>Code</th>
-                                            <th>Full Name</th>
-                                            <th>Job Title</th>
-                                            <th>Cell No</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -60,9 +57,6 @@ $(function () {
             { data: 'name', name: 'name' },
             { data: 'zone_name', name: 'zone.name' },
             { data: 'code', name: 'code' },
-            { data: 'full_name', name: 'full_name' },
-            { data: 'job_title', name: 'job_title' },
-            { data: 'cell_no', name: 'cell_no' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
     });
