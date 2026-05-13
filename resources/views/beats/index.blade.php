@@ -1,0 +1,98 @@
+@extends('layouts.main')
+@section('content')
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <h1 class="page-title">Beat Management</h1>
+                <div>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Beats</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- PAGE HEADER END -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">All Beats</h3>
+                            <div class="card-options">
+                                <a href="{{ route('beats.create') }}" class="btn btn-primary"><i class="ri-add-line"></i> Add New Beat</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="beats-table" class="table table-bordered text-nowrap border-bottom">
+                                    <thead>
+                                        <tr>
+                                            <th>Beat Name</th>
+                                            <th>Sub-Division</th>
+                                            <th>Division</th>
+                                            <th>Circle</th>
+                                            <th>Zone</th>
+                                            <th>Code</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('JScript')
+<script>
+$(document).ready(function() {
+    var table = $('#beats-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('beats.index') }}",
+        columns: [
+            { data: 'name', name: 'name' },
+            { data: 'sub_division_name', name: 'subDivision.name' },
+            { data: 'division_name', name: 'subDivision.division.name' },
+            { data: 'circle_name', name: 'subDivision.division.circle.name' },
+            { data: 'zone_name', name: 'subDivision.division.circle.zone.name' },
+            { data: 'code', name: 'code' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ]
+    });
+
+    $(document).on('click', '.delete-btn', function() {
+        var id = $(this).data('id');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{ url('beats') }}/" + id,
+                    type: 'DELETE',
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        Swal.fire("Deleted!", response.success, "success");
+                        table.ajax.reload();
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+@endsection

@@ -47,6 +47,7 @@
                                                         <li><a href="{{ route('circles.index') }}" class="slide-item">Circle Management</a></li>
                                                         <li><a href="{{ route('divisions.index') }}" class="slide-item">Division Management</a></li>
                                                         <li><a href="{{ route('sub_divisions.index') }}" class="slide-item">Sub-Division Management</a></li>
+                                                        <li><a href="{{ route('beats.index') }}" class="slide-item">Beat Management</a></li>
                                                         <li><a href="#" class="slide-item">District Management</a></li>
                                                         <li><a href="#" class="slide-item">Taluka Management</a></li>
                                                         <li><a href="#" class="slide-item">Deh Management</a></li>
