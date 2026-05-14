@@ -8,12 +8,12 @@
         <div class="main-container container-fluid">
             <!-- PAGE HEADER -->
             <div class="page-header">
-                <h1 class="page-title">@if(!isset($zone)) Create Zone @else Update Zone @endif</h1>
+                <h1 class="page-title">@if(!isset($unit)) Create Unit @else Update Unit @endif</h1>
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{route('zones.index')}}">Zones</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">@if(!isset($zone)) Create @else Update @endif</li>
+                        <li class="breadcrumb-item"><a href="{{route('units.index')}}">Units</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@if(!isset($unit)) Create @else Update @endif</li>
                     </ol>
                 </div>
             </div>
@@ -23,26 +23,26 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Zone Details</h3>
+                            <h3 class="card-title">Unit Details</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ isset($zone) ? route('zones.update', $zone->id) : route('zones.store') }}" class="ajaxForm row">
+                            <form action="{{ isset($unit) ? route('units.update', $unit->id) : route('units.store') }}" class="ajaxForm row">
                                 @csrf
-                                @if(isset($zone)) @method('PUT') @endif
+                                @if(isset($unit)) @method('PUT') @endif
                                 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Region / Zone Name</label>
-                                    <input type="text" class="form-control" name="name" value="{{ $zone->name ?? '' }}" required>
+                                    <label class="form-label">Unit Name</label>
+                                    <input type="text" class="form-control" name="name" value="{{ $unit->name ?? '' }}" required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Code</label>
-                                    <input type="text" class="form-control" name="code" value="{{ $zone->code ?? '' }}">
+                                    <input type="text" class="form-control" name="code" value="{{ $unit->code ?? '' }}">
                                 </div>
 
                                 <div class="col-md-12 mt-3">
-                                    <button type="submit" class="btn btn-primary">Save Zone</button>
-                                    <a href="{{ route('zones.index') }}" class="btn btn-light">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Save Unit</button>
+                                    <a href="{{ route('units.index') }}" class="btn btn-light">Cancel</a>
                                 </div>
                             </form>
                         </div>
@@ -57,7 +57,7 @@
 @section('JScript')
 <script>
 $(document).ready(function() {
-    // Other scripts if needed
+    //
 });
 </script>
 @endsection

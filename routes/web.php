@@ -52,14 +52,18 @@ Route::middleware(['auth','role:super-admin|admin'])->group(function () {
     Route::post('/permission/store', [PermissionsController::class, 'store'])->name('permission.store');
 
 
-    Route::resource('zones', ZoneController::class);
+    Route::resource('units', \App\Http\Controllers\UnitController::class);
+    Route::resource('regions', \App\Http\Controllers\RegionController::class);
     Route::resource('circles', CircleController::class);
-    Route::resource('divisions', DivisionController::class);
+    Route::resource('irrigation_divisions', \App\Http\Controllers\IrrigationDivisionController::class);
     Route::resource('sub_divisions', SubDivisionController::class);
     Route::resource('beats', BeatController::class);
-    Route::get('get-circles/{zone_id}', [DivisionController::class, 'getCircles']);
-    Route::get('get-divisions/{circle_id}', [SubDivisionController::class, 'getDivisions']);
-    Route::get('get-sub-divisions/{division_id}', [BeatController::class, 'getSubDivisions']);
+
+    Route::get('get-regions/{unit_id}', [\App\Http\Controllers\RegionController::class, 'getRegions']);
+    Route::get('get-circles/{region_id}', [\App\Http\Controllers\CircleController::class, 'getCircles']);
+    Route::get('get-irrigation-divisions/{circle_id}', [\App\Http\Controllers\IrrigationDivisionController::class, 'getIrrigationDivisions']);
+    Route::get('get-sub-divisions/{irrigation_division_id}', [SubDivisionController::class, 'getSubDivisions']);
+    Route::get('get-beats/{sub_division_id}', [BeatController::class, 'getBeats']);
 
 });
 require __DIR__.'/auth.php';

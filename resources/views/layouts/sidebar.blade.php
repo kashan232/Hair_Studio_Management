@@ -1,6 +1,6 @@
 
             
-            <!--{ app sidebar start }-->
+            <!-- app sidebar start -->
             <div class="sticky">
                 <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
                 <div class="app-sidebar">
@@ -34,7 +34,7 @@
                             <li class="slide">
                                 <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
                                     <i class="side-menu__icon fe fe-settings"></i>
-                                    <span class="side-menu__label">Administration</span>
+                                    <span class="side-menu__label">Irrigation Administration</span>
                                     <i class="angle fe fe-chevron-right"></i>
                                 </a>
                                 <ul class="slide-menu">
@@ -43,14 +43,12 @@
                                             <div class="tab-content">
                                                 <div class="tab-pane active">
                                                     <ul class="sidemenu-list">
-                                                        <li><a href="{{ route('zones.index') }}" class="slide-item">Zone Management</a></li>
+                                                        <li><a href="{{ route('units.index') }}" class="slide-item">Unit Management</a></li>
+                                                        <li><a href="{{ route('regions.index') }}" class="slide-item">Region Management</a></li>
                                                         <li><a href="{{ route('circles.index') }}" class="slide-item">Circle Management</a></li>
-                                                        <li><a href="{{ route('divisions.index') }}" class="slide-item">Division Management</a></li>
+                                                        <li><a href="{{ route('irrigation_divisions.index') }}" class="slide-item">Irrigation Division Management</a></li>
                                                         <li><a href="{{ route('sub_divisions.index') }}" class="slide-item">Sub-Division Management</a></li>
                                                         <li><a href="{{ route('beats.index') }}" class="slide-item">Beat Management</a></li>
-                                                        <li><a href="#" class="slide-item">District Management</a></li>
-                                                        <li><a href="#" class="slide-item">Taluka Management</a></li>
-                                                        <li><a href="#" class="slide-item">Deh Management</a></li>
                                                     </ul>
                                                 </div>
                                             </div>

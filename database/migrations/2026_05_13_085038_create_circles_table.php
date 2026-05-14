@@ -14,7 +14,7 @@ return new class extends Migration
 
         Schema::create('circles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('zone_id')->constrained()->onDelete('cascade');
+            $table->foreignId('region_id')->constrained('regions')->onDelete('cascade');
             $table->string('name')->comment('Circle Name');
             $table->string('job_title')->nullable();
             $table->string('full_name')->nullable();

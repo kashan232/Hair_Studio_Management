@@ -5,11 +5,11 @@
         <div class="main-container container-fluid">
             <!-- PAGE HEADER -->
             <div class="page-header">
-                <h1 class="page-title">Circle Management</h1>
+                <h1 class="page-title">Unit Management</h1>
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Circles</li>
+                        <li class="breadcrumb-item active" aria-current="page">Units</li>
                     </ol>
                 </div>
             </div>
@@ -19,19 +19,17 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Circle List</h3>
+                            <h3 class="card-title">Unit List</h3>
                             <div class="ms-auto">
-                                <a href="{{route('circles.create')}}" class="btn btn-primary btn-sm">Create Circle</a>
+                                <a href="{{route('units.create')}}" class="btn btn-primary btn-sm">Create Unit</a>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="circles-table" class="table table-bordered text-nowrap border-bottom">
+                                <table id="units-table" class="table table-bordered text-nowrap border-bottom">
                                     <thead>
                                         <tr>
                                             <th>Unit Name</th>
-                                            <th>Region Name</th>
-                                            <th>Circle Name</th>
                                             <th>Code</th>
                                             <th>Actions</th>
                                         </tr>
@@ -50,20 +48,18 @@
 @section('JScript')
 <script>
 $(function () {
-    var table = $('#circles-table').DataTable({
+    var table = $('#units-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route('circles.index') }}',
+        ajax: '{{ route('units.index') }}',
         columns: [
-            { data: 'unit_name', name: 'region.unit.name' },
-            { data: 'region_name', name: 'region.name' },
             { data: 'name', name: 'name' },
             { data: 'code', name: 'code' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
     });
 
-    $('#circles-table').on('click', '.delete-btn', function() {
+    $('#units-table').on('click', '.delete-btn', function() {
         var id = $(this).data('id');
         Swal.fire({
             title: "Are you sure?",
@@ -76,7 +72,7 @@ $(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ url('circles') }}/' + id,
+                    url: '{{ url('units') }}/' + id,
                     type: 'DELETE',
                     data: { _token: '{{ csrf_token() }}' },
                     success: function(response) {

@@ -11,18 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('irrigation_divisions', function (Blueprint $table) {
+        Schema::create('units', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('circle_id');
             $table->string('name');
-            $table->string('job_title')->nullable();
-            $table->string('full_name')->nullable();
-            $table->string('cell_no')->nullable();
-            $table->text('full_address')->nullable();
             $table->string('code')->nullable();
             $table->timestamps();
-
-            $table->foreign('circle_id')->references('id')->on('circles')->onDelete('cascade');
         });
     }
 
@@ -31,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('irrigation_divisions');
+        Schema::dropIfExists('units');
     }
 };

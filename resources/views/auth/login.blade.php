@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="E-ABIANA – Digitization of Abiana Record">
+    <meta name="description" content="ABIANA – Digitization of Abiana Record">
     <meta name="author" content="NCAWB">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
 
     <!-- TITLE -->
-    <title>Login | E-ABIANA - Nara Canal Area Water Board</title>
+    <title>Login | ABIANA - Nara Canal Area Water Board</title>
 
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{{ asset('assets/css/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -212,7 +212,7 @@
                 </div>
 
                 <div class="project-title">
-                    <h1>E-ABIANA</h1>
+                    <h1>ABIANA</h1>
                     <p>Digitization of Abiana Record<br><strong>Nara Canal Area Water Board</strong></p>
                 </div>
 

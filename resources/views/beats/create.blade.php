@@ -27,42 +27,54 @@
                                 @csrf
                                 @if(isset($beat)) @method('PUT') @endif
                                 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Region / Zone</label>
-                                    <select id="zone_id" class="form-control form-select" required>
-                                        <option value="">Select Region / Zone</option>
-                                        @foreach($zones as $z)
-                                            <option value="{{ $z->id }}" {{ (isset($beat) && $beat->subDivision->division->circle->zone_id == $z->id) ? 'selected' : '' }}>{{ $z->name }}</option>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Unit</label>
+                                    <select id="unit_id" class="form-control form-select" required>
+                                        <option value="">Select Unit</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}" {{ (isset($beat) && $beat->subDivision->irrigationDivision->circle->region->unit_id == $unit->id) ? 'selected' : '' }}>{{ $unit->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Circle</label>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Region</label>
+                                    <select id="region_id" class="form-control form-select" required>
+                                        <option value="">Select Region</option>
+                                        @if(isset($regions))
+                                            @foreach($regions as $r)
+                                                <option value="{{ $r->id }}" {{ (isset($beat) && $beat->subDivision->irrigationDivision->circle->region_id == $r->id) ? 'selected' : '' }}>{{ $r->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Circle</label>
                                     <select id="circle_id" class="form-control form-select" required>
                                         <option value="">Select Circle</option>
                                         @if(isset($circles))
                                             @foreach($circles as $c)
-                                                <option value="{{ $c->id }}" {{ (isset($beat) && $beat->subDivision->division->circle_id == $c->id) ? 'selected' : '' }}>{{ $c->name }}</option>
+                                                <option value="{{ $c->id }}" {{ (isset($beat) && $beat->subDivision->irrigationDivision->circle_id == $c->id) ? 'selected' : '' }}>{{ $c->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Division</label>
-                                    <select id="division_id" class="form-control form-select" required>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Irrigation Division</label>
+                                    <select id="irrigation_division_id" class="form-control form-select" required>
                                         <option value="">Select Division</option>
-                                        @if(isset($divisions))
-                                            @foreach($divisions as $d)
-                                                <option value="{{ $d->id }}" {{ (isset($beat) && $beat->subDivision->division_id == $d->id) ? 'selected' : '' }}>{{ $d->name }}</option>
+                                        @if(isset($irrigation_divisions))
+                                            @foreach($irrigation_divisions as $idv)
+                                                <option value="{{ $idv->id }}" {{ (isset($beat) && $beat->subDivision->irrigation_division_id == $idv->id) ? 'selected' : '' }}>{{ $idv->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Sub-Division</label>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Sub-Division</label>
                                     <select name="sub_division_id" id="sub_division_id" class="form-control form-select" required>
                                         <option value="">Select Sub-Division</option>
                                         @if(isset($subDivisions))
@@ -73,7 +85,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Beat Name</label>
                                     <input type="text" class="form-control" name="name" value="{{ $beat->name ?? '' }}" required>
                                 </div>
@@ -100,14 +112,36 @@
 @section('JScript')
 <script>
 $(document).ready(function() {
-    $('#zone_id').on('change', function() {
-        var zoneId = $(this).val();
-        $('#circle_id').html('<option value="">Loading...</option>');
-        $('#division_id').html('<option value="">Select Division</option>');
+    $('#unit_id').on('change', function() {
+        var unitId = $(this).val();
+        $('#region_id').html('<option value="">Loading...</option>');
+        $('#circle_id').html('<option value="">Select Circle</option>');
+        $('#irrigation_division_id').html('<option value="">Select Division</option>');
         $('#sub_division_id').html('<option value="">Select Sub-Division</option>');
-        if (zoneId) {
+        if (unitId) {
             $.ajax({
-                url: '{{ url('get-circles') }}/' + zoneId,
+                url: '{{ url('get-regions') }}/' + unitId,
+                type: 'GET',
+                success: function(data) {
+                    $('#region_id').html('<option value="">Select Region</option>');
+                    $.each(data, function(key, value) {
+                        $('#region_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#region_id').html('<option value="">Select Region</option>');
+        }
+    });
+
+    $('#region_id').on('change', function() {
+        var regionId = $(this).val();
+        $('#circle_id').html('<option value="">Loading...</option>');
+        $('#irrigation_division_id').html('<option value="">Select Division</option>');
+        $('#sub_division_id').html('<option value="">Select Sub-Division</option>');
+        if (regionId) {
+            $.ajax({
+                url: '{{ url('get-circles') }}/' + regionId,
                 type: 'GET',
                 success: function(data) {
                     $('#circle_id').html('<option value="">Select Circle</option>');
@@ -123,25 +157,25 @@ $(document).ready(function() {
 
     $('#circle_id').on('change', function() {
         var circleId = $(this).val();
-        $('#division_id').html('<option value="">Loading...</option>');
+        $('#irrigation_division_id').html('<option value="">Loading...</option>');
         $('#sub_division_id').html('<option value="">Select Sub-Division</option>');
         if (circleId) {
             $.ajax({
-                url: '{{ url('get-divisions') }}/' + circleId,
+                url: '{{ url('get-irrigation-divisions') }}/' + circleId,
                 type: 'GET',
                 success: function(data) {
-                    $('#division_id').html('<option value="">Select Division</option>');
+                    $('#irrigation_division_id').html('<option value="">Select Division</option>');
                     $.each(data, function(key, value) {
-                        $('#division_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                        $('#irrigation_division_id').append('<option value="' + value.id + '">' + value.name + '</option>');
                     });
                 }
             });
         } else {
-            $('#division_id').html('<option value="">Select Division</option>');
+            $('#irrigation_division_id').html('<option value="">Select Division</option>');
         }
     });
 
-    $('#division_id').on('change', function() {
+    $('#irrigation_division_id').on('change', function() {
         var divisionId = $(this).val();
         $('#sub_division_id').html('<option value="">Loading...</option>');
         if (divisionId) {

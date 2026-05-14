@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Beat;
 use App\Models\SubDivision;
-use App\Models\Division;
+use App\Models\IrrigationDivision;
 use App\Models\Circle;
-use App\Models\Zone;
+use App\Models\Region;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -15,20 +16,23 @@ class BeatController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Beat::with('subDivision.division.circle.zone')->select('beats.*');
+            $data = Beat::with('subDivision.irrigationDivision.circle.region.unit')->select('beats.*');
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('sub_division_name', function ($row) {
                     return $row->subDivision->name ?? '';
                 })
-                ->addColumn('division_name', function ($row) {
-                    return $row->subDivision->division->name ?? '';
+                ->addColumn('irrigation_division_name', function ($row) {
+                    return $row->subDivision->irrigationDivision->name ?? '';
                 })
                 ->addColumn('circle_name', function ($row) {
-                    return $row->subDivision->division->circle->name ?? '';
+                    return $row->subDivision->irrigationDivision->circle->name ?? '';
                 })
-                ->addColumn('zone_name', function ($row) {
-                    return $row->subDivision->division->circle->zone->name ?? '';
+                ->addColumn('region_name', function ($row) {
+                    return $row->subDivision->irrigationDivision->circle->region->name ?? '';
+                })
+                ->addColumn('unit_name', function ($row) {
+                    return $row->subDivision->irrigationDivision->circle->region->unit->name ?? '';
                 })
                 ->addColumn('actions', function ($row) {
                     return '<a href="' . route('beats.edit', $row->id) . '" class="btn btn-primary btn-sm"><i class="ri-edit-box-line"></i></a>
@@ -42,8 +46,8 @@ class BeatController extends Controller
 
     public function create()
     {
-        $zones = Zone::all();
-        return view('beats.create', compact('zones'));
+        $units = Unit::all();
+        return view('beats.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -61,23 +65,27 @@ class BeatController extends Controller
         ]);
     }
 
-    public function edit(Beat $beat)
+    public function edit($id)
     {
-        $zones = Zone::all();
+        $beat = Beat::findOrFail($id);
+        $units = Unit::all();
         $subDivision = $beat->subDivision;
-        $division = $subDivision->division;
-        $circle = $division->circle;
-        $zone = $circle->zone;
+        $irrigationDivision = $subDivision->irrigationDivision;
+        $circle = $irrigationDivision->circle;
+        $region = $circle->region;
+        $unit = $region->unit;
 
-        $circles = Circle::where('zone_id', $zone->id)->get();
-        $divisions = Division::where('circle_id', $circle->id)->get();
-        $subDivisions = SubDivision::where('division_id', $division->id)->get();
+        $regions = Region::where('unit_id', $unit->id)->get();
+        $circles = Circle::where('region_id', $region->id)->get();
+        $irrigation_divisions = IrrigationDivision::where('circle_id', $circle->id)->get();
+        $subDivisions = SubDivision::where('irrigation_division_id', $irrigationDivision->id)->get();
 
-        return view('beats.create', compact('beat', 'zones', 'circles', 'divisions', 'subDivisions'));
+        return view('beats.create', compact('beat', 'units', 'regions', 'circles', 'irrigation_divisions', 'subDivisions'));
     }
 
-    public function update(Request $request, Beat $beat)
+    public function update(Request $request, $id)
     {
+        $beat = Beat::findOrFail($id);
         $request->validate([
             'sub_division_id' => 'required',
             'name' => 'required',
@@ -91,16 +99,16 @@ class BeatController extends Controller
         ]);
     }
 
-    public function destroy(Beat $beat)
+    public function destroy($id)
     {
+        $beat = Beat::findOrFail($id);
         $beat->delete();
         return response()->json(['success' => 'Beat deleted successfully.']);
     }
 
-    // AJAX helper for cascading dropdown
-    public function getSubDivisions($division_id)
+    public function getBeats($sub_division_id)
     {
-        $subDivisions = SubDivision::where('division_id', $division_id)->get();
-        return response()->json($subDivisions);
+        $beats = Beat::where('sub_division_id', $sub_division_id)->get();
+        return response()->json($beats);
     }
 }

@@ -28,10 +28,11 @@
                                 <table id="sub-divisions-table" class="table table-bordered text-nowrap border-bottom">
                                     <thead>
                                         <tr>
-                                            <th>Sub-Division Name</th>
-                                            <th>Division</th>
+                                            <th>Unit</th>
+                                            <th>Region</th>
                                             <th>Circle</th>
-                                            <th>Zone</th>
+                                            <th>Irrigation Division</th>
+                                            <th>Sub-Division</th>
                                             <th>Code</th>
                                             <th>Actions</th>
                                         </tr>
@@ -55,10 +56,11 @@ $(function () {
         serverSide: true,
         ajax: '{{ route('sub_divisions.index') }}',
         columns: [
+            { data: 'unit_name', name: 'irrigationDivision.circle.region.unit.name' },
+            { data: 'region_name', name: 'irrigationDivision.circle.region.name' },
+            { data: 'circle_name', name: 'irrigationDivision.circle.name' },
+            { data: 'irrigation_division_name', name: 'irrigationDivision.name' },
             { data: 'name', name: 'name' },
-            { data: 'division_name', name: 'division.name' },
-            { data: 'circle_name', name: 'division.circle.name' },
-            { data: 'zone_name', name: 'division.circle.zone.name' },
             { data: 'code', name: 'code' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]

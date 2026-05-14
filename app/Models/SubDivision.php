@@ -10,7 +10,7 @@ class SubDivision extends Model
     use HasFactory;
 
     protected $fillable = [
-        'division_id',
+        'irrigation_division_id',
         'name',
         'job_title',
         'full_name',
@@ -19,8 +19,8 @@ class SubDivision extends Model
         'code',
     ];
 
-    public function division()
+    public function irrigationDivision()
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsTo(IrrigationDivision::class);
     }
 }

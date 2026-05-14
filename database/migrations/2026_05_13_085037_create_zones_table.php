@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
 
-        Schema::create('zones', function (Blueprint $table) {
+        Schema::create('regions', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->comment('Region / Zone Name');
+            $table->foreignId('unit_id')->nullable()->constrained('units')->onDelete('cascade');
+            $table->string('name')->comment('Region Name');
             $table->string('job_title')->nullable();
             $table->string('full_name')->nullable();
             $table->string('cell_no')->nullable();
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('zones');
+        Schema::dropIfExists('regions');
     }
 };

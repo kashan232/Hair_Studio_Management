@@ -8,7 +8,7 @@ class Circle extends Model
 
 {
     protected $fillable = [
-        'zone_id',
+        'region_id',
         'name',
         'job_title',
         'full_name',
@@ -17,9 +17,9 @@ class Circle extends Model
         'code',
     ];
 
-    public function zone()
+    public function region()
     {
-        return $this->belongsTo(Zone::class);
+        return $this->belongsTo(Region::class);
     }
 }
 

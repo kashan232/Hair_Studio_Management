@@ -5,12 +5,12 @@
     <div class="side-app">
         <div class="main-container container-fluid">
             <div class="page-header">
-                <h1 class="page-title">@if(!isset($sub_division)) Create Sub-Division @else Update Sub-Division @endif</h1>
+                <h1 class="page-title">@if(!isset($irrigation_division)) Create Irrigation Division @else Update Irrigation Division @endif</h1>
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{route('sub_divisions.index')}}">Sub-Divisions</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">@if(!isset($sub_division)) Create @else Update @endif</li>
+                        <li class="breadcrumb-item"><a href="{{route('irrigation_divisions.index')}}">Irrigation Divisions</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@if(!isset($irrigation_division)) Create @else Update @endif</li>
                     </ol>
                 </div>
             </div>
@@ -19,72 +19,60 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Sub-Division Details</h3>
+                            <h3 class="card-title">Irrigation Division Details</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ isset($sub_division) ? route('sub_divisions.update', $sub_division->id) : route('sub_divisions.store') }}" class="ajaxForm row">
+                            <form action="{{ isset($irrigation_division) ? route('irrigation_divisions.update', $irrigation_division->id) : route('irrigation_divisions.store') }}" class="ajaxForm row">
                                 @csrf
-                                @if(isset($sub_division)) @method('PUT') @endif
+                                @if(isset($irrigation_division)) @method('PUT') @endif
                                 
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Select Unit</label>
                                     <select id="unit_id" class="form-control form-select" required>
                                         <option value="">Select Unit</option>
                                         @foreach($units as $unit)
-                                            <option value="{{ $unit->id }}" {{ (isset($sub_division) && $sub_division->irrigationDivision->circle->region->unit_id == $unit->id) ? 'selected' : '' }}>{{ $unit->name }}</option>
+                                            <option value="{{ $unit->id }}" {{ (isset($irrigation_division) && $irrigation_division->circle->region->unit_id == $unit->id) ? 'selected' : '' }}>{{ $unit->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Select Region</label>
                                     <select id="region_id" class="form-control form-select" required>
                                         <option value="">Select Region</option>
                                         @if(isset($regions))
                                             @foreach($regions as $region)
-                                                <option value="{{ $region->id }}" {{ (isset($sub_division) && $sub_division->irrigationDivision->circle->region_id == $region->id) ? 'selected' : '' }}>{{ $region->name }}</option>
+                                                <option value="{{ $region->id }}" {{ (isset($irrigation_division) && $irrigation_division->circle->region_id == $region->id) ? 'selected' : '' }}>{{ $region->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
                                 </div>
 
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Select Circle</label>
-                                    <select id="circle_id" class="form-control form-select" required>
+                                    <select name="circle_id" id="circle_id" class="form-control form-select" required>
                                         <option value="">Select Circle</option>
                                         @if(isset($circles))
                                             @foreach($circles as $circle)
-                                                <option value="{{ $circle->id }}" {{ (isset($sub_division) && $sub_division->irrigationDivision->circle_id == $circle->id) ? 'selected' : '' }}>{{ $circle->name }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Select Irrigation Division</label>
-                                    <select name="irrigation_division_id" id="irrigation_division_id" class="form-control form-select" required>
-                                        <option value="">Select Division</option>
-                                        @if(isset($irrigation_divisions))
-                                            @foreach($irrigation_divisions as $irrigation_division)
-                                                <option value="{{ $irrigation_division->id }}" {{ (isset($sub_division) && $sub_division->irrigation_division_id == $irrigation_division->id) ? 'selected' : '' }}>{{ $irrigation_division->name }}</option>
+                                                <option value="{{ $circle->id }}" {{ (isset($irrigation_division) && $irrigation_division->circle_id == $circle->id) ? 'selected' : '' }}>{{ $circle->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Sub-Division Name</label>
-                                    <input type="text" class="form-control" name="name" value="{{ $sub_division->name ?? '' }}" required>
+                                    <label class="form-label">Irrigation Division Name</label>
+                                    <input type="text" class="form-control" name="name" value="{{ $irrigation_division->name ?? '' }}" required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Code</label>
-                                    <input type="text" class="form-control" name="code" value="{{ $sub_division->code ?? '' }}">
+                                    <input type="text" class="form-control" name="code" value="{{ $irrigation_division->code ?? '' }}">
                                 </div>
 
                                 <div class="col-md-12 mt-3">
-                                    <button type="submit" class="btn btn-primary">Save Sub-Division</button>
-                                    <a href="{{ route('sub_divisions.index') }}" class="btn btn-light">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Save Irrigation Division</button>
+                                    <a href="{{ route('irrigation_divisions.index') }}" class="btn btn-light">Cancel</a>
                                 </div>
                             </form>
                         </div>
@@ -102,8 +90,6 @@ $(document).ready(function() {
     $('#unit_id').on('change', function() {
         var unitId = $(this).val();
         $('#region_id').html('<option value="">Loading...</option>');
-        $('#circle_id').html('<option value="">Select Circle</option>');
-        $('#irrigation_division_id').html('<option value="">Select Division</option>');
         if (unitId) {
             $.ajax({
                 url: '{{ url('get-regions') }}/' + unitId,
@@ -123,7 +109,6 @@ $(document).ready(function() {
     $('#region_id').on('change', function() {
         var regionId = $(this).val();
         $('#circle_id').html('<option value="">Loading...</option>');
-        $('#irrigation_division_id').html('<option value="">Select Division</option>');
         if (regionId) {
             $.ajax({
                 url: '{{ url('get-circles') }}/' + regionId,
@@ -137,25 +122,6 @@ $(document).ready(function() {
             });
         } else {
             $('#circle_id').html('<option value="">Select Circle</option>');
-        }
-    });
-
-    $('#circle_id').on('change', function() {
-        var circleId = $(this).val();
-        $('#irrigation_division_id').html('<option value="">Loading...</option>');
-        if (circleId) {
-            $.ajax({
-                url: '{{ url('get-irrigation-divisions') }}/' + circleId,
-                type: 'GET',
-                success: function(data) {
-                    $('#irrigation_division_id').html('<option value="">Select Division</option>');
-                    $.each(data, function(key, value) {
-                        $('#irrigation_division_id').append('<option value="' + value.id + '">' + value.name + '</option>');
-                    });
-                }
-            });
-        } else {
-            $('#irrigation_division_id').html('<option value="">Select Division</option>');
         }
     });
 });

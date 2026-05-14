@@ -29,11 +29,12 @@
                                 <table id="beats-table" class="table table-bordered text-nowrap border-bottom">
                                     <thead>
                                         <tr>
-                                            <th>Beat Name</th>
-                                            <th>Sub-Division</th>
-                                            <th>Division</th>
+                                            <th>Unit</th>
+                                            <th>Region</th>
                                             <th>Circle</th>
-                                            <th>Zone</th>
+                                            <th>Irrigation Division</th>
+                                            <th>Sub-Division</th>
+                                            <th>Beat Name</th>
                                             <th>Code</th>
                                             <th>Actions</th>
                                         </tr>
@@ -57,11 +58,12 @@ $(document).ready(function() {
         serverSide: true,
         ajax: "{{ route('beats.index') }}",
         columns: [
-            { data: 'name', name: 'name' },
+            { data: 'unit_name', name: 'subDivision.irrigationDivision.circle.region.unit.name' },
+            { data: 'region_name', name: 'subDivision.irrigationDivision.circle.region.name' },
+            { data: 'circle_name', name: 'subDivision.irrigationDivision.circle.name' },
+            { data: 'irrigation_division_name', name: 'subDivision.irrigationDivision.name' },
             { data: 'sub_division_name', name: 'subDivision.name' },
-            { data: 'division_name', name: 'subDivision.division.name' },
-            { data: 'circle_name', name: 'subDivision.division.circle.name' },
-            { data: 'zone_name', name: 'subDivision.division.circle.zone.name' },
+            { data: 'name', name: 'name' },
             { data: 'code', name: 'code' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]

@@ -5,11 +5,11 @@
         <div class="main-container container-fluid">
             <!-- PAGE HEADER -->
             <div class="page-header">
-                <h1 class="page-title">Zone Management</h1>
+                <h1 class="page-title">Region Management</h1>
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Zones</li>
+                        <li class="breadcrumb-item active" aria-current="page">Regions</li>
                     </ol>
                 </div>
             </div>
@@ -19,17 +19,18 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Zone List</h3>
+                            <h3 class="card-title">Region List</h3>
                             <div class="ms-auto">
-                                <a href="{{route('zones.create')}}" class="btn btn-primary btn-sm">Create Zone</a>
+                                <a href="{{route('regions.create')}}" class="btn btn-primary btn-sm">Create Region</a>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="zones-table" class="table table-bordered text-nowrap border-bottom">
+                                <table id="regions-table" class="table table-bordered text-nowrap border-bottom">
                                     <thead>
                                         <tr>
-                                            <th>Region / Zone Name</th>
+                                            <th>Unit Name</th>
+                                            <th>Region Name</th>
                                             <th>Code</th>
                                             <th>Actions</th>
                                         </tr>
@@ -48,18 +49,19 @@
 @section('JScript')
 <script>
 $(function () {
-    var table = $('#zones-table').DataTable({
+    var table = $('#regions-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route('zones.index') }}',
+        ajax: '{{ route('regions.index') }}',
         columns: [
+            { data: 'unit_name', name: 'unit.name' },
             { data: 'name', name: 'name' },
             { data: 'code', name: 'code' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
     });
 
-    $('#zones-table').on('click', '.delete-btn', function() {
+    $('#regions-table').on('click', '.delete-btn', function() {
         var id = $(this).data('id');
         Swal.fire({
             title: "Are you sure?",
@@ -72,7 +74,7 @@ $(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ url('zones') }}/' + id,
+                    url: '{{ url('regions') }}/' + id,
                     type: 'DELETE',
                     data: { _token: '{{ csrf_token() }}' },
                     success: function(response) {

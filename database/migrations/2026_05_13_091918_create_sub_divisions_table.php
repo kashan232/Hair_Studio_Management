@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sub_divisions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('division_id');
+            $table->unsignedBigInteger('irrigation_division_id');
             $table->string('name');
             $table->string('job_title')->nullable();
             $table->string('full_name')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('code')->nullable();
             $table->timestamps();
 
-            $table->foreign('division_id')->references('id')->on('divisions')->onDelete('cascade');
+            $table->foreign('irrigation_division_id')->references('id')->on('irrigation_divisions')->onDelete('cascade');
         });
     }
 

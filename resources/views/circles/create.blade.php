@@ -30,17 +30,29 @@
                                 @csrf
                                 @if(isset($circle)) @method('PUT') @endif
                                 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Region / Zone</label>
-                                    <select name="zone_id" class="form-control form-select" required>
-                                        <option value="">Select Region / Zone</option>
-                                        @foreach($zones as $zone)
-                                            <option value="{{ $zone->id }}" {{ (isset($circle) && $circle->zone_id == $zone->id) ? 'selected' : '' }}>{{ $zone->name }}</option>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Unit</label>
+                                    <select name="unit_id" id="unit_id" class="form-control select2" required>
+                                        <option value="">Select Unit</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}" {{ (isset($circle) && $circle->region->unit_id == $unit->id) ? 'selected' : '' }}>{{ $unit->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Select Region</label>
+                                    <select name="region_id" id="region_id" class="form-control select2" required>
+                                        <option value="">Select Region</option>
+                                        @if(isset($regions))
+                                            @foreach($regions as $region)
+                                                <option value="{{ $region->id }}" {{ (isset($circle) && $circle->region_id == $region->id) ? 'selected' : '' }}>{{ $region->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Circle Name</label>
                                     <input type="text" class="form-control" name="name" value="{{ $circle->name ?? '' }}" required>
                                 </div>
@@ -67,7 +79,26 @@
 @section('JScript')
 <script>
 $(document).ready(function() {
-    //
+    $('#unit_id').on('change', function() {
+        var unit_id = $(this).val();
+        if (unit_id) {
+            $.ajax({
+                url: '{{ url('get-regions') }}/' + unit_id,
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    $('#region_id').empty();
+                    $('#region_id').append('<option value="">Select Region</option>');
+                    $.each(data, function(key, value) {
+                        $('#region_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#region_id').empty();
+            $('#region_id').append('<option value="">Select Region</option>');
+        }
+    });
 });
 </script>
 @endsection
