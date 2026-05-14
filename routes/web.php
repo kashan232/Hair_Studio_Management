@@ -59,11 +59,29 @@ Route::middleware(['auth','role:super-admin|admin'])->group(function () {
     Route::resource('sub_divisions', SubDivisionController::class);
     Route::resource('beats', BeatController::class);
 
+    // Revenue Administration Routes
+    Route::resource('revenue_divisions', \App\Http\Controllers\RevenueDivisionController::class);
+    Route::resource('districts', \App\Http\Controllers\DistrictController::class);
+    Route::resource('talukas', \App\Http\Controllers\TalukaController::class);
+    Route::resource('revenue_circles', \App\Http\Controllers\RevenueCircleController::class);
+    Route::resource('tappas', \App\Http\Controllers\TappaController::class);
+    Route::resource('dehs', \App\Http\Controllers\DehController::class);
+    Route::resource('survey_numbers', \App\Http\Controllers\SurveyNumberController::class);
+
+    // Irrigation Administration AJAX
     Route::get('get-regions/{unit_id}', [\App\Http\Controllers\RegionController::class, 'getRegions']);
     Route::get('get-circles/{region_id}', [\App\Http\Controllers\CircleController::class, 'getCircles']);
     Route::get('get-irrigation-divisions/{circle_id}', [\App\Http\Controllers\IrrigationDivisionController::class, 'getIrrigationDivisions']);
     Route::get('get-sub-divisions/{irrigation_division_id}', [SubDivisionController::class, 'getSubDivisions']);
     Route::get('get-beats/{sub_division_id}', [BeatController::class, 'getBeats']);
+
+    // Revenue Administration AJAX
+    Route::get('get-districts/{revenue_division_id}', [\App\Http\Controllers\DistrictController::class, 'getDistricts']);
+    Route::get('get-talukas/{district_id}', [\App\Http\Controllers\TalukaController::class, 'getTalukas']);
+    Route::get('get-revenue-circles/{taluka_id}', [\App\Http\Controllers\RevenueCircleController::class, 'getRevenueCircles']);
+    Route::get('get-tappas/{revenue_circle_id}', [\App\Http\Controllers\TappaController::class, 'getTappas']);
+    Route::get('get-dehs/{tappa_id}', [\App\Http\Controllers\DehController::class, 'getDehs']);
+    Route::get('get-survey-numbers/{deh_id}', [\App\Http\Controllers\SurveyNumberController::class, 'getSurveyNumbers']);
 
 });
 require __DIR__.'/auth.php';
