@@ -8,12 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('revenue_divisions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('code')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('revenue_divisions')) {
+            Schema::create('revenue_divisions', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('code')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

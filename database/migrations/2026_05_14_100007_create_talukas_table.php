@@ -8,13 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('talukas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('district_id')->constrained('districts')->onDelete('cascade');
-            $table->string('name');
-            $table->string('code')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('talukas')) {
+            Schema::create('talukas', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('district_id')->constrained('districts')->onDelete('cascade');
+                $table->string('name');
+                $table->string('code')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

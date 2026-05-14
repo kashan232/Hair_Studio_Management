@@ -8,13 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('tappas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('revenue_circle_id')->constrained('revenue_circles')->onDelete('cascade');
-            $table->string('name');
-            $table->string('code')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tappas')) {
+            Schema::create('tappas', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('revenue_circle_id')->constrained('revenue_circles')->onDelete('cascade');
+                $table->string('name');
+                $table->string('code')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

@@ -8,13 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('survey_numbers', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('deh_id')->constrained('dehs')->onDelete('cascade');
-            $table->string('number');
-            $table->string('code')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('survey_numbers')) {
+            Schema::create('survey_numbers', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('deh_id')->constrained('dehs')->onDelete('cascade');
+                $table->string('number');
+                $table->string('code')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void
