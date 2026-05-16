@@ -117,8 +117,10 @@
     <script src="{{ asset('assets/js/plugins/datatable/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/datatable/dataTables.bootstrap5.min.js') }}"></script>
     <!--{ INTERNAL APEXCHART JS }-->
+    @if (Route::currentRouteName() !== 'dashboard')
     <script src="{{ asset('assets/js/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/apexchart/irregular-data-series.js') }}"></script>
+    @endif
     <script src="{{ asset('assets/js/plugins/flot/jquery.flot.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/flot/jquery.flot.fillbetween.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/flot/chart.flot.sampledata.js') }}"></script>
@@ -128,10 +130,6 @@
     <script src="{{ asset('assets/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
     <!--{ SIDE-MENU JS }-->
     <script src="{{ asset('assets/js/plugins/sidemenu/sidemenu.js') }}"></script>
-    @if(Route::currentRouteName() == 'dashboard')
-    <!--{ INTERNAL INDEX JS }-->
-    <script src="{{ asset('assets/js/index1.js') }}"></script>
-    @endif
     <!--{ Color Theme js }-->
     <script src="{{ asset('assets/js/themeColors.js') }}"></script>
     <!--{ CUSTOM JS }-->

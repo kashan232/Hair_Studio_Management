@@ -91,11 +91,14 @@ let currentWidth;
     });
     //p-scroll
     
-    const ps = new PerfectScrollbar('.app-sidebar', {
-        useBothWheelAxes: true,
-        suppressScrollX: true,
-        suppressScrollY: false,
-    });
+    var sidebarEl = document.querySelector('.app-sidebar');
+    if (sidebarEl) {
+        new PerfectScrollbar(sidebarEl, {
+            useBothWheelAxes: true,
+            suppressScrollX: true,
+            suppressScrollY: false,
+        });
+    }
 
     //sticky-header
     $(window).on("scroll", function (e) {

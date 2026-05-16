@@ -100,7 +100,6 @@
                                                         <li><a href="{{ route('branch-canals.index') }}" class="slide-item">Branch canals</a></li>
                                                         <li><a href="{{ route('distributaries.index') }}" class="slide-item">Distributaries</a></li>
                                                         <li><a href="{{ route('minors.index') }}" class="slide-item">Minors</a></li>
-                                                        <li><a href="{{ route('watercourses.index') }}" class="slide-item">Watercourses (WC)</a></li>
                                                         <li><a href="{{ route('channels.import') }}" class="slide-item">Excel bulk import</a></li>
                                                     </ul>
                                                 </div>
@@ -109,7 +108,50 @@
                                     </li>
                                 </ul>
                             </li>
-                            
+
+                            <li class="slide">
+                                <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fe fe-user"></i>
+                                    <span class="side-menu__label">Customer management</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="panel sidetab-menu">
+                                        <div class="panel-body tabs-menu-body p-0 border-0">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active">
+                                                    <ul class="sidemenu-list">
+                                                        <li><a href="{{ route('customers.index') }}" class="slide-item">Customers</a></li>
+                                                        <li><a href="{{ route('customers.create') }}" class="slide-item">Add customer</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="slide">
+                                <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fe fe-layers"></i>
+                                    <span class="side-menu__label">Watercourse management</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="panel sidetab-menu">
+                                        <div class="panel-body tabs-menu-body p-0 border-0">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active">
+                                                    <ul class="sidemenu-list">
+                                                        <li><a href="{{ route('watercourses.index') }}" class="slide-item">Watercourses (WC)</a></li>
+                                                        <li><a href="{{ route('watercourses.create') }}" class="slide-item">Add watercourse</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
 
                             <li class="sub-category">
                                 <h3>User Access</h3>
@@ -135,6 +177,13 @@
                                         </div>
                                     </li>
                                 </ul>
+                            </li>
+
+                            <li class="slide">
+                                <a class="sidenav-menu-item" href="{{ route('dashboard') }}">
+                                    <i class="side-menu__icon fe fe-home"></i>
+                                    <span class="side-menu__label">Logout</span>
+                                </a>
                             </li>
 
                         </ul>

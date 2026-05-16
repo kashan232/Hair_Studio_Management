@@ -3,6 +3,7 @@
 use App\Http\Controllers\BarrageController;
 use App\Http\Controllers\BranchCanalController;
 use App\Http\Controllers\ChannelImportController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DehController;
 use App\Http\Controllers\DistributaryController;
@@ -93,6 +94,10 @@ Route::middleware(['auth', 'role:super-admin|admin'])->group(function () {
     Route::get('channels/import', [ChannelImportController::class, 'index'])->name('channels.import');
     Route::post('channels/import', [ChannelImportController::class, 'store'])->name('channels.import.store');
     Route::get('channels/import/template', [ChannelImportController::class, 'template'])->name('channels.import.template');
+
+    // / Customer management
+    Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::get('customers/create', [CustomerController::class, 'create'])->name('customers.create');
 
     // Irrigation Administration (Circle → Division → Sub Division)
     Route::get('circles/{circle}/confirm-delete', [\App\Http\Controllers\CircleController::class, 'confirmDelete'])->name('circles.confirm-delete');
