@@ -73,33 +73,18 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
         }
 
-        .auth-logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .auth-logo-container img {
-            max-height: 80px;
-            width: auto;
-            object-fit: contain;
-            mix-blend-mode: multiply;
-            filter: contrast(1.1);
-        }
 
         .project-title {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
         }
 
         .project-title h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
+            font-size: 2.2rem;
+            font-weight: 900;
             color: var(--primary-color);
-            margin: 0;
-            letter-spacing: -0.5px;
+            margin: -5px 0;
+            letter-spacing: 2px;
         }
 
         .project-title p {
@@ -151,7 +136,29 @@
             font-size: 0.75rem;
             color: #6b7280;
             border-top: 1px solid #e5e7eb;
-            padding-top: 10px;
+            padding-top: 15px;
+        }
+
+        .auth-logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .auth-logo-container img {
+            max-height: 35px;
+            width: auto;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            filter: grayscale(0.2) contrast(1.1);
+            transition: all 0.3s ease;
+        }
+
+        .auth-logo-container img:hover {
+            filter: grayscale(0) contrast(1.2);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -205,15 +212,12 @@
         <div class="login-container">
             <div class="card login-wrap-main p-4">
                 
-                <div class="auth-logo-container">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQi5ueEUcsB3jj5hxnLTHXUY4ZpVE87aON_Q&s" alt="Gov of Sindh">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThQvNSJVCfq0OJK34GPAfdPponLvA_lC5Hzw&s" alt="SIDA">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLbY1OsztKQ05-7knkY0ksVtFGJP_0PmGVzg&s" alt="NCAWB">
-                </div>
 
                 <div class="project-title">
+                    <p class="mb-0 text-uppercase fw-bold" style="letter-spacing: 1.5px; font-size: 0.75rem; color: #6b7280;">Sindh Irrigation And Drainage Authority</p>
                     <h1>ABIANA</h1>
-                    <p>Digitization of Abiana Record<br><strong>Nara Canal Area Water Board</strong></p>
+                    <p class="mb-2 fw-semibold" style="font-size: 0.8rem; color: var(--primary-color);">Government of Sindh</p>
+                    <p class="mt-3" style="font-size: 0.85rem; line-height: 1.4; color: #4b5563;">Digitization of Abiana Record<br><span class="fw-bold">Nara Canal Area Water Board</span></p>
                 </div>
 
                 <form method="POST" action="{{ route('login') }}" class="ajaxForm">
@@ -261,6 +265,11 @@
                     </div>
 
                     <div class="footer-note">
+                        <div class="auth-logo-container">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQi5ueEUcsB3jj5hxnLTHXUY4ZpVE87aON_Q&s" alt="Gov of Sindh">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThQvNSJVCfq0OJK34GPAfdPponLvA_lC5Hzw&s" alt="SIDA">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLbY1OsztKQ05-7knkY0ksVtFGJP_0PmGVzg&s" alt="NCAWB">
+                        </div>
                         &copy; 2026 <strong>Nara Canal Area Water Board</strong><br>
                         Sindh Irrigation & Drainage Authority (SIDA)<br>
                         <small class="fw-bold text-uppercase mt-2 d-block" style="letter-spacing: 1px;">Powered by XCL TECHNOLOGIES</small>
@@ -299,11 +308,36 @@
                 
                 var url = $(this).attr('action');
                 var formData = new FormData(this);
-                my_ajax(url, formData, 'post', function(res) {
-                    if(!res.success) {
+                
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: "json",
+                    complete: function () {
                         btn.prop('disabled', false).html(originalText);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ajaxErrorHandling(jqXHR, errorThrown);
+                    },
+                    success: function (data) {
+                        if (data['redirect'] !== undefined) {
+                            toast(data['success'], "Success!", 'success', 1200);
+                            setTimeout(function () {
+                                window.location = data['redirect'];
+                            }, 600);
+                        } else if (data['error'] !== undefined) {
+                            toast(data['error'], "Error!", 'error');
+                        } else if (data['errors'] !== undefined) {
+                            multiple_errors_ajax_handling(data['errors']);
+                        }
                     }
-                }, true);
+                });
             });
 
             // Password toggle logic for this template
