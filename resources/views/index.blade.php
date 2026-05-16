@@ -156,15 +156,64 @@
                     </div>
                 </div>
             </div>
+            <div class="section-divider">
+                <span>Channels hierarchy</span>
+            </div>
+
+            <div class="row row-cards">
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard">
+                        <div class="stat-title">Barrage</div>
+                        <div class="stat-number">{{ $stats['barrages'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard card-navy">
+                        <div class="stat-title">Main canal</div>
+                        <div class="stat-number">{{ $stats['main_canals'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard card-gold">
+                        <div class="stat-title">Sub canal</div>
+                        <div class="stat-number">{{ $stats['sub_canals'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard">
+                        <div class="stat-title">Branch canal</div>
+                        <div class="stat-number">{{ $stats['branch_canals'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard card-navy">
+                        <div class="stat-title">Distributary</div>
+                        <div class="stat-number">{{ $stats['distributaries'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard card-gold">
+                        <div class="stat-title">Minor</div>
+                        <div class="stat-number">{{ $stats['minors'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card-dashboard card-dark">
+                        <div class="stat-title">Watercourse (WC)</div>
+                        <div class="stat-number">{{ $stats['watercourses'] }}</div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row mt-5">
                 <div class="col-xl-8 mb-4">
                     <div class="bg-white p-4 rounded-3 shadow-sm">
-                        <h5 class="fw-bold mb-4 text-uppercase">Hierarchy distribution</h5>
+                        <h5 class="fw-bold mb-4 text-uppercase">Location hierarchy distribution</h5>
                         <div id="hierarchy-chart" style="height: 380px;"></div>
                     </div>
                 </div>
                 <div class="col-xl-4 mb-4">
+
                     <div class="activity-log h-100">
                         <h5 class="fw-bold mb-4 border-bottom pb-2 text-uppercase">Recent districts</h5>
                         <div class="activity-feed">
