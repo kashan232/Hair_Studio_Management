@@ -57,6 +57,24 @@ Route::middleware(['auth', 'role:super-admin|admin'])->group(function () {
     Route::get('locations/import', [LocationImportController::class, 'index'])->name('locations.import');
     Route::post('locations/import', [LocationImportController::class, 'store'])->name('locations.import.store');
     Route::get('locations/import/template', [LocationImportController::class, 'template'])->name('locations.import.template');
+
+    // Irrigation Administration (Circle → Division → Sub Division)
+    Route::get('circles/{circle}/confirm-delete', [\App\Http\Controllers\CircleController::class, 'confirmDelete'])->name('circles.confirm-delete');
+    Route::get('divisions/{division}/confirm-delete', [\App\Http\Controllers\DivisionController::class, 'confirmDelete'])->name('divisions.confirm-delete');
+    Route::get('sub-divisions/{subDivision}/confirm-delete', [\App\Http\Controllers\SubDivisionController::class, 'confirmDelete'])->name('sub-divisions.confirm-delete');
+
+    Route::resource('circles', \App\Http\Controllers\CircleController::class);
+    Route::resource('divisions', \App\Http\Controllers\DivisionController::class);
+    Route::resource('sub-divisions', \App\Http\Controllers\SubDivisionController::class);
+
+    Route::get('irrigation/import', [\App\Http\Controllers\IrrigationImportController::class, 'index'])->name('irrigation.import');
+    Route::post('irrigation/import', [\App\Http\Controllers\IrrigationImportController::class, 'store'])->name('irrigation.import.store');
+    Route::get('irrigation/import/template', [\App\Http\Controllers\IrrigationImportController::class, 'template'])->name('irrigation.import.template');
+
+    // Cascading for Irrigation
+    Route::get('cascade/divisions/{circle}', [\App\Http\Controllers\DivisionController::class, 'byCircle'])->name('cascade.divisions');
+    Route::get('cascade/sub-divisions/{division}', [\App\Http\Controllers\SubDivisionController::class, 'byDivision'])->name('cascade.sub-divisions');
+    Route::get('cascade/sub-division-details/{subDivision}', [\App\Http\Controllers\SubDivisionController::class, 'getDetails'])->name('cascade.sub-division-details');
 });
 
 require __DIR__.'/auth.php';
