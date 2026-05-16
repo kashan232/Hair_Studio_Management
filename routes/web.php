@@ -66,6 +66,34 @@ Route::middleware(['auth', 'role:super-admin|admin'])->group(function () {
     Route::post('locations/import', [LocationImportController::class, 'store'])->name('locations.import.store');
     Route::get('locations/import/template', [LocationImportController::class, 'template'])->name('locations.import.template');
 
+    // / Channels hierarchy (Barrage → Main Canal → … → Watercourse)
+    Route::get('barrages/{barrage}/confirm-delete', [BarrageController::class, 'confirmDelete'])->name('barrages.confirm-delete');
+    Route::get('main-canals/{main_canal}/confirm-delete', [MainCanalController::class, 'confirmDelete'])->name('main-canals.confirm-delete');
+    Route::get('sub-canals/{sub_canal}/confirm-delete', [SubCanalController::class, 'confirmDelete'])->name('sub-canals.confirm-delete');
+    Route::get('branch-canals/{branch_canal}/confirm-delete', [BranchCanalController::class, 'confirmDelete'])->name('branch-canals.confirm-delete');
+    Route::get('distributaries/{distributary}/confirm-delete', [DistributaryController::class, 'confirmDelete'])->name('distributaries.confirm-delete');
+    Route::get('minors/{minor}/confirm-delete', [MinorController::class, 'confirmDelete'])->name('minors.confirm-delete');
+    Route::get('watercourses/{watercourse}/confirm-delete', [WatercourseController::class, 'confirmDelete'])->name('watercourses.confirm-delete');
+
+    Route::resource('barrages', BarrageController::class);
+    Route::resource('main-canals', MainCanalController::class);
+    Route::resource('sub-canals', SubCanalController::class);
+    Route::resource('branch-canals', BranchCanalController::class);
+    Route::resource('distributaries', DistributaryController::class);
+    Route::resource('minors', MinorController::class);
+    Route::resource('watercourses', WatercourseController::class);
+
+    Route::get('cascade/main-canals/{barrage}', [MainCanalController::class, 'byBarrage'])->name('cascade.main-canals');
+    Route::get('cascade/sub-canals/{mainCanal}', [SubCanalController::class, 'byMainCanal'])->name('cascade.sub-canals');
+    Route::get('cascade/branch-canals/{subCanal}', [BranchCanalController::class, 'bySubCanal'])->name('cascade.branch-canals');
+    Route::get('cascade/distributaries/{branchCanal}', [DistributaryController::class, 'byBranchCanal'])->name('cascade.distributaries');
+    Route::get('cascade/minors/{distributary}', [MinorController::class, 'byDistributary'])->name('cascade.minors');
+    Route::get('cascade/watercourses/{minor}', [WatercourseController::class, 'byMinor'])->name('cascade.watercourses');
+
+    Route::get('channels/import', [ChannelImportController::class, 'index'])->name('channels.import');
+    Route::post('channels/import', [ChannelImportController::class, 'store'])->name('channels.import.store');
+    Route::get('channels/import/template', [ChannelImportController::class, 'template'])->name('channels.import.template');
+
     // Irrigation Administration (Circle → Division → Sub Division)
     Route::get('circles/{circle}/confirm-delete', [\App\Http\Controllers\CircleController::class, 'confirmDelete'])->name('circles.confirm-delete');
     Route::get('divisions/{division}/confirm-delete', [\App\Http\Controllers\DivisionController::class, 'confirmDelete'])->name('divisions.confirm-delete');

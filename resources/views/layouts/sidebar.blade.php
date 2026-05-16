@@ -56,6 +56,8 @@
                                 </ul>
                             </li>
 
+                            
+
                             <li class="slide">
                                 <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
                                     <i class="side-menu__icon fe fe-droplet"></i>
@@ -79,6 +81,35 @@
                                     </li>
                                 </ul>
                             </li>
+
+                            <li class="slide">
+                                <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fe fe-git-branch"></i>
+                                    <span class="side-menu__label">Channels hierarchy</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="panel sidetab-menu">
+                                        <div class="panel-body tabs-menu-body p-0 border-0">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active">
+                                                    <ul class="sidemenu-list">
+                                                        <li><a href="{{ route('barrages.index') }}" class="slide-item">Barrages</a></li>
+                                                        <li><a href="{{ route('main-canals.index') }}" class="slide-item">Main canals</a></li>
+                                                        <li><a href="{{ route('sub-canals.index') }}" class="slide-item">Sub canals</a></li>
+                                                        <li><a href="{{ route('branch-canals.index') }}" class="slide-item">Branch canals</a></li>
+                                                        <li><a href="{{ route('distributaries.index') }}" class="slide-item">Distributaries</a></li>
+                                                        <li><a href="{{ route('minors.index') }}" class="slide-item">Minors</a></li>
+                                                        <li><a href="{{ route('watercourses.index') }}" class="slide-item">Watercourses (WC)</a></li>
+                                                        <li><a href="{{ route('channels.import') }}" class="slide-item">Excel bulk import</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            
 
                             <li class="sub-category">
                                 <h3>User Access</h3>
