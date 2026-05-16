@@ -56,6 +56,30 @@
                                 </ul>
                             </li>
 
+                            <li class="slide">
+                                <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fe fe-droplet"></i>
+                                    <span class="side-menu__label">Administration Irrigation</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="panel sidetab-menu">
+                                        <div class="panel-body tabs-menu-body p-0 border-0">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active">
+                                                    <ul class="sidemenu-list">
+                                                        <li><a href="{{ route('circles.index') }}" class="slide-item">Circles</a></li>
+                                                        <li><a href="{{ route('divisions.index') }}" class="slide-item">Divisions</a></li>
+                                                        <li><a href="{{ route('sub-divisions.index') }}" class="slide-item">Sub Divisions</a></li>
+                                                        <li><a href="{{ route('irrigation.import') }}" class="slide-item">Excel bulk import</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+
                             <li class="sub-category">
                                 <h3>User Access</h3>
                             </li>
