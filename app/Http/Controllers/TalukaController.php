@@ -2,103 +2,96 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Taluka;
 use App\Models\District;
-use App\Models\RevenueDivision;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Taluka;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TalukaController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        if ($request->ajax()) {
-            $talukas = Taluka::with('district.revenueDivision');
-            return DataTables::of($talukas)
-                ->addColumn('district_name', function ($row) {
-                    return $row->district->name ?? '';
-                })
-                ->addColumn('division_name', function ($row) {
-                    return $row->district->revenueDivision->name ?? '';
-                })
-                ->addColumn('actions', function ($row) {
-                    return '
-                        <a href="'.route('talukas.edit', $row->id).'" class="btn btn-sm btn-primary">Edit</a>
-                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="'.$row->id.'">Delete</button>
-                    ';
-                })
-                ->rawColumns(['actions'])
-                ->make(true);
-        }
-        return view('talukas.index');
+        $talukas = Taluka::with('district')->withCount('tehsils')->orderBy('name')->paginate(15);
+
+        return view('talukas.index', compact('talukas'));
     }
 
     public function create()
     {
-        $divisions = RevenueDivision::all();
-        return view('talukas.create', compact('divisions'));
+        $districts = District::orderBy('name')->get(['id', 'name']);
+
+        return view('talukas.create', compact('districts'));
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'district_id' => 'required',
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:100',
+        $validated = $request->validate([
+            'district_id' => ['required', 'exists:districts,id'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('talukas', 'name')->where(fn ($q) => $q->where('district_id', $request->district_id)),
+            ],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
-        }
+        Taluka::create($validated);
 
-        Taluka::create($request->all());
-
-        return response()->json([
-            'success' => 'Taluka Created Successfully',
-            'redirect' => route('talukas.index')
-        ]);
+        return redirect()->route('talukas.index')->with('success', 'Taluka created successfully.');
     }
 
-    public function edit($id)
+    public function show(Taluka $taluka)
     {
-        $taluka = Taluka::findOrFail($id);
-        $divisions = RevenueDivision::all();
-        $districts = District::where('revenue_division_id', $taluka->district->revenue_division_id)->get();
-        return view('talukas.create', compact('taluka', 'divisions', 'districts'));
+        $taluka->load('district')->loadCount('tehsils');
+
+        return view('talukas.show', compact('taluka'));
     }
 
-    public function update(Request $request, $id)
+    public function edit(Taluka $taluka)
     {
-        $taluka = Taluka::findOrFail($id);
-        $validator = Validator::make($request->all(), [
-            'district_id' => 'required',
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:100',
-        ]);
+        $districts = District::orderBy('name')->get(['id', 'name']);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
-        }
-
-        $taluka->update($request->all());
-
-        return response()->json([
-            'success' => 'Taluka Updated Successfully',
-            'redirect' => route('talukas.index')
-        ]);
+        return view('talukas.edit', compact('taluka', 'districts'));
     }
 
-    public function destroy($id)
+    public function update(Request $request, Taluka $taluka)
     {
-        $taluka = Taluka::findOrFail($id);
+        $validated = $request->validate([
+            'district_id' => ['required', 'exists:districts,id'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('talukas', 'name')
+                    ->where(fn ($q) => $q->where('district_id', $request->district_id))
+                    ->ignore($taluka->id),
+            ],
+        ]);
+
+        $taluka->update($validated);
+
+        return redirect()->route('talukas.index')->with('success', 'Taluka updated successfully.');
+    }
+
+    public function confirmDelete(Taluka $taluka)
+    {
+        $taluka->load('district')->loadCount('tehsils');
+
+        return view('talukas.delete', compact('taluka'));
+    }
+
+    public function destroy(Taluka $taluka)
+    {
         $taluka->delete();
-        return response()->json(['success' => 'Taluka Deleted Successfully']);
+
+        return redirect()->route('talukas.index')->with('success', 'Taluka deleted successfully.');
     }
 
-    public function getTalukas($district_id)
+    /** JSON for cascading selects: districts → talukas */
+    public function byDistrict(District $district)
     {
-        $talukas = Taluka::where('district_id', $district_id)->get();
-        return response()->json($talukas);
+        $items = Taluka::where('district_id', $district->id)->orderBy('name')->get(['id', 'name']);
+
+        return response()->json($items);
     }
 }

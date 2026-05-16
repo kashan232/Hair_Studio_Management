@@ -33,34 +33,8 @@
 
                             <li class="slide">
                                 <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
-                                    <i class="side-menu__icon fe fe-settings"></i>
-                                    <span class="side-menu__label">Irrigation Administration</span>
-                                    <i class="angle fe fe-chevron-right"></i>
-                                </a>
-                                <ul class="slide-menu">
-                                    <li class="panel sidetab-menu">
-                                        <div class="panel-body tabs-menu-body p-0 border-0">
-                                            <div class="tab-content">
-                                                <div class="tab-pane active">
-                                                    <ul class="sidemenu-list">
-                                                        <li><a href="{{ route('units.index') }}" class="slide-item">Unit Management</a></li>
-                                                        <li><a href="{{ route('regions.index') }}" class="slide-item">Region Management</a></li>
-                                                        <li><a href="{{ route('circles.index') }}" class="slide-item">Circle Management</a></li>
-                                                        <li><a href="{{ route('irrigation_divisions.index') }}" class="slide-item">Irrigation Division Management</a></li>
-                                                        <li><a href="{{ route('sub_divisions.index') }}" class="slide-item">Sub-Division Management</a></li>
-                                                        <li><a href="{{ route('beats.index') }}" class="slide-item">Beat Management</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            <li class="slide">
-                                <a class="sidenav-menu-item" data-bs-toggle="slide" href="javascript:void(0)">
                                     <i class="side-menu__icon fe fe-map"></i>
-                                    <span class="side-menu__label">Revenue Administration</span>
+                                    <span class="side-menu__label">Location hierarchy</span>
                                     <i class="angle fe fe-chevron-right"></i>
                                 </a>
                                 <ul class="slide-menu">
@@ -69,13 +43,11 @@
                                             <div class="tab-content">
                                                 <div class="tab-pane active">
                                                     <ul class="sidemenu-list">
-                                                        <li><a href="{{ route('revenue_divisions.index') }}" class="slide-item">Revenue Division</a></li>
                                                         <li><a href="{{ route('districts.index') }}" class="slide-item">Districts</a></li>
                                                         <li><a href="{{ route('talukas.index') }}" class="slide-item">Talukas</a></li>
-                                                        <li><a href="{{ route('revenue_circles.index') }}" class="slide-item">R-Circles</a></li>
-                                                        <li><a href="{{ route('tappas.index') }}" class="slide-item">Tappas</a></li>
-                                                        <li><a href="{{ route('dehs.index') }}" class="slide-item">Dehs</a></li>
-                                                        <li><a href="{{ route('survey_numbers.index') }}" class="slide-item">Survey Numbers</a></li>
+                                                        <li><a href="{{ route('tehsils.index') }}" class="slide-item">Tehsils</a></li>
+                                                        <li><a href="{{ route('dehs.index') }}" class="slide-item">DEHs</a></li>
+                                                        <li><a href="{{ route('locations.import') }}" class="slide-item">Excel bulk import</a></li>
                                                     </ul>
                                                 </div>
                                             </div>

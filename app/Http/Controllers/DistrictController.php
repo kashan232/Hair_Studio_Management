@@ -2,98 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\District;
-use App\Models\RevenueDivision;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DistrictController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        if ($request->ajax()) {
-            $districts = District::with('revenueDivision');
-            return DataTables::of($districts)
-                ->addColumn('division_name', function ($row) {
-                    return $row->revenueDivision->name ?? '';
-                })
-                ->addColumn('actions', function ($row) {
-                    return '
-                        <a href="'.route('districts.edit', $row->id).'" class="btn btn-sm btn-primary">Edit</a>
-                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="'.$row->id.'">Delete</button>
-                    ';
-                })
-                ->rawColumns(['actions'])
-                ->make(true);
-        }
-        return view('districts.index');
+        $districts = District::withCount('talukas')->orderBy('name')->paginate(15);
+
+        return view('districts.index', compact('districts'));
     }
 
     public function create()
     {
-        $divisions = RevenueDivision::all();
-        return view('districts.create', compact('divisions'));
+        return view('districts.create');
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'revenue_division_id' => 'required',
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:100',
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', Rule::unique('districts', 'name')],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
-        }
+        District::create($validated);
 
-        District::create($request->all());
-
-        return response()->json([
-            'success' => 'District Created Successfully',
-            'redirect' => route('districts.index')
-        ]);
+        return redirect()->route('districts.index')->with('success', 'District created successfully.');
     }
 
-    public function edit($id)
+    public function show(District $district)
     {
-        $district = District::findOrFail($id);
-        $divisions = RevenueDivision::all();
-        return view('districts.create', compact('district', 'divisions'));
+        $district->loadCount('talukas');
+
+        return view('districts.show', compact('district'));
     }
 
-    public function update(Request $request, $id)
+    public function edit(District $district)
     {
-        $district = District::findOrFail($id);
-        $validator = Validator::make($request->all(), [
-            'revenue_division_id' => 'required',
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:100',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
-        }
-
-        $district->update($request->all());
-
-        return response()->json([
-            'success' => 'District Updated Successfully',
-            'redirect' => route('districts.index')
-        ]);
+        return view('districts.edit', compact('district'));
     }
 
-    public function destroy($id)
+    public function update(Request $request, District $district)
     {
-        $district = District::findOrFail($id);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', Rule::unique('districts', 'name')->ignore($district->id)],
+        ]);
+
+        $district->update($validated);
+
+        return redirect()->route('districts.index')->with('success', 'District updated successfully.');
+    }
+
+    public function confirmDelete(District $district)
+    {
+        $district->loadCount('talukas');
+
+        return view('districts.delete', compact('district'));
+    }
+
+    public function destroy(District $district)
+    {
         $district->delete();
-        return response()->json(['success' => 'District Deleted Successfully']);
-    }
 
-    public function getDistricts($revenue_division_id)
-    {
-        $districts = District::where('revenue_division_id', $revenue_division_id)->get();
-        return response()->json($districts);
+        return redirect()->route('districts.index')->with('success', 'District deleted successfully.');
     }
 }

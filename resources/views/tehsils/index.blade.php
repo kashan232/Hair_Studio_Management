@@ -5,11 +5,11 @@
     <div class="side-app">
         <div class="main-container container-fluid">
             <div class="page-header">
-                <h1 class="page-title">Talukas</h1>
+                <h1 class="page-title">Tehsils</h1>
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Talukas</li>
+                        <li class="breadcrumb-item active" aria-current="page">Tehsils</li>
                     </ol>
                 </div>
             </div>
@@ -18,9 +18,9 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Taluka list</h3>
+                            <h3 class="card-title">Tehsil list</h3>
                             <div class="ms-auto">
-                                <a href="{{ route('talukas.create') }}" class="btn btn-primary btn-sm">Add Taluka</a>
+                                <a href="{{ route('tehsils.create') }}" class="btn btn-primary btn-sm">Add Tehsil</a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -36,33 +36,35 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Taluka</th>
                                             <th>District</th>
-                                            <th>Tehsils</th>
+                                            <th>DEHs</th>
                                             <th style="width: 220px">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($talukas as $taluka)
+                                        @forelse ($tehsils as $tehsil)
                                             <tr>
-                                                <td>{{ $taluka->name }}</td>
-                                                <td>{{ $taluka->district->name }}</td>
-                                                <td>{{ $taluka->tehsils_count }}</td>
+                                                <td>{{ $tehsil->name }}</td>
+                                                <td>{{ $tehsil->taluka->name }}</td>
+                                                <td>{{ $tehsil->taluka->district->name }}</td>
+                                                <td>{{ $tehsil->dehs_count }}</td>
                                                 <td>
-                                                    <a href="{{ route('talukas.show', $taluka) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                                                    <a href="{{ route('talukas.edit', $taluka) }}" class="btn btn-sm btn-primary">Edit</a>
-                                                    <a href="{{ route('talukas.confirm-delete', $taluka) }}" class="btn btn-sm btn-danger">Delete</a>
+                                                    <a href="{{ route('tehsils.show', $tehsil) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                                                    <a href="{{ route('tehsils.edit', $tehsil) }}" class="btn btn-sm btn-primary">Edit</a>
+                                                    <a href="{{ route('tehsils.confirm-delete', $tehsil) }}" class="btn btn-sm btn-danger">Delete</a>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted">No talukas yet.</td>
+                                                <td colspan="5" class="text-center text-muted">No tehsils yet.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
                             </div>
 
-                            {{ $talukas->links() }}
+                            {{ $tehsils->links() }}
                         </div>
                     </div>
                 </div>

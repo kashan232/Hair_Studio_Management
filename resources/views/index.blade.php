@@ -9,10 +9,8 @@
         --gov-navy: #1a237e;
         --executive-blue: #2c3e50;
     }
-    
-    .dashboard-container {
-        padding: 20px 0;
-    }
+
+    .dashboard-container { padding: 20px 0; }
 
     .main-heading {
         text-align: center;
@@ -45,14 +43,14 @@
         border: none;
         border-top: 4px solid var(--gov-green);
         background: #ffffff;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         padding: 25px;
         transition: all 0.3s ease;
     }
-    
+
     .card-dashboard:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
     }
 
     .card-navy { border-top-color: var(--gov-navy); }
@@ -67,7 +65,7 @@
         letter-spacing: 1.2px;
         margin-bottom: 10px;
     }
-    
+
     .card-dark .stat-title { color: #bdc3c7; }
 
     .stat-number {
@@ -76,7 +74,7 @@
         color: #2c3e50;
         line-height: 1;
     }
-    
+
     .card-dark .stat-number { color: white; }
 
     .section-divider {
@@ -111,7 +109,7 @@
         background: #fff;
         border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
     }
 </style>
 @endsection
@@ -120,143 +118,71 @@
 <div class="main-content app-content mt-0">
     <div class="side-app">
         <div class="main-container container-fluid dashboard-container">
-            
-            <!-- CENTERED MAIN HEADING -->
             <div class="main-heading">
                 <h1>Nara Canal Area Water Board</h1>
                 <h2>Sindh Irrigation And Drainage Authority</h2>
                 <div class="mt-2">
-                    <span class="badge bg-gov-green text-white px-3">Government of Sindh</span>
+                    <span class="badge bg-success text-white px-3">Government of Sindh</span>
                 </div>
             </div>
 
-            <!-- IRRIGATION SECTION -->
             <div class="section-divider">
-                <span>Irrigation Administration structure</span>
-            </div>
-            
-            <div class="row row-cards">
-                <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
-                    <div class="card-dashboard">
-                        <div class="stat-title">Units</div>
-                        <div class="stat-number">{{ $stats['irrigation']['units'] }}</div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
-                    <div class="card-dashboard card-navy">
-                        <div class="stat-title">Regions</div>
-                        <div class="stat-number">{{ $stats['irrigation']['regions'] }}</div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
-                    <div class="card-dashboard card-gold">
-                        <div class="stat-title">Circles</div>
-                        <div class="stat-number">{{ $stats['irrigation']['circles'] }}</div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
-                    <div class="card-dashboard">
-                        <div class="stat-title">Divisions</div>
-                        <div class="stat-number">{{ $stats['irrigation']['divisions'] }}</div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
-                    <div class="card-dashboard card-navy">
-                        <div class="stat-title">Sub-Divisions</div>
-                        <div class="stat-number">{{ $stats['irrigation']['sub_divisions'] }}</div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
-                    <div class="card-dashboard card-gold">
-                        <div class="stat-title">Beats</div>
-                        <div class="stat-number">{{ $stats['irrigation']['beats'] }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- REVENUE SECTION -->
-            <div class="section-divider">
-                <span>Revenue Administration structure</span>
+                <span>Location hierarchy</span>
             </div>
 
             <div class="row row-cards">
                 <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card-dashboard">
-                        <div class="stat-title">Revenue Divisions</div>
-                        <div class="stat-number">{{ $stats['revenue']['divisions'] }}</div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card-dashboard card-navy">
                         <div class="stat-title">Districts</div>
-                        <div class="stat-number">{{ $stats['revenue']['districts'] }}</div>
+                        <div class="stat-number">{{ $stats['districts'] }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card-dashboard card-navy">
+                        <div class="stat-title">Talukas</div>
+                        <div class="stat-number">{{ $stats['talukas'] }}</div>
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card-dashboard card-gold">
-                        <div class="stat-title">Talukas</div>
-                        <div class="stat-number">{{ $stats['revenue']['talukas'] }}</div>
+                        <div class="stat-title">Tehsils</div>
+                        <div class="stat-number">{{ $stats['tehsils'] }}</div>
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card-dashboard card-dark">
-                        <div class="stat-title">Total Tappas</div>
-                        <div class="stat-number">{{ $stats['revenue']['tappas'] }}</div>
+                        <div class="stat-title">DEHs</div>
+                        <div class="stat-number">{{ $stats['dehs'] }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-xl-4 mb-4">
-                    <div class="card-dashboard border-start border-gov-green border-top-0">
-                        <div class="stat-title">Dehs Cataloged</div>
-                        <div class="stat-number">{{ $stats['revenue']['dehs'] }}</div>
-                        <p class="text-muted small mt-2 mb-0">Official Land Records Synchronized</p>
-                    </div>
-                </div>
-                <div class="col-xl-8 mb-4">
-                    <div class="card-dashboard card-navy p-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-9">
-                                <div class="stat-title">Survey Numbers Cataloged</div>
-                                <h3 class="stat-number">{{ $stats['revenue']['survey_numbers'] }}</h3>
-                                <p class="text-muted small mt-2 mb-0">Detailed land records available for Nara Canal Area Water Board.</p>
-                            </div>
-                            <div class="col-md-3 text-end d-none d-md-block">
-                                <h1 class="display-3 fw-bold opacity-10">99%</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ANALYTICS -->
             <div class="row mt-5">
                 <div class="col-xl-8 mb-4">
                     <div class="bg-white p-4 rounded-3 shadow-sm">
-                        <h5 class="fw-bold mb-4 text-uppercase">Structural Distribution Analysis</h5>
+                        <h5 class="fw-bold mb-4 text-uppercase">Hierarchy distribution</h5>
                         <div id="hierarchy-chart" style="height: 380px;"></div>
                     </div>
                 </div>
                 <div class="col-xl-4 mb-4">
                     <div class="activity-log h-100">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2 text-uppercase">Executive Logs</h5>
+                        <h5 class="fw-bold mb-4 border-bottom pb-2 text-uppercase">Recent districts</h5>
                         <div class="activity-feed">
-                            @forelse($stats['recent_units'] as $recent)
-                            <div class="mb-4 pb-2 border-bottom border-light">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="fw-bold mb-0 text-gov-green">{{ $recent->name }}</h6>
-                                    <small class="text-muted">{{ $recent->created_at->diffForHumans() }}</small>
+                            @forelse($stats['recent_districts'] as $recent)
+                                <div class="mb-4 pb-2 border-bottom border-light">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="fw-bold mb-0 text-success">{{ $recent->name }}</h6>
+                                        <small class="text-muted">{{ $recent->created_at->diffForHumans() }}</small>
+                                    </div>
+                                    <p class="text-muted small mb-0">District master record updated.</p>
                                 </div>
-                                <p class="text-muted small mb-0">Registration of new Irrigation Unit completed.</p>
-                            </div>
                             @empty
-                            <p class="text-center text-muted">No logs recorded.</p>
+                                <p class="text-center text-muted">No districts yet.</p>
                             @endforelse
-                            
+
                             <div class="mt-5 text-center">
                                 <h3 class="fw-black mb-0">{{ $stats['total_users'] }}</h3>
-                                <div class="stat-title">Authorized Personnel</div>
+                                <div class="stat-title">Authorized personnel</div>
                             </div>
                         </div>
                     </div>
@@ -272,11 +198,8 @@
 <script>
     var options = {
         series: [{
-            name: 'Irrigation Hierarchy',
-            data: [{{ $stats['irrigation']['units'] }}, {{ $stats['irrigation']['regions'] }}, {{ $stats['irrigation']['circles'] }}, {{ $stats['irrigation']['divisions'] }}, {{ $stats['irrigation']['sub_divisions'] }}, {{ $stats['irrigation']['beats'] }}]
-        }, {
-            name: 'Revenue Hierarchy',
-            data: [{{ $stats['revenue']['divisions'] }}, {{ $stats['revenue']['districts'] }}, {{ $stats['revenue']['talukas'] }}, {{ $stats['revenue']['circles'] }}, {{ $stats['revenue']['tappas'] }}, {{ $stats['revenue']['dehs'] }}]
+            name: 'Records',
+            data: [{{ $stats['districts'] }}, {{ $stats['talukas'] }}, {{ $stats['tehsils'] }}, {{ $stats['dehs'] }}]
         }],
         chart: {
             type: 'area',
@@ -284,7 +207,7 @@
             toolbar: { show: false },
             fontFamily: 'Inter, sans-serif'
         },
-        colors: ['#006837', '#1a237e'],
+        colors: ['#006837'],
         dataLabels: { enabled: false },
         stroke: { curve: 'straight', width: 2 },
         fill: {
@@ -297,7 +220,7 @@
             }
         },
         xaxis: {
-            categories: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6'],
+            categories: ['District', 'Taluka', 'Tehsil', 'DEH'],
         },
         yaxis: { labels: { style: { colors: '#8e8da4' } } },
         grid: { borderColor: '#f1f1f1' },

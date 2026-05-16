@@ -3,17 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class District extends Model
 {
-    protected $fillable = ['revenue_division_id', 'name', 'code'];
+    protected $fillable = [
+        'name',
+    ];
 
-    public function revenueDivision()
-    {
-        return $this->belongsTo(RevenueDivision::class);
-    }
-
-    public function talukas()
+    public function talukas(): HasMany
     {
         return $this->hasMany(Taluka::class);
     }

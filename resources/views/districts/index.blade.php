@@ -1,13 +1,14 @@
 @extends('layouts.main')
+
 @section('content')
 <div class="main-content app-content mt-0">
     <div class="side-app">
         <div class="main-container container-fluid">
             <div class="page-header">
-                <h1 class="page-title">District Management</h1>
+                <h1 class="page-title">Districts</h1>
                 <div>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Districts</li>
                     </ol>
                 </div>
@@ -17,24 +18,49 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">District List</h3>
+                            <h3 class="card-title">District list</h3>
                             <div class="ms-auto">
-                                <a href="{{route('districts.create')}}" class="btn btn-primary btn-sm">Create District</a>
+                                <a href="{{ route('districts.create') }}" class="btn btn-primary btn-sm">Add District</a>
                             </div>
                         </div>
                         <div class="card-body">
+                            @if (session('success'))
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            @endif
+
                             <div class="table-responsive">
-                                <table id="districts-table" class="table table-bordered text-nowrap border-bottom">
+                                <table class="table table-bordered text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Revenue Division</th>
                                             <th>Name</th>
-                                            <th>Code</th>
-                                            <th>Actions</th>
+                                            <th>Talukas</th>
+                                            <th style="width: 220px">Actions</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        @forelse ($districts as $district)
+                                            <tr>
+                                                <td>{{ $district->name }}</td>
+                                                <td>{{ $district->talukas_count }}</td>
+                                                <td>
+                                                    <a href="{{ route('districts.show', $district) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                                                    <a href="{{ route('districts.edit', $district) }}" class="btn btn-sm btn-primary">Edit</a>
+                                                    <a href="{{ route('districts.confirm-delete', $district) }}" class="btn btn-sm btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">No districts yet.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
                                 </table>
                             </div>
+
+                            {{ $districts->links() }}
                         </div>
                     </div>
                 </div>
@@ -42,47 +68,4 @@
         </div>
     </div>
 </div>
-@endsection
-
-@section('JScript')
-<script>
-$(function () {
-    var table = $('#districts-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: '{{ route('districts.index') }}',
-        columns: [
-            { data: 'division_name', name: 'revenueDivision.name' },
-            { data: 'name', name: 'name' },
-            { data: 'code', name: 'code' },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false }
-        ]
-    });
-
-    $('#districts-table').on('click', '.delete-btn', function() {
-        var id = $(this).data('id');
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '{{ url('districts') }}/' + id,
-                    type: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(response) {
-                        table.ajax.reload();
-                        Swal.fire("Deleted!", response.success, "success");
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
 @endsection

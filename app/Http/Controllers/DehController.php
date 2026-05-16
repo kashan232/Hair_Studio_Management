@@ -2,118 +2,127 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Deh;
-use App\Models\Tappa;
-use App\Models\RevenueCircle;
-use App\Models\Taluka;
 use App\Models\District;
-use App\Models\RevenueDivision;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DehController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        if ($request->ajax()) {
-            $dehs = Deh::with('tappa.revenueCircle.taluka.district.revenueDivision');
-            return DataTables::of($dehs)
-                ->addColumn('tappa_name', function ($row) {
-                    return $row->tappa->name ?? '';
-                })
-                ->addColumn('circle_name', function ($row) {
-                    return $row->tappa->revenueCircle->name ?? '';
-                })
-                ->addColumn('taluka_name', function ($row) {
-                    return $row->tappa->revenueCircle->taluka->name ?? '';
-                })
-                ->addColumn('district_name', function ($row) {
-                    return $row->tappa->revenueCircle->taluka->district->name ?? '';
-                })
-                ->addColumn('division_name', function ($row) {
-                    return $row->tappa->revenueCircle->taluka->district->revenueDivision->name ?? '';
-                })
-                ->addColumn('actions', function ($row) {
-                    return '
-                        <a href="'.route('dehs.edit', $row->id).'" class="btn btn-sm btn-primary">Edit</a>
-                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="'.$row->id.'">Delete</button>
-                    ';
-                })
-                ->rawColumns(['actions'])
-                ->make(true);
-        }
-        return view('dehs.index');
+        $dehs = Deh::with([
+            'tehsil.taluka.district',
+        ])->orderBy('name')->paginate(15);
+
+        return view('dehs.index', compact('dehs'));
     }
 
     public function create()
     {
-        $divisions = RevenueDivision::all();
-        return view('dehs.create', compact('divisions'));
+        $districts = District::orderBy('name')->get(['id', 'name']);
+
+        return view('dehs.create', compact('districts'));
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'tappa_id' => 'required',
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:100',
+        $validated = $request->validate([
+            'district_id' => ['required', 'exists:districts,id'],
+            'taluka_id' => [
+                'required',
+                Rule::exists('talukas', 'id')->where(fn ($q) => $q->where('district_id', $request->district_id)),
+            ],
+            'tehsil_id' => [
+                'required',
+                Rule::exists('tehsils', 'id')->where(fn ($q) => $q->where('taluka_id', $request->taluka_id)),
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('dehs', 'name')->where(fn ($q) => $q->where('tehsil_id', $request->tehsil_id)),
+            ],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
-        }
-
-        Deh::create($request->all());
-
-        return response()->json([
-            'success' => 'Deh Created Successfully',
-            'redirect' => route('dehs.index')
+        Deh::create([
+            'tehsil_id' => $validated['tehsil_id'],
+            'name' => $validated['name'],
         ]);
+
+        return redirect()->route('dehs.index')->with('success', 'DEH created successfully.');
     }
 
-    public function edit($id)
+    public function show(Deh $deh)
     {
-        $deh = Deh::findOrFail($id);
-        $divisions = RevenueDivision::all();
-        $districts = District::where('revenue_division_id', $deh->tappa->revenueCircle->taluka->district->revenue_division_id)->get();
-        $talukas = Taluka::where('district_id', $deh->tappa->revenueCircle->taluka->district_id)->get();
-        $circles = RevenueCircle::where('taluka_id', $deh->tappa->revenueCircle->taluka_id)->get();
-        $tappas = Tappa::where('revenue_circle_id', $deh->tappa->revenue_circle_id)->get();
-        return view('dehs.create', compact('deh', 'divisions', 'districts', 'talukas', 'circles', 'tappas'));
+        $deh->load(['tehsil.taluka.district']);
+
+        return view('dehs.show', compact('deh'));
     }
 
-    public function update(Request $request, $id)
+    public function edit(Deh $deh)
     {
-        $deh = Deh::findOrFail($id);
-        $validator = Validator::make($request->all(), [
-            'tappa_id' => 'required',
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:100',
-        ]);
+        $deh->load(['tehsil.taluka.district']);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
-        }
+        $districts = District::orderBy('name')->get(['id', 'name']);
+        $districtId = $deh->tehsil->taluka->district_id;
+        $talukaId = $deh->tehsil->taluka_id;
 
-        $deh->update($request->all());
+        $talukas = Taluka::where('district_id', $districtId)->orderBy('name')->get(['id', 'name']);
+        $tehsils = Tehsil::where('taluka_id', $talukaId)->orderBy('name')->get(['id', 'name']);
 
-        return response()->json([
-            'success' => 'Deh Updated Successfully',
-            'redirect' => route('dehs.index')
-        ]);
+        return view('dehs.edit', compact('deh', 'districts', 'talukas', 'tehsils', 'districtId', 'talukaId'));
     }
 
-    public function destroy($id)
+    public function update(Request $request, Deh $deh)
     {
-        $deh = Deh::findOrFail($id);
+        $validated = $request->validate([
+            'district_id' => ['required', 'exists:districts,id'],
+            'taluka_id' => [
+                'required',
+                Rule::exists('talukas', 'id')->where(fn ($q) => $q->where('district_id', $request->district_id)),
+            ],
+            'tehsil_id' => [
+                'required',
+                Rule::exists('tehsils', 'id')->where(fn ($q) => $q->where('taluka_id', $request->taluka_id)),
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('dehs', 'name')
+                    ->where(fn ($q) => $q->where('tehsil_id', $request->tehsil_id))
+                    ->ignore($deh->id),
+            ],
+        ]);
+
+        $deh->update([
+            'tehsil_id' => $validated['tehsil_id'],
+            'name' => $validated['name'],
+        ]);
+
+        return redirect()->route('dehs.index')->with('success', 'DEH updated successfully.');
+    }
+
+    public function confirmDelete(Deh $deh)
+    {
+        $deh->load(['tehsil.taluka.district']);
+
+        return view('dehs.delete', compact('deh'));
+    }
+
+    public function destroy(Deh $deh)
+    {
         $deh->delete();
-        return response()->json(['success' => 'Deh Deleted Successfully']);
+
+        return redirect()->route('dehs.index')->with('success', 'DEH deleted successfully.');
     }
 
-    public function getDehs($tappa_id)
+    /** JSON: tehsil → DEHs */
+    public function byTehsil(Tehsil $tehsil)
     {
-        $dehs = Deh::where('tappa_id', $tappa_id)->get();
-        return response()->json($dehs);
+        $items = Deh::where('tehsil_id', $tehsil->id)->orderBy('name')->get(['id', 'name']);
+
+        return response()->json($items);
     }
 }

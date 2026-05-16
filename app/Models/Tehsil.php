@@ -6,20 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Taluka extends Model
+class Tehsil extends Model
 {
     protected $fillable = [
-        'district_id',
+        'taluka_id',
         'name',
     ];
 
-    public function district(): BelongsTo
+    public function taluka(): BelongsTo
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(Taluka::class);
     }
 
-    public function tehsils(): HasMany
+    public function dehs(): HasMany
     {
-        return $this->hasMany(Tehsil::class);
+        return $this->hasMany(Deh::class);
     }
 }
