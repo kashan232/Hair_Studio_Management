@@ -1,33 +1,24 @@
 @extends('layouts.main')
 @section('content')
-  <!-- App hero header starts -->
-  <div class="app-hero-header d-flex align-items-center">
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <h1 class="page-title">Permissions</h1>
+                <div>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Permissions</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- PAGE HEADER END -->
 
-    <!-- Breadcrumb starts -->
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <i class="ri-home-8-line lh-1 pe-3 me-3 border-end"></i>
-        <a href="{{route('login')}}">Home</a>
-      </li>
-      <li class="breadcrumb-item text-primary" aria-current="page">
-        Give Permissions to Role
-      </li>
-    </ol>
-    <!-- Breadcrumb ends -->
-
-    <!-- Sales stats starts -->
-    <div class="ms-auto d-lg-flex d-none flex-row">
-    </div>
-    <!-- Sales stats ends -->
-
-  </div>
-  <!-- App Hero header ends -->
-
-
+            <div class="row">
 
 
   <!-- App body starts -->
-  <div class="app-body">
     <div class="row gx-3">
         <div class="col-xl-12 col-sm-6 col-12">
             <div class="card mb-3">

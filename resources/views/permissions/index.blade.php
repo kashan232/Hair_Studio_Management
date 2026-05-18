@@ -114,8 +114,16 @@ $(document).ready(function() {
         $('#modelLabel').html('Create Permission');
     });
 
-    $('.ajaxForm').on('submit', function(e) {
-        e.preventDefault();
+    $(document).off('submit', '.ajaxForm').on('submit', '.ajaxForm', function(e) {
+    e.preventDefault();
+
+    let btn = form.find('button[type="submit"]');
+
+    if (btn.prop('disabled')) return false;
+
+    btn.prop('disabled', true).text('Saving...');
+
+
         var form = $(this);
         var url = form.attr('action');
         var formData = form.serialize();
