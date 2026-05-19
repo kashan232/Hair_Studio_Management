@@ -15,7 +15,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
 
     <!-- TITLE -->
-    <title>E-ABIANA - Digitization of Abiana Record</title>
+    <title>Hair Studio Management - Premium Salon Dashboard</title>
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{{ asset('assets/css/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
@@ -77,7 +77,7 @@
         <div class="container">
             <div class="row align-items-center flex-row-reverse">
                 <div class="col-md-12 col-sm-12 text-center">
-                    <div>Copyright © <span id="year"></span> <a href="javascript:void(0)">ABIANA</a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0)"> XCL TECHNOLOGIES </a> All rights reserved.</div>
+                    <div>Copyright © <span id="year"></span> <a href="javascript:void(0)">HAIR STUDIO</a>. All rights reserved.</div>
                 </div>
             </div>
         </div>

@@ -2,77 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barrage;
-use App\Models\BranchCanal;
-use App\Models\Circle;
-use App\Models\Deh;
-use App\Models\Distributary;
-use App\Models\Division;
-use App\Models\District;
-use App\Models\MainCanal;
-use App\Models\Minor;
-use App\Models\SubCanal;
-use App\Models\SubDivision;
-use App\Models\Taluka;
-use App\Models\Tehsil;
 use App\Models\User;
-use App\Models\Watercourse;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $locationTotal = District::count() + Taluka::count() + Tehsil::count() + Deh::count();
-        $channelTotal = Barrage::count() + MainCanal::count() + SubCanal::count()
-            + BranchCanal::count() + Distributary::count() + Minor::count() + Watercourse::count();
-        $irrigationTotal = Circle::count() + Division::count() + SubDivision::count();
-
+        // Premium Hair Studio Dashboard Stats
         $stats = [
-            'districts' => District::count(),
-            'talukas' => Taluka::count(),
-            'tehsils' => Tehsil::count(),
-            'dehs' => Deh::count(),
-            'barrages' => Barrage::count(),
-            'main_canals' => MainCanal::count(),
-            'sub_canals' => SubCanal::count(),
-            'branch_canals' => BranchCanal::count(),
-            'distributaries' => Distributary::count(),
-            'minors' => Minor::count(),
-            'watercourses' => Watercourse::count(),
-            'circles' => Circle::count(),
-            'divisions' => Division::count(),
-            'sub_divisions' => SubDivision::count(),
-            'location_total' => $locationTotal,
-            'channel_total' => $channelTotal,
-            'irrigation_total' => $irrigationTotal,
-            'grand_total' => $locationTotal + $channelTotal + $irrigationTotal,
-            'recent_districts' => District::latest()->take(5)->get(['id', 'name', 'created_at']),
-            'recent_watercourses' => Watercourse::latest()->take(5)->get(['id', 'name', 'created_at']),
-            'recent_barrages' => Barrage::latest()->take(3)->get(['id', 'name', 'created_at']),
+            'today_appointments' => 18,
+            'active_stylists' => 6,
+            'today_revenue' => 45800,
+            'total_customers' => 342,
             'total_users' => User::count(),
-        ];
+            
+            // Stylists info
+            'stylists' => [
+                ['name' => 'Aisha Khan', 'role' => 'Master Stylist', 'status' => 'Active', 'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'],
+                ['name' => 'Zain Ahmed', 'role' => 'Senior Hair Artist', 'status' => 'Active', 'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'],
+                ['name' => 'Sara Ali', 'role' => 'Color Specialist', 'status' => 'On Break', 'avatar' => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'],
+                ['name' => 'Bilal Mustafa', 'role' => 'Barber Expert', 'status' => 'Active', 'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'],
+            ],
 
-        $stats['channels'] = [
-            ['key' => 'barrage', 'label' => 'Distinct Barrage', 'badge' => 'BARRAGE', 'count' => $stats['barrages'], 'hint' => 'Unique barrage values', 'route' => 'barrages.index', 'accent' => '#006837'],
-            ['key' => 'main', 'label' => 'Distinct Main Canal', 'badge' => 'MAIN', 'count' => $stats['main_canals'], 'hint' => 'Unique main canal values', 'route' => 'main-canals.index', 'accent' => '#1a237e'],
-            ['key' => 'sub', 'label' => 'Distinct Sub Canal', 'badge' => 'SUB', 'count' => $stats['sub_canals'], 'hint' => 'Unique sub canal values', 'route' => 'sub-canals.index', 'accent' => '#c6a34d'],
-            ['key' => 'branch', 'label' => 'Distinct Branch Canal', 'badge' => 'BRANCH', 'count' => $stats['branch_canals'], 'hint' => 'Unique branch canal values', 'route' => 'branch-canals.index', 'accent' => '#2c3e50'],
-            ['key' => 'dist', 'label' => 'Distinct Distributary', 'badge' => 'DISTRY', 'count' => $stats['distributaries'], 'hint' => 'Unique distributary values', 'route' => 'distributaries.index', 'accent' => '#00897b'],
-            ['key' => 'minor', 'label' => 'Distinct Minor', 'badge' => 'MINOR', 'count' => $stats['minors'], 'hint' => 'Unique minor values', 'route' => 'minors.index', 'accent' => '#6a1b9a'],
-            ['key' => 'wc', 'label' => 'WC No', 'badge' => 'WC', 'count' => $stats['watercourses'], 'hint' => 'Unique WC No values', 'route' => 'watercourses.index', 'accent' => '#004d2a'],
-        ];
+            // Today's appointments schedule
+            'appointments' => [
+                ['time' => '10:00 AM', 'customer' => 'Mariam Saeed', 'service' => 'Balayage & Haircut', 'stylist' => 'Aisha Khan', 'price' => 12500, 'status' => 'Completed'],
+                ['time' => '11:30 AM', 'customer' => 'Hamza Lodhi', 'service' => 'Classic Beard Trim', 'stylist' => 'Bilal Mustafa', 'price' => 3500, 'status' => 'Completed'],
+                ['time' => '01:00 PM', 'customer' => 'Kinza Bashir', 'service' => 'Deep Conditioning Spa', 'stylist' => 'Sara Ali', 'price' => 6000, 'status' => 'In Progress'],
+                ['time' => '02:30 PM', 'customer' => 'Daniyal Shah', 'service' => 'Gentleman Haircut', 'stylist' => 'Zain Ahmed', 'price' => 4000, 'status' => 'Scheduled'],
+                ['time' => '04:00 PM', 'customer' => 'Sana Malik', 'service' => 'Global Color & Styling', 'stylist' => 'Aisha Khan', 'price' => 15000, 'status' => 'Scheduled'],
+                ['time' => '05:30 PM', 'customer' => 'Omar Farooq', 'service' => 'Keratin Treatment', 'stylist' => 'Zain Ahmed', 'price' => 18000, 'status' => 'Scheduled'],
+            ],
 
-        $stats['locations'] = [
-            ['label' => 'Districts', 'count' => $stats['districts'], 'route' => 'districts.index', 'icon' => 'fe-map-pin'],
-            ['label' => 'Talukas', 'count' => $stats['talukas'], 'route' => 'talukas.index', 'icon' => 'fe-map'],
-            ['label' => 'Tehsils', 'count' => $stats['tehsils'], 'route' => 'tehsils.index', 'icon' => 'fe-layers'],
-            ['label' => 'DEHs', 'count' => $stats['dehs'], 'route' => 'dehs.index', 'icon' => 'fe-grid'],
-        ];
+            // Services distribution (for chart)
+            'services_chart' => [
+                'labels' => ['Haircut & Beard', 'Hair Coloring', 'Treatments', 'Hair Styling', 'Spa & Massage'],
+                'data' => [45, 25, 15, 10, 5],
+            ],
 
-        $stats['irrigation'] = [
-            ['label' => 'Circles', 'count' => $stats['circles'], 'route' => 'circles.index'],
-            ['label' => 'Divisions', 'count' => $stats['divisions'], 'route' => 'divisions.index'],
-            ['label' => 'Sub Divisions', 'count' => $stats['sub_divisions'], 'route' => 'sub-divisions.index'],
+            // Revenue chart (weekly)
+            'revenue_chart' => [
+                'categories' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                'data' => [32000, 48000, 41000, 55000, 68000, 85000, 72000],
+            ]
         ];
 
         return view('index', compact('stats'));
