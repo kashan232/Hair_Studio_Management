@@ -17,54 +17,11 @@
                 <li class="sub-category">
                     <h3>Main</h3>
                 </li>
+                
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <i class="side-menu__icon fe fe-home"></i>
                         <span class="side-menu__label">Dashboard</span>
-                    </a>
-                </li>
-
-                <li class="sub-category">
-                    <h3>Salon Management</h3>
-                </li>
-
-                <li class="slide">
-                    <a class="sidenav-menu-item" href="javascript:void(0)">
-                        <i class="side-menu__icon fe fe-calendar"></i>
-                        <span class="side-menu__label">Appointments</span>
-                        <span class="badge bg-gold text-white ms-auto">New</span>
-                    </a>
-                </li>
-
-                <li class="slide">
-                    <a class="sidenav-menu-item" href="javascript:void(0)">
-                        <i class="side-menu__icon fe fe-scissors"></i>
-                        <span class="side-menu__label">Services</span>
-                    </a>
-                </li>
-
-                <li class="slide">
-                    <a class="sidenav-menu-item" href="javascript:void(0)">
-                        <i class="side-menu__icon fe fe-users"></i>
-                        <span class="side-menu__label">Stylists & Staff</span>
-                    </a>
-                </li>
-
-                <li class="slide">
-                    <a class="sidenav-menu-item" href="javascript:void(0)">
-                        <i class="side-menu__icon fe fe-user"></i>
-                        <span class="side-menu__label">Customers</span>
-                    </a>
-                </li>
-
-                <li class="sub-category">
-                    <h3>Settings</h3>
-                </li>
-                
-                <li class="slide">
-                    <a class="sidenav-menu-item {{ Route::is('profile') ? 'active' : '' }}" href="{{ route('profile') }}">
-                        <i class="side-menu__icon fe fe-user-check"></i>
-                        <span class="side-menu__label">My Profile</span>
                     </a>
                 </li>
 
