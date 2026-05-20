@@ -195,7 +195,7 @@
                             <tr>
                                 <th>Chair Identifier</th>
                                 <th>Type</th>
-                                <th>Current Pricing (€)</th>
+                                <th>Current Pricing (£)</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -213,10 +213,10 @@
                                     </td>
                                     <td>
                                         <div style="font-size: 0.75rem; line-height: 1.4;">
-                                            @if($chair->price_hourly)<span class="text-muted">Hourly:</span> <span class="fw-bold text-dark">€{{ number_format($chair->price_hourly, 2) }}</span><br>@endif
-                                            @if($chair->price_daily)<span class="text-muted">Daily:</span> <span class="fw-bold text-dark">€{{ number_format($chair->price_daily, 2) }}</span><br>@endif
-                                            @if($chair->price_monthly)<span class="text-muted">Monthly:</span> <span class="fw-bold text-dark">€{{ number_format($chair->price_monthly, 2) }}</span><br>@endif
-                                            @if($chair->price_yearly)<span class="text-muted">Yearly:</span> <span class="fw-bold text-dark">€{{ number_format($chair->price_yearly, 2) }}</span>@endif
+                                            @if($chair->price_hourly)<span class="text-muted">Hourly:</span> <span class="fw-bold text-dark">£{{ number_format($chair->price_hourly, 2) }}</span><br>@endif
+                                            @if($chair->price_daily)<span class="text-muted">Daily:</span> <span class="fw-bold text-dark">£{{ number_format($chair->price_daily, 2) }}</span><br>@endif
+                                            @if($chair->price_monthly)<span class="text-muted">Monthly:</span> <span class="fw-bold text-dark">£{{ number_format($chair->price_monthly, 2) }}</span><br>@endif
+                                            @if($chair->price_yearly)<span class="text-muted">Yearly:</span> <span class="fw-bold text-dark">£{{ number_format($chair->price_yearly, 2) }}</span>@endif
                                             @if(!$chair->price_hourly && !$chair->price_daily && !$chair->price_monthly && !$chair->price_yearly)
                                                 <span class="text-muted fst-italic">Not Set</span>
                                             @endif
@@ -225,7 +225,7 @@
                                     <td class="text-end">
                                         <div class="action-btn-group justify-content-end">
                                             <a href="javascript:void(0)" class="action-btn" title="Setup Pricing" data-bs-toggle="modal" data-bs-target="#editPricingModal{{ $chair->id }}">
-                                                <span class="currency-symbol">€</span>
+                                                <span class="currency-symbol">£</span>
                                             </a>
                                         </div>
                                     </td>
@@ -269,7 +269,7 @@
                                     <div class="form-group-luxury mb-3">
                                         <label>Hourly Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_hourly" class="form-control form-control-luxury" placeholder="0.00" min="0">
                                         </div>
                                     </div>
@@ -278,7 +278,7 @@
                                     <div class="form-group-luxury mb-3">
                                         <label>Daily Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_daily" class="form-control form-control-luxury" placeholder="0.00" min="0">
                                         </div>
                                     </div>
@@ -287,7 +287,7 @@
                                     <div class="form-group-luxury mb-0">
                                         <label>Monthly Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_monthly" class="form-control form-control-luxury" placeholder="0.00" min="0">
                                         </div>
                                     </div>
@@ -296,7 +296,7 @@
                                     <div class="form-group-luxury mb-0">
                                         <label>Yearly Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_yearly" class="form-control form-control-luxury" placeholder="0.00" min="0">
                                         </div>
                                     </div>
@@ -332,7 +332,7 @@
                                     <div class="form-group-luxury mb-3">
                                         <label>Hourly Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_hourly" class="form-control form-control-luxury" placeholder="0.00" value="{{ $chair->price_hourly }}" min="0">
                                         </div>
                                     </div>
@@ -341,7 +341,7 @@
                                     <div class="form-group-luxury mb-3">
                                         <label>Daily Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_daily" class="form-control form-control-luxury" placeholder="0.00" value="{{ $chair->price_daily }}" min="0">
                                         </div>
                                     </div>
@@ -350,7 +350,7 @@
                                     <div class="form-group-luxury mb-0">
                                         <label>Monthly Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_monthly" class="form-control form-control-luxury" placeholder="0.00" value="{{ $chair->price_monthly }}" min="0">
                                         </div>
                                     </div>
@@ -359,7 +359,7 @@
                                     <div class="form-group-luxury mb-0">
                                         <label>Yearly Price</label>
                                         <div class="input-group">
-                                            <span class="input-group-text currency-prefix">€</span>
+                                            <span class="input-group-text currency-prefix">£</span>
                                             <input type="number" step="0.01" name="price_yearly" class="form-control form-control-luxury" placeholder="0.00" value="{{ $chair->price_yearly }}" min="0">
                                         </div>
                                     </div>

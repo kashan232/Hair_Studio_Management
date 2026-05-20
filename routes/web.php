@@ -8,11 +8,13 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Hairstylist web app (no admin dashboard)
-Route::middleware(['auth', 'hairstylist'])->prefix('stylist')->name('stylist.')->group(function () {
+// Hairstylist web app — public booking (no login required)
+Route::prefix('stylist')->name('stylist.')->group(function () {
     Route::get('/', [HairstylistPortalController::class, 'index'])->name('home');
     Route::get('/book', [HairstylistPortalController::class, 'booking'])->name('book');
     Route::post('/book/chair', [HairstylistPortalController::class, 'selectChair'])->name('book.chair');
+    Route::post('/book/pricing', [HairstylistPortalController::class, 'selectPricing'])->name('book.pricing');
+    Route::post('/book/confirm', [HairstylistPortalController::class, 'confirm'])->name('book.confirm');
     Route::post('/book/reset', [HairstylistPortalController::class, 'clearBooking'])->name('book.reset');
 });
 

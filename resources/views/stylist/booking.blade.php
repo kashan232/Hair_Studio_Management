@@ -13,7 +13,6 @@
         --app-text: #2a2420;
         --app-muted: #8a7d72;
         --app-line: #efe4dc;
-        --app-gold: #c6a34d;
     }
 
     * { box-sizing: border-box; }
@@ -27,40 +26,128 @@
         padding-bottom: 88px;
     }
 
-    .app-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
+    .top-profile-bar {
         background: var(--app-surface);
         border-bottom: 1px solid var(--app-line);
         padding: 0.85rem 1.25rem;
+    }
+
+    .top-profile-inner {
+        max-width: 720px;
+        margin: 0 auto;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 1rem;
     }
 
-    .app-header .brand {
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: var(--app-text);
-        text-decoration: none;
+    .profile-info {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        min-width: 0;
+        flex: 1;
     }
 
-    .header-icon-btn {
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: var(--app-accent-soft);
+    .profile-avatar-sm {
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--app-accent-soft);
+        flex-shrink: 0;
+    }
+
+    .profile-text h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-text p {
+        margin: 0.15rem 0 0;
+        font-size: 0.72rem;
+        color: var(--app-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-badge-sm {
+        display: inline-block;
+        margin-top: 0.25rem;
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-accent-dark);
+        background: var(--app-accent-soft);
+        padding: 0.15rem 0.45rem;
+        border-radius: 3px;
+    }
+
+    .btn-logout {
+        flex-shrink: 0;
+        height: 40px;
+        padding: 0 1rem;
+        border: 1px solid var(--app-line);
+        background: #fff;
+        color: var(--app-text);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-radius: 6px;
+        cursor: pointer;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.35rem;
+        transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+        border-color: var(--app-accent);
+        color: var(--app-accent-dark);
+    }
+
+    .btn-signin-link {
+        flex-shrink: 0;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
         color: var(--app-accent-dark);
         text-decoration: none;
-        cursor: pointer;
-        font-size: 1.1rem;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--app-accent-soft);
+        border-radius: 6px;
+        background: var(--app-accent-soft);
+    }
+
+    .app-brand-strip {
+        text-align: center;
+        padding: 0.65rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--app-muted);
+        background: var(--app-bg);
+        border-bottom: 1px solid var(--app-line);
+    }
+
+    .alert-success-app {
+        max-width: 720px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.25rem;
+        background: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        color: #2e7d32;
+        font-size: 0.82rem;
+        border-radius: 8px;
     }
 
     .stepper-wrap {
@@ -73,7 +160,9 @@
     .stepper {
         display: flex;
         align-items: flex-start;
-        min-width: 520px;
+        min-width: 420px;
+        max-width: 720px;
+        margin: 0 auto;
         position: relative;
         padding: 0 0.25rem;
     }
@@ -82,8 +171,8 @@
         content: '';
         position: absolute;
         top: 14px;
-        left: 8%;
-        right: 8%;
+        left: 10%;
+        right: 10%;
         height: 2px;
         background: var(--app-line);
         z-index: 0;
@@ -92,7 +181,7 @@
     .stepper-progress {
         position: absolute;
         top: 14px;
-        left: 8%;
+        left: 10%;
         height: 2px;
         background: var(--app-accent);
         z-index: 1;
@@ -156,108 +245,26 @@
     .app-main {
         max-width: 720px;
         margin: 0 auto;
-        padding: 1.5rem 1.25rem 2rem;
-    }
-
-    .location-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.78rem;
-        color: var(--app-muted);
-        margin-bottom: 1rem;
+        padding: 1.25rem 1.25rem 2rem;
     }
 
     .step-heading {
-        font-size: 1.35rem;
+        font-size: 1.2rem;
         font-weight: 600;
         letter-spacing: 1px;
         text-transform: uppercase;
         text-align: center;
-        margin: 0 0 1.5rem;
-        line-height: 1.35;
+        margin: 0 0 1.25rem;
     }
 
-    /* Profile card */
-    .profile-card {
-        background: var(--app-surface);
-        border: 1px solid var(--app-line);
-        border-radius: 12px;
-        padding: 1.25rem;
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-    }
-
-    .profile-avatar {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--app-accent-soft);
-    }
-
-    .profile-meta h3 {
-        margin: 0 0 0.25rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-
-    .profile-meta p {
-        margin: 0.15rem 0;
-        font-size: 0.82rem;
-        color: var(--app-muted);
-    }
-
-    .profile-badge {
-        display: inline-block;
-        margin-top: 0.5rem;
-        padding: 0.25rem 0.6rem;
-        background: var(--app-accent-soft);
-        color: var(--app-accent-dark);
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        border-radius: 4px;
-    }
-
-    .detail-list {
-        margin-top: 1.25rem;
-        background: var(--app-surface);
-        border: 1px solid var(--app-line);
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.9rem 1rem;
-        border-bottom: 1px solid var(--app-line);
-        font-size: 0.85rem;
-    }
-
-    .detail-row:last-child { border-bottom: none; }
-    .detail-row span:first-child { color: var(--app-muted); font-weight: 500; }
-
-    /* Chair grid */
     .chair-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 0.75rem;
     }
 
-    .chair-option {
-        position: relative;
-        cursor: pointer;
-    }
-
-    .chair-option input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-    }
+    .chair-option { position: relative; cursor: pointer; }
+    .chair-option input { position: absolute; opacity: 0; pointer-events: none; }
 
     .chair-tile {
         aspect-ratio: 1;
@@ -279,73 +286,57 @@
         color: #fff;
     }
 
-    .chair-tile .chair-num {
-        font-size: 1.5rem;
-        font-weight: 700;
-        line-height: 1;
-    }
-
+    .chair-tile .chair-num { font-size: 1.5rem; font-weight: 700; }
     .chair-tile .chair-name {
         font-size: 0.58rem;
         font-weight: 600;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         margin-top: 0.35rem;
-        opacity: 0.85;
         max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    .chair-option input:checked + .chair-tile .chair-name { opacity: 1; }
+    .chair-type-tag { font-size: 0.55rem; margin-top: 0.2rem; opacity: 0.8; }
 
-    .chair-type-tag {
-        font-size: 0.55rem;
+    .chair-status-tag {
+        font-size: 0.5rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-top: 0.25rem;
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+    }
+
+    .chair-status-tag.available { background: #e8f5e9; color: #2e7d32; }
+    .chair-status-tag.booked { background: #ffebee; color: #c62828; }
+
+    .chair-option.is-unavailable { cursor: not-allowed; opacity: 0.55; }
+    .chair-option.is-unavailable .chair-tile { background: #f0f0f0; }
+
+    .chair-price-hint-tile {
+        font-size: 0.5rem;
         margin-top: 0.2rem;
         opacity: 0.75;
+        line-height: 1.2;
     }
 
-    .chair-price-hint {
-        text-align: center;
-        font-size: 0.72rem;
-        color: var(--app-muted);
-        margin-top: 1rem;
-    }
-
-    .empty-chairs {
-        text-align: center;
-        padding: 2.5rem 1rem;
-        background: var(--app-surface);
-        border: 1px dashed var(--app-line);
-        border-radius: 12px;
-        color: var(--app-muted);
-    }
-
-    .coming-card {
+    .empty-chairs, .coming-card, .summary-card {
         background: var(--app-surface);
         border: 1px solid var(--app-line);
         border-radius: 12px;
-        padding: 2rem 1.5rem;
+        padding: 1.5rem;
         text-align: center;
+        color: var(--app-muted);
     }
 
-    .coming-card i {
-        font-size: 2rem;
-        color: var(--app-accent);
-        margin-bottom: 0.75rem;
-    }
-
-    .summary-card {
-        background: var(--app-surface);
-        border: 1px solid var(--app-line);
-        border-radius: 12px;
-        padding: 1.25rem;
-    }
-
+    .summary-card { text-align: left; margin-bottom: 1rem; }
     .summary-card h4 {
-        margin: 0 0 1rem;
-        font-size: 0.75rem;
+        margin: 0 0 0.75rem;
+        font-size: 0.72rem;
         letter-spacing: 2px;
         text-transform: uppercase;
         color: var(--app-muted);
@@ -354,12 +345,54 @@
     .summary-line {
         display: flex;
         justify-content: space-between;
-        padding: 0.5rem 0;
-        font-size: 0.88rem;
+        padding: 0.45rem 0;
+        font-size: 0.85rem;
         border-bottom: 1px solid var(--app-line);
     }
 
-    .summary-line:last-child { border-bottom: none; font-weight: 600; }
+    .summary-line:last-child { border-bottom: none; }
+
+    .details-form .form-field {
+        margin-bottom: 1.1rem;
+    }
+
+    .details-form label {
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-muted);
+        margin-bottom: 0.35rem;
+    }
+
+    .details-form input {
+        width: 100%;
+        height: 46px;
+        border: 1px solid var(--app-line);
+        border-radius: 6px;
+        padding: 0 0.85rem;
+        font-size: 0.88rem;
+        background: #fff;
+        color: var(--app-text);
+    }
+
+    .details-form input:focus {
+        outline: none;
+        border-color: var(--app-accent);
+    }
+
+    .details-form .hint {
+        font-size: 0.72rem;
+        color: var(--app-muted);
+        margin: -0.5rem 0 1rem;
+    }
+
+    .details-form .row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
 
     .app-footer-nav {
         position: fixed;
@@ -389,48 +422,123 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .btn-app-back { background: var(--app-accent-soft); color: var(--app-accent-dark); }
+    .btn-app-next { background: var(--app-accent); color: #fff; }
+    .btn-app:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .pricing-option { position: relative; cursor: pointer; }
+    .pricing-option input { position: absolute; opacity: 0; pointer-events: none; }
+
+    .pricing-tile {
+        background: var(--app-surface);
+        border: 2px solid var(--app-line);
+        border-radius: 10px;
+        padding: 1.1rem 0.85rem;
+        text-align: center;
         transition: all 0.2s;
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
-    .btn-app-back {
-        background: var(--app-accent-soft);
-        color: var(--app-accent-dark);
-    }
-
-    .btn-app-next {
+    .pricing-option input:checked + .pricing-tile {
+        border-color: var(--app-accent-dark);
         background: var(--app-accent);
         color: #fff;
     }
 
-    .btn-app-next:hover { background: var(--app-accent-dark); }
-    .btn-app:disabled { opacity: 0.45; cursor: not-allowed; }
+    .pricing-tile .pricing-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
 
-    @media (max-width: 400px) {
+    .pricing-tile .pricing-amount {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 0.35rem 0 0.2rem;
+    }
+
+    .pricing-tile .pricing-sub {
+        font-size: 0.65rem;
+        opacity: 0.85;
+    }
+
+    .alert-error-app {
+        max-width: 720px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.25rem;
+        background: #ffebee;
+        border: 1px solid #ffcdd2;
+        color: #c62828;
+        font-size: 0.82rem;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 480px) {
+        .pricing-grid { grid-template-columns: 1fr; }
         .chair-grid { grid-template-columns: repeat(2, 1fr); }
-        .stepper { min-width: 100%; }
+        .details-form .row-2 { grid-template-columns: 1fr; }
     }
 </style>
 @endsection
 
 @section('content')
 @php
-    $progressPercent = (($step - 1) / 4) * 84;
+    $progressPercent = $step <= 1 ? 0 : (($step - 1) / 3) * 80;
+    $displayName = $user?->name ?? ($guestDetails['name'] ?? 'Guest');
+    $displayEmail = $user?->email ?? ($guestDetails['email'] ?? 'Details at confirmation');
+    $avatarUrl = $user?->avatar
+        ? (str_starts_with($user->avatar, 'http') ? $user->avatar : asset($user->avatar))
+        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
 @endphp
 
-<header class="app-header">
-    <span style="width:40px;"></span>
-    <a href="{{ route('stylist.book') }}" class="brand">Eladé Studio</a>
-    <form action="{{ route('logout') }}" method="POST" class="m-0">
-        @csrf
-        <button type="submit" class="header-icon-btn" title="Logout">
-            @if($user->avatar)
-                <img src="{{ str_starts_with($user->avatar, 'http') ? $user->avatar : asset($user->avatar) }}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
-            @else
-                <i class="fe fe-user"></i>
-            @endif
-        </button>
-    </form>
-</header>
+{{-- Profile bar (always on top) --}}
+<div class="top-profile-bar">
+    <div class="top-profile-inner">
+        <div class="profile-info">
+            <img src="{{ $avatarUrl }}" alt="" class="profile-avatar-sm">
+            <div class="profile-text">
+                <h3>{{ $displayName }}</h3>
+                <p>{{ $displayEmail }}</p>
+                @if($user)
+                    <span class="profile-badge-sm">Hairstylist</span>
+                @else
+                    <span class="profile-badge-sm">Guest booking</span>
+                @endif
+            </div>
+        </div>
+        @auth
+            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <i class="fe fe-log-out"></i> Logout
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="btn-signin-link">Sign in</a>
+        @endauth
+    </div>
+</div>
+
+<div class="app-brand-strip">Eladé Studio</div>
+
+@if(session('booking_success'))
+    <div class="alert-success-app mx-3">{{ session('booking_success') }}</div>
+@endif
+@if(session('booking_error'))
+    <div class="alert-error-app mx-3">{{ session('booking_error') }}</div>
+@endif
 
 <div class="stepper-wrap">
     <div class="stepper">
@@ -439,112 +547,151 @@
             @php
                 $isActive = $num === $step;
                 $isDone = $num < $step;
-                $canJump = $num <= $step || ($num === 2 && $step >= 2);
+                $canJump = $num <= $step || ($num === 1);
             @endphp
-            <a href="{{ $canJump ? route('stylist.book', ['step' => $num]) : 'javascript:void(0)' }}"
+            <a href="{{ ($canJump && ($num < $step || ($num === 1) || $selectedChair)) ? route('stylist.book', ['step' => $num]) : 'javascript:void(0)' }}"
                class="step-item {{ $isActive ? 'active' : '' }} {{ $isDone ? 'done' : '' }}">
                 <div class="step-circle">
-                    @if($isDone)
-                        <i class="fe fe-check" style="font-size:0.85rem;"></i>
-                    @else
-                        {{ $num }}
-                    @endif
+                    @if($isDone)<i class="fe fe-check" style="font-size:0.85rem;"></i>@else{{ $num }}@endif
                 </div>
                 <div class="step-label">{{ $info['label'] }}</div>
-                @if($isDone && $num === 2 && $selectedChair)
-                    <span class="step-edit">Edit</span>
-                @endif
+                @if($isDone && $num === 1 && $selectedChair)<span class="step-edit">Edit</span>@endif
+                @if($isDone && $num === 2 && $selectedPricing)<span class="step-edit">Edit</span>@endif
             </a>
         @endforeach
     </div>
 </div>
 
 <main class="app-main">
-    <div class="location-pill">
-        <i class="fe fe-map-pin"></i>
-        <span>Eladé Studio — Workspace Booking</span>
-    </div>
-
     <h1 class="step-heading">{{ $steps[$step]['title'] }}</h1>
 
-    {{-- Step 1: Profile --}}
+    {{-- Step 1: Chairs (default) --}}
     @if($step === 1)
-        <div class="profile-card">
-            <img src="{{ $user->avatar && str_starts_with($user->avatar, 'http') ? $user->avatar : asset($user->avatar ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150') }}"
-                 alt="{{ $user->name }}" class="profile-avatar">
-            <div class="profile-meta">
-                <h3>{{ $user->name }}</h3>
-                <p>{{ $user->email }}</p>
-                @if($user->mobile)
-                    <p>{{ $user->mobile }}</p>
-                @endif
-                <span class="profile-badge">Hairstylist</span>
-            </div>
-        </div>
-
-        <div class="detail-list">
-            <div class="detail-row"><span>Designation</span><span>{{ $user->designation ?? 'Hairstylist' }}</span></div>
-            <div class="detail-row"><span>Member since</span><span>{{ $user->joining_date ? \Carbon\Carbon::parse($user->joining_date)->format('d M Y') : '—' }}</span></div>
-            <div class="detail-row"><span>Account status</span><span>{{ (int) $user->status === 1 ? 'Active' : 'Inactive' }}</span></div>
-            @if($user->specialization)
-                <div class="detail-row"><span>Specialization</span><span>{{ $user->specialization }}</span></div>
-            @endif
-        </div>
-    @endif
-
-    {{-- Step 2: Chairs --}}
-    @if($step === 2)
         @if($chairs->isEmpty())
             <div class="empty-chairs">
                 <i class="fe fe-grid d-block mb-2" style="font-size:2rem;color:var(--app-accent);"></i>
-                <p class="mb-0">No chairs available right now.<br>Please check back later.</p>
+                <p class="mb-0">No chairs registered yet. Add chairs in admin.</p>
             </div>
         @else
             <form id="chair-form" method="POST" action="{{ route('stylist.book.chair') }}">
                 @csrf
                 <div class="chair-grid">
                     @foreach($chairs as $index => $chair)
-                        <label class="chair-option">
+                        @php
+                            $isAvailable = $chair->status === 'available';
+                            $hasPricing = $chair->price_hourly || $chair->price_daily || $chair->price_monthly || $chair->price_yearly;
+                        @endphp
+                        <label class="chair-option {{ $isAvailable ? '' : 'is-unavailable' }}">
                             <input type="radio" name="chair_id" value="{{ $chair->id }}"
-                                {{ (int) old('chair_id', $selectedChair?->id) === (int) $chair->id ? 'checked' : '' }}
-                                required>
+                                {{ !$isAvailable ? 'disabled' : '' }}
+                                {{ $isAvailable && (int) old('chair_id', $selectedChair?->id) === (int) $chair->id ? 'checked' : '' }}>
                             <div class="chair-tile">
                                 <span class="chair-num">{{ $index + 1 }}</span>
                                 <span class="chair-name">{{ $chair->name }}</span>
                                 <span class="chair-type-tag">{{ $chair->type ?? 'Chair' }}</span>
+                                <span class="chair-status-tag {{ $isAvailable ? 'available' : 'booked' }}">{{ $isAvailable ? 'Available' : 'Booked' }}</span>
+                                @if($hasPricing)
+                                    <span class="chair-price-hint-tile">Pricing set</span>
+                                @else
+                                    <span class="chair-price-hint-tile">No pricing yet</span>
+                                @endif
                             </div>
                         </label>
                     @endforeach
                 </div>
-                <p class="chair-price-hint">Select a chair to continue. Pricing shown on next steps.</p>
+                @if(!$chairs->contains(fn ($c) => $c->status === 'available'))
+                    <p class="text-center mt-3 mb-0" style="font-size:0.78rem;color:var(--app-muted);">All chairs are currently booked.</p>
+                @endif
             </form>
         @endif
     @endif
 
-    {{-- Step 3–5 placeholders --}}
-    @if($step >= 3)
-        <div class="summary-card mb-3">
+    @if($step >= 2 && $selectedChair)
+        <div class="summary-card">
             <h4>Selected chair</h4>
-            <div class="summary-line">
-                <span>Chair</span>
-                <span>{{ $selectedChair->name }} ({{ $selectedChair->type ?? 'N/A' }})</span>
-            </div>
-            @if($selectedChair->price_hourly)
-                <div class="summary-line"><span>Hourly</span><span>€{{ number_format($selectedChair->price_hourly, 2) }}</span></div>
-            @endif
-            @if($selectedChair->price_daily)
-                <div class="summary-line"><span>Daily</span><span>€{{ number_format($selectedChair->price_daily, 2) }}</span></div>
-            @endif
-            @if($selectedChair->price_monthly)
-                <div class="summary-line"><span>Monthly</span><span>€{{ number_format($selectedChair->price_monthly, 2) }}</span></div>
+            <div class="summary-line"><span>Chair</span><span>{{ $selectedChair->name }}</span></div>
+            <div class="summary-line"><span>Type</span><span>{{ $selectedChair->type ?? 'N/A' }}</span></div>
+            @if($selectedPricingOption)
+                <div class="summary-line"><span>Pricing</span><span>{{ $selectedPricingOption['label'] }} — £{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
             @endif
         </div>
+    @endif
 
+    @if($step === 2)
+        @if(empty($pricingOptions))
+            <div class="empty-chairs">
+                <i class="fe fe-dollar-sign d-block mb-2" style="font-size:2rem;color:var(--app-accent);"></i>
+                <p class="mb-0">No pricing configured for <strong>{{ $selectedChair->name }}</strong>.<br>Please set prices in admin Pricing page.</p>
+            </div>
+        @else
+            <p class="text-center mb-3" style="font-size:0.8rem;color:var(--app-muted);">Rates from studio pricing setup for this chair</p>
+            <form id="pricing-form" method="POST" action="{{ route('stylist.book.pricing') }}">
+                @csrf
+                <div class="pricing-grid">
+                    @foreach($pricingOptions as $option)
+                        <label class="pricing-option">
+                            <input type="radio" name="pricing_type" value="{{ $option['key'] }}"
+                                {{ old('pricing_type', $selectedPricing) === $option['key'] ? 'checked' : '' }} required>
+                            <div class="pricing-tile">
+                                <span class="pricing-label">{{ $option['label'] }}</span>
+                                <span class="pricing-amount">£{{ number_format($option['price'], 2) }}</span>
+                                <span class="pricing-sub">{{ $option['subtitle'] }}</span>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+            </form>
+        @endif
+    @endif
+
+    @if($step === 3)
         <div class="coming-card">
-            <i class="fe fe-clock d-block"></i>
-            <p class="mb-1 fw-semibold">{{ $steps[$step]['label'] }} — coming soon</p>
-            <p class="mb-0 small text-muted">Your chair is saved. Full booking flow will be added next.</p>
+            <i class="fe fe-clock d-block mb-2" style="font-size:1.75rem;color:var(--app-accent);"></i>
+            <p class="mb-0 fw-semibold">Date & time — coming soon</p>
+            <p class="mb-0 small mt-2" style="color:var(--app-muted);">Your chair and {{ $selectedPricingOption['label'] ?? 'pricing' }} plan (£{{ number_format(session('stylist_booking.pricing_amount', 0), 2) }}) are saved.</p>
         </div>
+    @endif
+
+    {{-- Step 4: Details at confirmation --}}
+    @if($step === 4)
+        @if($selectedChair && $selectedPricingOption)
+        <div class="summary-card mb-3">
+            <h4>Booking summary</h4>
+            <div class="summary-line"><span>Chair</span><span>{{ $selectedChair->name }}</span></div>
+            <div class="summary-line"><span>Plan</span><span>{{ $selectedPricingOption['label'] }}</span></div>
+            <div class="summary-line"><span>Total rate</span><span>£{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
+        </div>
+        @endif
+        <form method="POST" action="{{ route('stylist.book.confirm') }}" class="details-form" id="confirm-form">
+            @csrf
+            <p class="hint">Enter your details to complete booking. Your account will be created if you are new.</p>
+
+            <div class="form-field">
+                <label for="name">Full name *</label>
+                <input type="text" name="name" id="name" required
+                    value="{{ old('name', $user?->name ?? ($guestDetails['name'] ?? '')) }}">
+            </div>
+            <div class="form-field">
+                <label for="email">Email *</label>
+                <input type="email" name="email" id="email" required
+                    value="{{ old('email', $user?->email ?? ($guestDetails['email'] ?? '')) }}">
+            </div>
+            <div class="form-field">
+                <label for="mobile">Mobile</label>
+                <input type="text" name="mobile" id="mobile"
+                    value="{{ old('mobile', $user?->mobile ?? ($guestDetails['mobile'] ?? '')) }}">
+            </div>
+            <div class="row-2">
+                <div class="form-field">
+                    <label for="password">{{ $user ? 'New password (optional)' : 'Password *' }}</label>
+                    <input type="password" name="password" id="password" {{ $user ? '' : 'required' }} minlength="6" placeholder="Min. 6 characters">
+                </div>
+                <div class="form-field">
+                    <label for="password_confirmation">Confirm password</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" {{ $user ? '' : 'required' }} minlength="6">
+                </div>
+            </div>
+        </form>
     @endif
 </main>
 
@@ -554,28 +701,23 @@
     @endif
 
     @if($step === 1)
-        <a href="{{ route('stylist.book', ['step' => 2]) }}" class="btn-app btn-app-next">Next</a>
+        <button type="submit" form="chair-form" class="btn-app btn-app-next" id="chair-next-btn" {{ $chairs->isEmpty() || !$chairs->contains(fn ($c) => $c->status === 'available') ? 'disabled' : '' }}>Next</button>
     @elseif($step === 2)
-        <button type="submit" form="chair-form" class="btn-app btn-app-next" {{ $chairs->isEmpty() ? 'disabled' : '' }}>Next</button>
-    @elseif($step < 5)
+        <button type="submit" form="pricing-form" class="btn-app btn-app-next" {{ empty($pricingOptions) ? 'disabled' : '' }}>Next</button>
+    @elseif($step < 4)
         <a href="{{ route('stylist.book', ['step' => $step + 1]) }}" class="btn-app btn-app-next">Next</a>
     @else
-        <form action="{{ route('stylist.book.reset') }}" method="POST" class="m-0">
-            @csrf
-            <button type="submit" class="btn-app btn-app-next">Finish</button>
-        </form>
+        <button type="submit" form="confirm-form" class="btn-app btn-app-next">Confirm</button>
     @endif
 </nav>
 @endsection
 
 @section('scripts')
 <script>
-    document.querySelectorAll('.chair-option input').forEach(function (radio) {
+    document.querySelectorAll('.chair-option input:not(:disabled)').forEach(function (radio) {
         radio.addEventListener('change', function () {
-            document.querySelectorAll('.chair-tile').forEach(function (t) { t.style.transform = ''; });
-            if (this.checked) {
-                this.nextElementSibling.style.transform = 'scale(1.02)';
-            }
+            const btn = document.getElementById('chair-next-btn');
+            if (btn) btn.removeAttribute('disabled');
         });
     });
 </script>

@@ -302,6 +302,57 @@
 
         .auth-switch-link:hover { color: var(--elade-dark); }
 
+        .btn-book-now {
+            display: block;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            background: var(--elade-gold) !important;
+            color: #fff !important;
+            border: 1px solid var(--elade-gold) !important;
+            height: 52px !important;
+            line-height: 52px;
+            font-size: 0.72rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 2px !important;
+            text-transform: uppercase !important;
+            margin-bottom: 0.25rem;
+        }
+
+        .btn-book-now:hover {
+            background: var(--elade-dark) !important;
+            border-color: var(--elade-dark) !important;
+            color: #fff !important;
+        }
+
+        .book-now-hint {
+            font-size: 0.72rem;
+            color: var(--elade-muted);
+            text-align: center;
+            margin: 0 0 1.5rem;
+            line-height: 1.5;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.5rem 0 1.25rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #a0937d;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #eae2d5;
+        }
+
         .login-shell-footer {
             flex-shrink: 0;
             margin-top: 1.25rem;
@@ -349,16 +400,20 @@
 
                 <div class="login-shell-header">
                     <h2>Eladé Studio</h2>
-                    <p id="auth-subtitle">Premium Salon Portal</p>
+                    <p id="auth-subtitle">Book your workspace</p>
                 </div>
 
-                <div class="auth-tabs">
+                <a href="{{ route('stylist.book') }}" class="login100-form-btn btn-book-now" style="margin-bottom:0;">
+                    Book chairs — continue without account
+                </a>
+                <p class="book-now-hint">Or sign in / register below to save your profile.</p>
+
+                <div class="auth-tabs" style="margin-top:1.25rem;">
                     <button type="button" class="auth-tab-btn active" data-auth-tab="login">Sign In</button>
                     <button type="button" class="auth-tab-btn" data-auth-tab="register">Register</button>
                 </div>
 
                 <div class="auth-body">
-                    <!-- Login -->
                     <div id="login-panel" class="auth-panel active">
                         <form method="POST" action="{{ route('login') }}" class="ajaxForm" id="login-form">
                             @csrf
@@ -389,10 +444,9 @@
                         </form>
                     </div>
 
-                    <!-- Register -->
                     <div id="register-panel" class="auth-panel">
                         <p class="register-intro">
-                            Join as a hairstylist to view available chairs and place workspace orders with Eladé Studio.
+                            Create your hairstylist account, then book available chairs in the studio portal.
                         </p>
 
                         <form method="POST" action="{{ route('register.hairstylist') }}" class="ajaxForm" id="register-form">
@@ -462,7 +516,7 @@
                 $('.auth-tab-btn[data-auth-tab="' + tab + '"]').addClass('active');
                 $('.auth-panel').removeClass('active');
                 $('#' + tab + '-panel').addClass('active');
-                $('#auth-subtitle').text(tab === 'register' ? 'Hairstylist Registration' : 'Premium Salon Portal');
+                $('#auth-subtitle').text(tab === 'register' ? 'Hairstylist Registration' : 'Book your workspace');
                 $authBody.scrollTop(0);
             }
 
@@ -498,13 +552,6 @@
                         ajaxErrorHandling(jqXHR, errorThrown);
                     },
                     success: function(data) {
-                        if (data.show_login) {
-                            toast(data.success, 'Success!', 'success', 2500);
-                            form[0].reset();
-                            switchAuthTab('login');
-                            if (data.email) $('#email').val(data.email);
-                            return;
-                        }
                         if (data.redirect !== undefined) {
                             toast(data.success, 'Success!', 'success', 1200);
                             setTimeout(function() { window.location = data.redirect; }, 600);

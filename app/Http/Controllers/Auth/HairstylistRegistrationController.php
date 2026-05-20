@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -23,7 +24,7 @@ class HairstylistRegistrationController extends Controller
 
         $hairstylistRole = Role::where('slug', 'hairstylist')->firstOrFail();
 
-        User::create([
+        $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'mobile' => $request->input('mobile'),
@@ -36,10 +37,11 @@ class HairstylistRegistrationController extends Controller
             'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         ]);
 
+        Auth::login($user);
+
         return response()->json([
-            'success' => 'Registration successful! Please sign in with your email and password.',
-            'email' => $request->input('email'),
-            'show_login' => true,
+            'success' => 'Registration successful! Taking you to booking…',
+            'redirect' => route('stylist.book'),
         ]);
     }
 }
