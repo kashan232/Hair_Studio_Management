@@ -5,13 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const switch5 = document.getElementById('myonoffswitch5'); // Dark menu switch
     const switch6 = document.getElementById('myonoffswitch6'); // Header-light switch
     const switch8 = document.getElementById('myonoffswitch8'); // Dark-header switch
-    const htmlElement = document.documentElement; // Reference to the <html> element
+
+    if (!switch1) {
+        return;
+    }
 
     // Load dark mode state from localStorage
     if (localStorage.getItem('dark-mode') === 'true') {
         document.body.classList.add('dark-mode');
         document.body.classList.remove('light-mode');
-        switch2.checked = true;
+        if (switch2) switch2.checked = true;
     } else {
         document.body.classList.add('light-mode');
         document.body.classList.remove('dark-mode');
@@ -21,26 +24,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load menu state from localStorage
     if (localStorage.getItem('dark-menu') === 'true') {
         document.body.classList.add('dark-menu');
-        switch5.checked = true;
+        if (switch5) switch5.checked = true;
     } else if (localStorage.getItem('light-menu') === 'true') {
         document.body.classList.add('light-menu');
-        switch3.checked = true;
+        if (switch3) switch3.checked = true;
     }
 
     // Load dark header state from localStorage
     if (localStorage.getItem('dark-header') === 'true') {
         document.body.classList.add('dark-header');
-        switch8.checked = true;
+        if (switch8) switch8.checked = true;
     }
 
     // Load header-light state from localStorage
     if (localStorage.getItem('header-light') === 'true') {
         document.body.classList.add('header-light');
-        switch6.checked = true;
+        if (switch6) switch6.checked = true;
     }
 
     // Event listener for #myonoffswitch2 (dark mode)
-    switch2.addEventListener('change', (event) => {
+    if (switch2) switch2.addEventListener('change', (event) => {
         if (event.target.checked) {
             document.body.classList.add('dark-mode');
             document.body.classList.remove('light-mode');
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Event listener for #myonoffswitch3 (light and dark menu)
-    switch3.addEventListener('change', (event) => {
+    if (switch3) switch3.addEventListener('change', (event) => {
         if (event.target.checked) {
             // Remove dark-menu class and add light-menu class
             document.body.classList.remove('dark-menu');
@@ -105,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Event listener for #myonoffswitch5 (toggle between light and dark menu)
-    switch5.addEventListener('change', (event) => {
+    if (switch5) switch5.addEventListener('change', (event) => {
         if (event.target.checked) {
             document.body.classList.add('dark-menu');
             document.body.classList.remove('light-menu');
@@ -117,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Event listener for #myonoffswitch8 (dark header)
-    switch8.addEventListener('change', (event) => {
+    if (switch8) switch8.addEventListener('change', (event) => {
         if (event.target.checked) {
             document.body.classList.add('dark-header');
             document.body.classList.remove('header-light');
@@ -129,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Event listener for #myonoffswitch6 (header-light and remove dark header)
-    switch6.addEventListener('change', (event) => {
+    if (switch6) switch6.addEventListener('change', (event) => {
         if (event.target.checked) {
             document.body.classList.add('header-light');
             document.body.classList.remove('dark-header');

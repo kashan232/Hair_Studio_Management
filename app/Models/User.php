@@ -19,6 +19,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
+        'role', // legacy support
         'designation',
         'code',
         'cnic',
@@ -47,5 +49,24 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the role associated with the user.
+     */
+    public function roleRelation()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    /**
+     * Check if user has a specific permission.
+     */
+    public function hasPermission($permissionSlug)
+    {
+        if (!$this->roleRelation) {
+            return false;
+        }
+        return $this->roleRelation->permissions()->where('slug', $permissionSlug)->exists();
     }
 }

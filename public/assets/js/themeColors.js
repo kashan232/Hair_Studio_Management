@@ -26,12 +26,22 @@ function updateColor(color, buttonId) {
     document.body.style.setProperty('--primary-rgb', color);
 }
 
-// Add event listeners
-primaryDefaultColor1Btn.addEventListener('click', () => updateColor(colors.color1, 'switcher-primary1'));
-primaryDefaultColor2Btn.addEventListener('click', () => updateColor(colors.color2, 'switcher-primary2'));
-primaryDefaultColor3Btn.addEventListener('click', () => updateColor(colors.color3, 'switcher-primary3'));
-primaryDefaultColor4Btn.addEventListener('click', () => updateColor(colors.color4, 'switcher-primary4'));
-primaryDefaultColor5Btn.addEventListener('click', () => updateColor(colors.color5, 'switcher-primary5'));
+// Add event listeners (theme switcher panel is optional in layout)
+if (primaryDefaultColor1Btn) {
+    primaryDefaultColor1Btn.addEventListener('click', () => updateColor(colors.color1, 'switcher-primary1'));
+}
+if (primaryDefaultColor2Btn) {
+    primaryDefaultColor2Btn.addEventListener('click', () => updateColor(colors.color2, 'switcher-primary2'));
+}
+if (primaryDefaultColor3Btn) {
+    primaryDefaultColor3Btn.addEventListener('click', () => updateColor(colors.color3, 'switcher-primary3'));
+}
+if (primaryDefaultColor4Btn) {
+    primaryDefaultColor4Btn.addEventListener('click', () => updateColor(colors.color4, 'switcher-primary4'));
+}
+if (primaryDefaultColor5Btn) {
+    primaryDefaultColor5Btn.addEventListener('click', () => updateColor(colors.color5, 'switcher-primary5'));
+}
 
 // Initialize with the color and button stored in localStorage, if any
 const storedColor = localStorage.getItem("vistaprimaryColor");
@@ -43,6 +53,9 @@ if (storedColor) {
 
     // Mark the previously selected button as checked
     if (selectedButton) {
-        document.querySelector(`#${selectedButton}`).checked = true;
+        const selectedEl = document.querySelector(`#${selectedButton}`);
+        if (selectedEl) {
+            selectedEl.checked = true;
+        }
     }
 }

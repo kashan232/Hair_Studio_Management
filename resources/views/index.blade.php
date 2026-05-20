@@ -245,7 +245,7 @@
             <div class="dash-hero">
                 <div class="row align-items-center position-relative" style="z-index: 1">
                     <div class="col-md-8">
-                        <h1>Welcome to Hair Studio</h1>
+                        <h1>Welcome to Eladé Studio</h1>
                         <p class="subtitle mb-2">Manage appointments, stylists, services, and check real-time business performance.</p>
                         <span class="badge px-3 py-2" style="background: var(--salon-gold); color: #fff; font-weight: 600; letter-spacing: 0.5px;">PREMIUM SALON PORTAL</span>
                     </div>

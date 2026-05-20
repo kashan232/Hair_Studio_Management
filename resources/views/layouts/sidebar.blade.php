@@ -4,7 +4,7 @@
     <div class="app-sidebar">
         <div class="side-header">
             <a class="header-brand1" href="{{ route('dashboard') }}">
-                <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #c6a34d !important;">HAIR STUDIO</h3>
+                <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #c6a34d !important;">ELADÉ STUDIO</h3>
             </a>
         </div>
         <div class="main-sidemenu">
@@ -22,6 +22,41 @@
                     <a class="sidenav-menu-item {{ Route::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <i class="side-menu__icon fe fe-home"></i>
                         <span class="side-menu__label">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('users*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                        <i class="side-menu__icon fe fe-users"></i>
+                        <span class="side-menu__label">Users</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('chairs*') ? 'active' : '' }}" href="{{ route('chairs.index') }}">
+                        <i class="side-menu__icon fe fe-grid"></i>
+                        <span class="side-menu__label">Chairs</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('pricing*') ? 'active' : '' }}" href="{{ route('pricing.index') }}">
+                        <i class="side-menu__icon fe fe-credit-card"></i>
+                        <span class="side-menu__label">Pricing and slots setup</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('roles*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                        <i class="side-menu__icon fe fe-shield"></i>
+                        <span class="side-menu__label">Roles</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('permissions*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">
+                        <i class="side-menu__icon fe fe-lock"></i>
+                        <span class="side-menu__label">Permissions</span>
                     </a>
                 </li>
 

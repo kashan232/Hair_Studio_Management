@@ -16,7 +16,7 @@
             </a>
             <!-- sidebar-toggle-->
             <a class="logo-horizontal" href="{{ route('dashboard') }}">
-                <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #c6a34d !important;">HAIR STUDIO</h3>
+                <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #c6a34d !important;">ELADÉ STUDIO</h3>
             </a>
             <!-- LOGO -->
             <div class="main-header-center ms-3 d-none d-lg-block">

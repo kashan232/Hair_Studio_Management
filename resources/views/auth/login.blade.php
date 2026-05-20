@@ -1,5 +1,3 @@
-
-
 <!doctype html>
 <html lang="en" dir="ltr">
 
@@ -8,275 +6,345 @@
     <meta charset="UTF-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="ABIANA – Digitization of Abiana Record">
-    <meta name="author" content="NCAWB">
+    <meta name="description" content="Hair Studio Management - Premium Salon Portal">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
 
     <!-- TITLE -->
-    <title>Login | ABIANA - Nara Canal Area Water Board</title>
+    <title>Login | Eladé Studio</title>
 
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{{ asset('assets/css/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- STYLE CSS -->
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
-
-    <!-- Plugins CSS -->
     <link href="{{ asset('assets/css/plugins.css') }}" rel="stylesheet">
-
-    <!--- FONT-ICONS CSS -->
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
 
-    <!-- INTERNAL Switcher css -->
-    <link href="{{ asset('assets/switcher/css/switcher.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/switcher/demo.css') }}" rel="stylesheet">
-
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #01411C;
-        }
-        
-        body.login-img {
-            background: url('{{ asset("assets/images/backgrounds/nara_canal.png") }}') no-repeat center center fixed !important;
-            background-size: cover !important;
-            font-family: 'Outfit', sans-serif !important;
+            --elade-gold: #c6a34d;
+            --elade-dark: #121212;
+            --elade-charcoal: #1e1c19;
+            --elade-sand: #f4efe6;
+            --elade-cream: #faf7f2;
         }
 
-        body.login-img::before {
+        html, body {
+            overflow: hidden !important;
+            height: 100vh !important;
+            margin: 0;
+            padding: 0;
+            background-color: var(--elade-sand) !important;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        .login-page-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Split Screen Left - Hero image */
+        .login-hero-side {
+            flex: 1.3;
+            background: linear-gradient(rgba(18, 18, 18, 0.35), rgba(18, 18, 18, 0.75)), 
+                        url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5rem;
+            color: #fff;
+        }
+
+        .login-hero-side::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(1, 65, 28, 0.4), rgba(30, 64, 175, 0.4));
-            z-index: 0;
+            top: 30px; left: 30px; right: 30px; bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            pointer-events: none;
         }
 
-        .page.auth-page {
+        .hero-top-meta {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--elade-gold);
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .hero-brand-wrap {
+            z-index: 2;
+        }
+
+        .hero-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.8rem;
+            font-weight: 300;
+            letter-spacing: 12px;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero-tagline {
+            font-size: 1.05rem;
+            max-width: 500px;
+            line-height: 1.7;
+            font-weight: 300;
+            color: #e0d5c1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Split Screen Right - Form side */
+        .login-form-side {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 5rem;
             position: relative;
-            z-index: 1;
+            overflow-y: auto;
         }
 
-        .login-wrap-main {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 0 !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+            background: transparent;
+            border: none;
         }
 
-
-        .project-title {
-            text-align: center;
-            margin-bottom: 25px;
+        .form-brand-header {
+            text-align: left;
+            margin-bottom: 3.5rem;
         }
 
-        .project-title h1 {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--primary-color);
-            margin: -5px 0;
-            letter-spacing: 2px;
+        .form-brand-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            color: var(--elade-dark);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
         }
 
-        .project-title p {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-top: 5px;
+        .form-brand-header p {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #8c7e6c;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Unique Boutique Input Styling (Only bottom border) */
+        .form-group-custom {
+            position: relative;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dcd3be;
+            transition: border-color 0.3s;
+        }
+
+        .form-group-custom:focus-within {
+            border-bottom-color: var(--elade-gold);
+        }
+
+        .form-group-custom label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #8c7e6c;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .form-group-custom input {
+            width: 100%;
+            border: none !important;
+            background: transparent !important;
+            outline: none !important;
+            font-size: 0.95rem;
+            color: var(--elade-dark);
+            padding: 0.5rem 0;
             font-weight: 500;
+            box-shadow: none !important;
         }
 
-        .login-form-title {
-            font-weight: 700 !important;
-            color: #1f2937 !important;
-            font-size: 1.2rem !important;
-            padding-bottom: 15px !important;
+        .form-group-custom input::placeholder {
+            color: #b8ac95 !important;
+            opacity: 0.6;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 0;
+            bottom: 0.5rem;
+            color: #8c7e6c;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--elade-gold);
         }
 
         .login100-form-btn {
-            background: var(--primary-color) !important;
-            border-radius: 10px !important;
+            background: var(--elade-dark) !important;
+            color: #fff !important;
+            border: 1px solid var(--elade-dark) !important;
+            border-radius: 0px !important;
             font-weight: 600 !important;
-            height: 50px !important;
-            box-shadow: 0 10px 15px -3px rgba(1, 65, 28, 0.3) !important;
+            height: 56px !important;
+            letter-spacing: 3px !important;
+            text-transform: uppercase !important;
+            font-size: 0.8rem !important;
+            transition: all 0.3s !important;
+            box-shadow: none !important;
+            cursor: pointer;
+            margin-top: 1rem;
         }
 
         .login100-form-btn:hover {
-            background: #012a12 !important;
+            background: var(--elade-gold) !important;
+            border-color: var(--elade-gold) !important;
+            color: #fff !important;
             transform: translateY(-2px);
         }
 
-        .wrap-input {
-            border-radius: 10px !important;
-            overflow: hidden;
-            margin-bottom: 20px !important;
+        .form-check-label {
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            color: #8c7e6c !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .input-group-text {
-            border: none !important;
-            background: #f3f4f6 !important;
+        .form-check-input {
+            border-radius: 0px !important;
+            border-color: #dcd3be !important;
         }
 
-        .input100 {
-            height: 50px !important;
-            font-size: 0.95rem !important;
+        .form-check-input:checked {
+            background-color: var(--elade-gold) !important;
+            border-color: var(--elade-gold) !important;
         }
 
         .footer-note {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.75rem;
-            color: #6b7280;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
+            text-align: left;
+            margin-top: 3.5rem;
+            font-size: 0.65rem;
+            color: #a0937d;
+            letter-spacing: 1.5px;
+            line-height: 1.8;
+            text-transform: uppercase;
+            border-top: 1px solid #faf7f2;
+            padding-top: 1.5rem;
         }
 
-        .auth-logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .auth-logo-container img {
-            max-height: 35px;
-            width: auto;
-            object-fit: contain;
-            mix-blend-mode: multiply;
-            filter: grayscale(0.2) contrast(1.1);
-            transition: all 0.3s ease;
-        }
-
-        .auth-logo-container img:hover {
-            filter: grayscale(0) contrast(1.2);
-            transform: scale(1.05);
+        /* Responsive */
+        @media (max-width: 991px) {
+            .login-hero-side {
+                display: none;
+            }
+            .login-form-side {
+                flex: 1;
+                padding: 3rem 1.5rem;
+            }
+            html, body {
+                overflow-y: auto !important;
+                height: auto !important;
+            }
         }
     </style>
 </head>
 
-<body class="app sidebar-mini ltr light-mode login-img">
+<body>
 
-    <!--{ Switcher Start }-->
-    <div class="switcher-wrapper">
-        <!-- Switcher content remains as per original template to maintain "format" -->
-        <div class="demo_changer">
-            <div class="p-4 m-0 lh-1 border-start template-customizer-header position-relative py-3 d-flex align-items-center justify-content-between">
-                <div>
-                    <h3 class="template-customizer-t-panel_header mb-2">Template Customizer</h3>
-                    <p class="template-customizer-t-panel_sub_header mb-0">Customize and preview in real time</p>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <a href="javascript:void(0)" id="ThemeReset" class="text-danger"><i class="fe fe-refresh-ccw fs-17 text-danger"></i></a>
+    <div class="login-page-container">
+        
+        <!-- Left Side: Hero Brand -->
+        <div class="login-hero-side">
+            <div class="hero-top-meta">LONDON, UK</div>
+            <div class="hero-brand-wrap">
+                <div class="hero-brand">Eladé Studio</div>
+                <div class="hero-tagline">
+                    Control your schedule. Elevate your standard. Book luxury workspace without long-term commitments.
                 </div>
             </div>
-            <div class="form_holder sidebar-right1 ps ps--active-y">
-                <div class="row">
-                    <div class="predefined_styles">
-                        <!-- Color palette, theme styles, etc. -->
-                        <div class="swichermainleft">
-                            <h4 class="mt-0"><i class="zmdi zmdi-invert-colors"></i> Color palette</h4>
-                            <div class="skin-body theme-colors">
-                                <div class="switch_section">
-                                    <div class="d-flex flex-wrap align-items-center gap-2">
-                                        <div class="form-check p-0"> 
-                                            <input class="form-check-input color-input color-primary-1" type="radio" name="theme-primary" id="switcher-primary1"> 
-                                        </div>
-                                        <div class="form-check p-0"> 
-                                            <input class="form-check-input color-input color-primary-2" type="radio" name="theme-primary" id="switcher-primary2"> 
-                                        </div>
-                                        <div class="form-check p-0"> 
-                                            <input class="form-check-input color-input color-primary-3" type="radio" name="theme-primary" id="switcher-primary3"> 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Other switcher options... -->
-                    </div>
-                </div>
-            </div>
+            <div class="hero-top-meta">&copy; 2026 ELADÉ STUDIO</div>
         </div>
-    </div>
-    <!--{ Switcher End }-->
 
-    <div class="page auth-page">
-        <div class="login-container">
-            <div class="card login-wrap-main p-4">
+        <!-- Right Side: Luxury Form -->
+        <div class="login-form-side">
+            <div class="login-card">
                 
-
-                <div class="project-title">
-                    <p class="mb-0 text-uppercase fw-bold" style="letter-spacing: 1.5px; font-size: 0.75rem; color: #6b7280;">Sindh Irrigation And Drainage Authority</p>
-                    <h1>ABIANA</h1>
-                    <p class="mb-2 fw-semibold" style="font-size: 0.8rem; color: var(--primary-color);">Government of Sindh</p>
-                    <p class="mt-3" style="font-size: 0.85rem; line-height: 1.4; color: #4b5563;">Digitization of Abiana Record<br><span class="fw-bold">Nara Canal Area Water Board</span></p>
+                <div class="form-brand-header">
+                    <h2>Eladé Studio</h2>
+                    <p>PREMIUM SALON PORTAL</p>
                 </div>
 
                 <form method="POST" action="{{ route('login') }}" class="ajaxForm">
                     @csrf
-                    
-                    <span class="login-form-title text-center d-block">
-                        Account Login
-                    </span>
 
-                    <div class="panel panel-primary">
-                        <div class="panel-body tabs-menu-body p-0">
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="tab5">
-                                    <div class="wrap-input validate-input input-group" data-bs-validate="Valid email is required: ex@abc.xyz">
-                                        <a href="javascript:void(0)" class="input-group-text bg-white text-muted">
-                                            <i class="zmdi zmdi-email text-muted" aria-hidden="true"></i>
-                                        </a>
-                                        <input class="input100 border-start-0 form-control ms-0" name="email" type="email" placeholder="Email Address" id="email" required>
-                                    </div>
+                    <!-- Email Address -->
+                    <div class="form-group-custom">
+                        <label for="email">Email Address</label>
+                        <input name="email" type="email" placeholder="e.g. name@eladeuk.com" id="email" required>
+                    </div>
 
-                                    <div class="wrap-input validate-input input-group" id="Password-toggle">
-                                        <a href="javascript:void(0)" class="input-group-text bg-white text-muted toggle-password">
-                                            <i class="zmdi zmdi-eye-off text-muted" aria-hidden="true"></i>
-                                        </a>
-                                        <input class="input100 border-start-0 form-control ms-0" name="password" type="password" placeholder="Password" id="password" required>
-                                    </div>
+                    <!-- Password -->
+                    <div class="form-group-custom">
+                        <label for="password">Password</label>
+                        <input name="password" type="password" placeholder="Enter security password" id="password" required>
+                        <a href="javascript:void(0)" class="password-toggle-btn toggle-password">
+                            <i class="zmdi zmdi-eye-off" aria-hidden="true"></i>
+                        </a>
+                    </div>
 
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="user-checkbox">
-                                            <label class="form-check-label text-muted" for="user-checkbox" style="font-size: 0.85rem;">
-                                                Remember me
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="container-login100-form-btn">
-                                        <button type="submit" class="login100-form-btn btn-primary w-100">
-                                            Secure Login
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Remember Me -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="user-checkbox">
+                            <label class="form-check-label text-muted" for="user-checkbox">
+                                REMEMBER THIS DEVICE
+                            </label>
                         </div>
                     </div>
 
+                    <!-- Sign In Button -->
+                    <div class="container-login100-form-btn">
+                        <button type="submit" class="login100-form-btn w-100">
+                            SECURE SIGN IN
+                        </button>
+                    </div>
+
+                    <!-- Footer Note -->
                     <div class="footer-note">
-                        <div class="auth-logo-container">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQi5ueEUcsB3jj5hxnLTHXUY4ZpVE87aON_Q&s" alt="Gov of Sindh">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThQvNSJVCfq0OJK34GPAfdPponLvA_lC5Hzw&s" alt="SIDA">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLbY1OsztKQ05-7knkY0ksVtFGJP_0PmGVzg&s" alt="NCAWB">
-                        </div>
-                        &copy; 2026 <strong>Nara Canal Area Water Board</strong><br>
-                        Sindh Irrigation & Drainage Authority (SIDA)<br>
-                        <small class="fw-bold text-uppercase mt-2 d-block" style="letter-spacing: 1px;">Powered by XCL TECHNOLOGIES</small>
+                        &copy; 2026 <strong>Eladé Studio</strong><br>
+                        Powered by Luxury Salon Portal Inc.<br>
+                        <small class="fw-bold mt-1 d-block" style="letter-spacing: 2px;">Premium Quality &bull; Stylists First</small>
                     </div>
+
                 </form>
+
             </div>
         </div>
+
     </div>
 
     <!-- JQUERY JS -->
@@ -284,15 +352,7 @@
     <!-- BOOTSTRAP JS -->
     <script src="{{ asset('assets/js/plugins/bootstrap/js/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
-    <!-- Perfect SCROLLBAR JS-->
-    <script src="{{ asset('assets/js/plugins/p-scroll/perfect-scrollbar.js') }}"></script>
-    <!-- Color Theme js -->
-    <script src="{{ asset('assets/js/themeColors.js') }}"></script>
-    <!-- Custom-switcher -->
-    <script src="{{ asset('assets/js/custom-swicher.js') }}"></script>
-    <!-- Switcher js -->
-    <script src="{{ asset('assets/switcher/js/switcher.js') }}"></script>
-
+    
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}">
     
@@ -304,7 +364,7 @@
                 e.preventDefault();
                 const btn = $(this).find('button[type="submit"]');
                 const originalText = btn.html();
-                btn.prop('disabled', true).html('Authenticating... <span class="spinner-border spinner-border-sm ms-2"></span>');
+                btn.prop('disabled', true).html('AUTHENTICATING... <span class="spinner-border spinner-border-sm ms-2"></span>');
                 
                 var url = $(this).attr('action');
                 var formData = new FormData(this);
@@ -340,7 +400,7 @@
                 });
             });
 
-            // Password toggle logic for this template
+            // Password toggle logic
             $(document).on('click', '.toggle-password', function(e) {
                 e.preventDefault();
                 const input = $('#password');
@@ -372,7 +432,3 @@
 </body>
 
 </html>
-
-
-
-
