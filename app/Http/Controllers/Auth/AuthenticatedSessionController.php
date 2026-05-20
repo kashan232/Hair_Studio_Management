@@ -29,9 +29,13 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // return redirect()->intended(route('dashboard', absolute: false));
-         return response()->json([
+        $redirect = $request->user()->isHairstylist()
+            ? route('stylist.book')
+            : route('dashboard');
+
+        return response()->json([
             'success' => 'Login Successfully',
-            'redirect' => route('dashboard')
+            'redirect' => $redirect,
         ]);
     }
 

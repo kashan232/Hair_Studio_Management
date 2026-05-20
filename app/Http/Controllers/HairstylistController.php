@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -53,9 +54,12 @@ class HairstylistController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $hairstylistRole = Role::where('slug', 'hairstylist')->firstOrFail();
+
         $data = $request->except(['password', 'avatar']);
         $data['password'] = Hash::make($request->input('password'));
         $data['role'] = 'hairstylist';
+        $data['role_id'] = $hairstylistRole->id;
         $data['joining_date'] = date('Y-m-d');
 
         // Handle Avatar Upload

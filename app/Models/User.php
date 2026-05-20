@@ -69,4 +69,13 @@ class User extends Authenticatable
         }
         return $this->roleRelation->permissions()->where('slug', $permissionSlug)->exists();
     }
+
+    public function isHairstylist(): bool
+    {
+        if ($this->role === 'hairstylist') {
+            return true;
+        }
+
+        return $this->roleRelation && $this->roleRelation->slug === 'hairstylist';
+    }
 }

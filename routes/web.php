@@ -2,12 +2,21 @@
 
 use App\Http\Controllers\ChairController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HairstylistPortalController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+// Hairstylist web app (no admin dashboard)
+Route::middleware(['auth', 'hairstylist'])->prefix('stylist')->name('stylist.')->group(function () {
+    Route::get('/', [HairstylistPortalController::class, 'index'])->name('home');
+    Route::get('/book', [HairstylistPortalController::class, 'booking'])->name('book');
+    Route::post('/book/chair', [HairstylistPortalController::class, 'selectChair'])->name('book.chair');
+    Route::post('/book/reset', [HairstylistPortalController::class, 'clearBooking'])->name('book.reset');
+});
+
+Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Users Management CRUD Routes
