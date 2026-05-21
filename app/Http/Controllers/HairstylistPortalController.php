@@ -22,43 +22,48 @@ class HairstylistPortalController extends Controller
     {
         $step = max(1, min(4, (int) $request->query('step', 1)));
         $user = $request->user();
-        $selectedChairId = session('stylist_booking.chair_id');
-        $selectedChair = $selectedChairId ? Chair::find($selectedChairId) : null;
-
-        if ($step >= 2 && !$selectedChair) {
-            return redirect()->route('stylist.book', ['step' => 1]);
-        }
-
         $selectedPricing = session('stylist_booking.pricing_type');
+        $selectedPricingOption = null;
+        $assignedChair = null;
 
-        if ($step >= 3 && !$selectedPricing) {
-            return redirect()->route('stylist.book', ['step' => 2]);
+        // Use first available chair for pricing options (all chairs identical)
+        $pricingSourceChair = Chair::where('status', 'available')->first();
+        // Store the chair ID in session so later steps (selectPricing) can access it
+        if ($pricingSourceChair) {
+            session(['stylist_booking.chair_id' => $pricingSourceChair->id]);
         }
+        $pricingOptions = $pricingSourceChair ? $this->pricingOptionsForChair($pricingSourceChair) : [];
 
-        $chairs = Chair::query()->orderBy('id', 'desc')->get();
-
-        $pricingOptions = $selectedChair ? $this->pricingOptionsForChair($selectedChair) : [];
-
+        // Steps order: 1 Pricing, 2 Time, 3 Confirm, 4 Summary
         $steps = [
-            1 => ['label' => 'Chair', 'title' => 'Choose an available chair'],
-            2 => ['label' => 'Pricing', 'title' => 'Select pricing for this chair'],
-            3 => ['label' => 'Time', 'title' => 'Pick date & time'],
-            4 => ['label' => 'Confirm', 'title' => 'Your details & confirm'],
+            1 => ['label' => 'Pricing', 'title' => 'Select your pricing plan'],
+            2 => ['label' => 'Time', 'title' => 'Pick date & time'],
+            3 => ['label' => 'Confirm', 'title' => 'Your details & confirm'],
+            4 => ['label' => 'Summary', 'title' => 'Booking summary'],
         ];
 
+        // Retrieve assigned chair after payment, if any
+        $assignedChairId = session('stylist_booking.assigned_chair_id');
+        if ($assignedChairId) {
+            $assignedChair = Chair::find($assignedChairId);
+        }
+
+        // If a pricing type is already selected, fetch its details
+        if ($selectedPricing) {
+            $selectedPricingOption = collect($pricingOptions)->firstWhere('key', $selectedPricing);
+        }
+
         $guestDetails = session('stylist_booking.guest', []);
-        $selectedPricingOption = collect($pricingOptions)->firstWhere('key', $selectedPricing);
 
         return view('stylist.booking', compact(
             'step',
             'user',
-            'chairs',
-            'selectedChair',
-            'steps',
-            'guestDetails',
             'pricingOptions',
             'selectedPricing',
-            'selectedPricingOption'
+            'selectedPricingOption',
+            'steps',
+            'guestDetails',
+            'assignedChair'
         ));
     }
 
@@ -117,17 +122,54 @@ class HairstylistPortalController extends Controller
             'stylist_booking.pricing_amount' => $option['price'],
         ]);
 
+        return redirect()->route('stylist.book', ['step' => 2]);
+    }
+
+    // Handle time selection (start + end date & time)
+    public function selectTime(Request $request): RedirectResponse
+    {
+        if (!session('stylist_booking.pricing_type')) {
+            return redirect()->route('stylist.book', ['step' => 1]);
+        }
+
+        $request->validate([
+            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'start_time' => ['required'],
+            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
+            'end_time'   => ['required'],
+        ]);
+
+        // Calculate duration in hours for price reference
+        $start = \Carbon\Carbon::parse($request->input('start_date') . ' ' . $request->input('start_time'));
+        $end   = \Carbon\Carbon::parse($request->input('end_date')   . ' ' . $request->input('end_time'));
+
+        if ($end->lte($start)) {
+            return redirect()->route('stylist.book', ['step' => 2])
+                ->withInput()
+                ->with('booking_error', 'End date/time must be after start date/time.');
+        }
+
+        $hours = max(1, (int) ceil($start->diffInHours($end)));
+
+        session([
+            'stylist_booking.start_date' => $request->input('start_date'),
+            'stylist_booking.start_time' => $request->input('start_time'),
+            'stylist_booking.end_date'   => $request->input('end_date'),
+            'stylist_booking.end_time'   => $request->input('end_time'),
+            'stylist_booking.hours'      => $hours,
+            // Keep legacy keys for backward compat with confirm/summary views
+            'stylist_booking.date'       => $request->input('start_date'),
+            'stylist_booking.time'       => $request->input('start_time'),
+        ]);
+
         return redirect()->route('stylist.book', ['step' => 3]);
     }
 
     public function confirm(Request $request): RedirectResponse
     {
-        if (!session('stylist_booking.chair_id')) {
-            return redirect()->route('stylist.book', ['step' => 1]);
-        }
-
+        // Ensure a pricing option has been selected before confirming
         if (!session('stylist_booking.pricing_type')) {
-            return redirect()->route('stylist.book', ['step' => 2]);
+            return redirect()->route('stylist.book', ['step' => 1]);
         }
 
         $rules = [
@@ -175,10 +217,17 @@ class HairstylistPortalController extends Controller
             Auth::login($user);
         }
 
-        session()->forget('stylist_booking');
+        // Assign first available chair after successful payment/confirmation
+        $chair = Chair::where('status', 'available')->first();
+        if ($chair) {
+            $chair->status = 'booked';
+            $chair->save();
+            session(['stylist_booking.assigned_chair_id' => $chair->id]);
+        }
 
-        return redirect()
-            ->route('stylist.book')
+        // Keep existing booking session data for summary (pricing etc.)
+        // Redirect to the summary step (step 4)
+        return redirect()->route('stylist.book', ['step' => 4])
             ->with('booking_success', 'Booking confirmed! Your hairstylist account is ready.');
     }
 

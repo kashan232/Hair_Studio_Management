@@ -485,6 +485,253 @@
         border-radius: 8px;
     }
 
+    /* ===== CALENDAR STEP 2 ===== */
+    .datetime-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .cal-card, .slots-card {
+        background: var(--app-surface);
+        border: 1px solid var(--app-line);
+        border-radius: 14px;
+        padding: 1.25rem;
+    }
+
+    .cal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .cal-nav-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: var(--app-accent-soft);
+        color: var(--app-accent-dark);
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+
+    .cal-nav-btn:hover { background: var(--app-accent); color: #fff; }
+
+    .cal-month-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-text);
+    }
+
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+    }
+
+    .cal-day-name {
+        text-align: center;
+        font-size: 0.55rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: var(--app-muted);
+        padding: 0.3rem 0;
+    }
+
+    .cal-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: none;
+        background: transparent;
+        color: var(--app-text);
+    }
+
+    .cal-day:hover:not(.cal-day-disabled):not(.cal-day-empty) {
+        background: var(--app-accent-soft);
+        color: var(--app-accent-dark);
+    }
+
+    .cal-day.cal-day-selected {
+        background: var(--app-accent);
+        color: #fff;
+    }
+
+    .cal-day.cal-day-today {
+        border: 2px solid var(--app-accent);
+        color: var(--app-accent-dark);
+    }
+
+    .cal-day.cal-day-today.cal-day-selected {
+        background: var(--app-accent);
+        color: #fff;
+    }
+
+    .cal-day.cal-day-disabled {
+        color: #ddd;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .cal-day.cal-day-empty { cursor: default; }
+
+    /* Time slots */
+    .slots-heading {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-muted);
+        margin-bottom: 0.75rem;
+    }
+
+    .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.45rem;
+        max-height: 260px;
+        overflow-y: auto;
+    }
+
+    .slot-btn {
+        padding: 0.4rem 0;
+        font-size: 0.68rem;
+        font-weight: 600;
+        border: 1px solid var(--app-line);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--app-text);
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+    }
+
+    .slot-btn:hover:not(.slot-unavail) {
+        border-color: var(--app-accent);
+        color: var(--app-accent-dark);
+        background: var(--app-accent-soft);
+    }
+
+    .slot-btn.slot-selected {
+        background: var(--app-accent);
+        border-color: var(--app-accent-dark);
+        color: #fff;
+    }
+
+    .slot-btn.slot-unavail {
+        background: #f5f5f5;
+        color: #bbb;
+        cursor: not-allowed;
+        text-decoration: line-through;
+        font-size: 0.6rem;
+    }
+
+    /* Price summary strip */
+    .price-strip {
+        margin-top: 1.25rem;
+        padding: 1rem 1.25rem;
+        background: var(--app-surface);
+        border: 2px solid var(--app-accent-soft);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .price-strip-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .price-strip-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-muted);
+    }
+
+    .price-strip-duration {
+        font-size: 0.75rem;
+        color: var(--app-text);
+        font-weight: 500;
+    }
+
+    .price-strip-amount {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--app-accent-dark);
+        white-space: nowrap;
+    }
+
+    /* datetime two-panel layout */
+    .dt-panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .dt-panel {
+        background: var(--app-surface);
+        border: 1px solid var(--app-line);
+        border-radius: 14px;
+        padding: 1rem;
+    }
+
+    .dt-panel-title {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--app-accent-dark);
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .dt-panel-title::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--app-accent);
+    }
+
+    .date-confirm-label {
+        font-size: 0.7rem;
+        text-align: center;
+        margin-top: 0.5rem;
+        color: var(--app-accent-dark);
+        font-weight: 600;
+        min-height: 1.1rem;
+    }
+
+    @media (max-width: 620px) {
+        .dt-panels { grid-template-columns: 1fr; }
+        .slots-grid { grid-template-columns: repeat(3, 1fr); max-height: 160px; }
+    }
+
     @media (max-width: 480px) {
         .pricing-grid { grid-template-columns: 1fr; }
         .chair-grid { grid-template-columns: repeat(2, 1fr); }
@@ -549,14 +796,12 @@
                 $isDone = $num < $step;
                 $canJump = $num <= $step || ($num === 1);
             @endphp
-            <a href="{{ ($canJump && ($num < $step || ($num === 1) || $selectedChair)) ? route('stylist.book', ['step' => $num]) : 'javascript:void(0)' }}"
+            <a href="{{ ($canJump && ($num < $step || $num === 1)) ? route('stylist.book', ['step' => $num]) : 'javascript:void(0)' }}"
                class="step-item {{ $isActive ? 'active' : '' }} {{ $isDone ? 'done' : '' }}">
                 <div class="step-circle">
                     @if($isDone)<i class="fe fe-check" style="font-size:0.85rem;"></i>@else{{ $num }}@endif
                 </div>
                 <div class="step-label">{{ $info['label'] }}</div>
-                @if($isDone && $num === 1 && $selectedChair)<span class="step-edit">Edit</span>@endif
-                @if($isDone && $num === 2 && $selectedPricing)<span class="step-edit">Edit</span>@endif
             </a>
         @endforeach
     </div>
@@ -565,66 +810,14 @@
 <main class="app-main">
     <h1 class="step-heading">{{ $steps[$step]['title'] }}</h1>
 
-    {{-- Step 1: Chairs (default) --}}
     @if($step === 1)
-        @if($chairs->isEmpty())
-            <div class="empty-chairs">
-                <i class="fe fe-grid d-block mb-2" style="font-size:2rem;color:var(--app-accent);"></i>
-                <p class="mb-0">No chairs registered yet. Add chairs in admin.</p>
-            </div>
-        @else
-            <form id="chair-form" method="POST" action="{{ route('stylist.book.chair') }}">
-                @csrf
-                <div class="chair-grid">
-                    @foreach($chairs as $index => $chair)
-                        @php
-                            $isAvailable = $chair->status === 'available';
-                            $hasPricing = $chair->price_hourly || $chair->price_daily || $chair->price_monthly || $chair->price_yearly;
-                        @endphp
-                        <label class="chair-option {{ $isAvailable ? '' : 'is-unavailable' }}">
-                            <input type="radio" name="chair_id" value="{{ $chair->id }}"
-                                {{ !$isAvailable ? 'disabled' : '' }}
-                                {{ $isAvailable && (int) old('chair_id', $selectedChair?->id) === (int) $chair->id ? 'checked' : '' }}>
-                            <div class="chair-tile">
-                                <span class="chair-num">{{ $index + 1 }}</span>
-                                <span class="chair-name">{{ $chair->name }}</span>
-                                <span class="chair-type-tag">{{ $chair->type ?? 'Chair' }}</span>
-                                <span class="chair-status-tag {{ $isAvailable ? 'available' : 'booked' }}">{{ $isAvailable ? 'Available' : 'Booked' }}</span>
-                                @if($hasPricing)
-                                    <span class="chair-price-hint-tile">Pricing set</span>
-                                @else
-                                    <span class="chair-price-hint-tile">No pricing yet</span>
-                                @endif
-                            </div>
-                        </label>
-                    @endforeach
-                </div>
-                @if(!$chairs->contains(fn ($c) => $c->status === 'available'))
-                    <p class="text-center mt-3 mb-0" style="font-size:0.78rem;color:var(--app-muted);">All chairs are currently booked.</p>
-                @endif
-            </form>
-        @endif
-    @endif
-
-    @if($step >= 2 && $selectedChair)
-        <div class="summary-card">
-            <h4>Selected chair</h4>
-            <div class="summary-line"><span>Chair</span><span>{{ $selectedChair->name }}</span></div>
-            <div class="summary-line"><span>Type</span><span>{{ $selectedChair->type ?? 'N/A' }}</span></div>
-            @if($selectedPricingOption)
-                <div class="summary-line"><span>Pricing</span><span>{{ $selectedPricingOption['label'] }} — £{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
-            @endif
-        </div>
-    @endif
-
-    @if($step === 2)
         @if(empty($pricingOptions))
             <div class="empty-chairs">
                 <i class="fe fe-dollar-sign d-block mb-2" style="font-size:2rem;color:var(--app-accent);"></i>
-                <p class="mb-0">No pricing configured for <strong>{{ $selectedChair->name }}</strong>.<br>Please set prices in admin Pricing page.</p>
+                <p class="mb-0">No pricing configured. Please set prices in admin.</p>
             </div>
         @else
-            <p class="text-center mb-3" style="font-size:0.8rem;color:var(--app-muted);">Rates from studio pricing setup for this chair</p>
+            <p class="text-center mb-3" style="font-size:0.8rem;color:var(--app-muted);">Select a pricing plan</p>
             <form id="pricing-form" method="POST" action="{{ route('stylist.book.pricing') }}">
                 @csrf
                 <div class="pricing-grid">
@@ -644,22 +837,93 @@
         @endif
     @endif
 
-    @if($step === 3)
-        <div class="coming-card">
-            <i class="fe fe-clock d-block mb-2" style="font-size:1.75rem;color:var(--app-accent);"></i>
-            <p class="mb-0 fw-semibold">Date & time — coming soon</p>
-            <p class="mb-0 small mt-2" style="color:var(--app-muted);">Your chair and {{ $selectedPricingOption['label'] ?? 'pricing' }} plan (£{{ number_format(session('stylist_booking.pricing_amount', 0), 2) }}) are saved.</p>
+    @if($step === 2)
+        @php
+            $isHourly  = $selectedPricingOption && $selectedPricingOption['key'] === 'hourly';
+            $isDaily   = $selectedPricingOption && $selectedPricingOption['key'] === 'daily';
+            $isWeekly  = $selectedPricingOption && $selectedPricingOption['key'] === 'weekly';
+            $isMonthly = $selectedPricingOption && $selectedPricingOption['key'] === 'monthly';
+            $unitPrice = $selectedPricingOption['price'] ?? 0;
+            $savedStartDate = old('start_date', session('stylist_booking.start_date') ?? '');
+            $savedStartTime = old('start_time', session('stylist_booking.start_time') ?? '');
+            $savedEndDate   = old('end_date',   session('stylist_booking.end_date')   ?? '');
+            $savedEndTime   = old('end_time',   session('stylist_booking.end_time')   ?? '');
+        @endphp
+
+        <form method="POST" action="{{ route('stylist.book.time') }}" id="time-form">
+            @csrf
+            <input type="hidden" name="start_date" id="hidden-start-date" value="{{ $savedStartDate }}">
+            <input type="hidden" name="start_time" id="hidden-start-time" value="{{ $savedStartTime }}">
+            <input type="hidden" name="end_date"   id="hidden-end-date"   value="{{ $savedEndDate }}">
+            <input type="hidden" name="end_time"   id="hidden-end-time"   value="{{ $savedEndTime }}">
+        </form>
+
+        <div class="dt-panels">
+
+            {{-- START block --}}
+            <div class="dt-panel">
+                <div class="dt-panel-title">Start</div>
+
+                {{-- Start calendar --}}
+                <div class="cal-header">
+                    <button type="button" class="cal-nav-btn" id="s-cal-prev">&#8249;</button>
+                    <span class="cal-month-label" id="s-cal-label">...</span>
+                    <button type="button" class="cal-nav-btn" id="s-cal-next">&#8250;</button>
+                </div>
+                <div class="cal-grid" id="s-cal-grid"></div>
+                <div class="date-confirm-label" id="s-date-label">
+                    {{ $savedStartDate ? \Carbon\Carbon::parse($savedStartDate)->format('D, d M Y') : 'Select start date' }}
+                </div>
+
+                {{-- Start time slots --}}
+                <div class="slots-heading" style="margin-top:1rem;">Start time</div>
+                <div class="slots-grid" id="s-slots-grid"></div>
+            </div>
+
+            {{-- END block --}}
+            <div class="dt-panel">
+                <div class="dt-panel-title">End</div>
+
+                {{-- End calendar --}}
+                <div class="cal-header">
+                    <button type="button" class="cal-nav-btn" id="e-cal-prev">&#8249;</button>
+                    <span class="cal-month-label" id="e-cal-label">...</span>
+                    <button type="button" class="cal-nav-btn" id="e-cal-next">&#8250;</button>
+                </div>
+                <div class="cal-grid" id="e-cal-grid"></div>
+                <div class="date-confirm-label" id="e-date-label">
+                    {{ $savedEndDate ? \Carbon\Carbon::parse($savedEndDate)->format('D, d M Y') : 'Select end date' }}
+                </div>
+
+                {{-- End time slots --}}
+                <div class="slots-heading" style="margin-top:1rem;">End time</div>
+                <div class="slots-grid" id="e-slots-grid"></div>
+            </div>
+
+        </div>
+
+        {{-- Price strip --}}
+        <div class="price-strip">
+            <div class="price-strip-meta">
+                <span class="price-strip-label">Total amount</span>
+                <span class="price-strip-duration" id="duration-label">—</span>
+            </div>
+            <span class="price-strip-amount" id="price-display">£{{ number_format($unitPrice, 2) }}</span>
         </div>
     @endif
 
-    {{-- Step 4: Details at confirmation --}}
-    @if($step === 4)
-        @if($selectedChair && $selectedPricingOption)
+    @if($step === 3)
+        @if($selectedPricingOption)
         <div class="summary-card mb-3">
             <h4>Booking summary</h4>
-            <div class="summary-line"><span>Chair</span><span>{{ $selectedChair->name }}</span></div>
-            <div class="summary-line"><span>Plan</span><span>{{ $selectedPricingOption['label'] }}</span></div>
-            <div class="summary-line"><span>Total rate</span><span>£{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
+            @if($selectedPricingOption)
+                <div class="summary-line"><span>Plan</span><span>{{ $selectedPricingOption['label'] }}</span></div>
+                <div class="summary-line"><span>Rate</span><span>£{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
+            @endif
+            @if(session('stylist_booking.start_date'))
+                <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} @ {{ session('stylist_booking.start_time') }}</span></div>
+                <div class="summary-line"><span>End</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.end_date'))->format('D d M Y') }} @ {{ session('stylist_booking.end_time') }}</span></div>
+            @endif
         </div>
         @endif
         <form method="POST" action="{{ route('stylist.book.confirm') }}" class="details-form" id="confirm-form">
@@ -693,6 +957,23 @@
             </div>
         </form>
     @endif
+
+    @if($step === 4)
+        <div class="summary-card mb-3">
+            <h4>Booking confirmed!</h4>
+            @if($assignedChair)
+                <div class="summary-line"><span>Chair</span><span>{{ $assignedChair->name }}</span></div>
+            @endif
+            @if($selectedPricingOption)
+                <div class="summary-line"><span>Plan</span><span>{{ $selectedPricingOption['label'] }}</span></div>
+                <div class="summary-line"><span>Rate</span><span>£{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
+            @endif
+            @if(session('stylist_booking.start_date'))
+                <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} @ {{ session('stylist_booking.start_time') }}</span></div>
+                <div class="summary-line"><span>End</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.end_date'))->format('D d M Y') }} @ {{ session('stylist_booking.end_time') }}</span></div>
+            @endif
+        </div>
+    @endif
 </main>
 
 <nav class="app-footer-nav">
@@ -701,12 +982,10 @@
     @endif
 
     @if($step === 1)
-        <button type="submit" form="chair-form" class="btn-app btn-app-next" id="chair-next-btn" {{ $chairs->isEmpty() || !$chairs->contains(fn ($c) => $c->status === 'available') ? 'disabled' : '' }}>Next</button>
-    @elseif($step === 2)
         <button type="submit" form="pricing-form" class="btn-app btn-app-next" {{ empty($pricingOptions) ? 'disabled' : '' }}>Next</button>
-    @elseif($step < 4)
-        <a href="{{ route('stylist.book', ['step' => $step + 1]) }}" class="btn-app btn-app-next">Next</a>
-    @else
+    @elseif($step === 2)
+        <button type="submit" form="time-form" class="btn-app btn-app-next">Next</button>
+    @elseif($step === 3)
         <button type="submit" form="confirm-form" class="btn-app btn-app-next">Confirm</button>
     @endif
 </nav>
@@ -714,11 +993,288 @@
 
 @section('scripts')
 <script>
-    document.querySelectorAll('.chair-option input:not(:disabled)').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            const btn = document.getElementById('chair-next-btn');
-            if (btn) btn.removeAttribute('disabled');
+(function () {
+    if (!document.getElementById('time-form')) return;
+
+    /* ============================================================
+       CONFIG
+    ============================================================ */
+    const PRICING_TYPE = '{{ $selectedPricingOption["key"] ?? "" }}';
+    const UNIT_PRICE   = {{ $unitPrice ?? 0 }};
+
+    /* ============================================================
+       STATE
+    ============================================================ */
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    // Start
+    let sDate = '{{ $savedStartDate ?? "" }}' || null;
+    let sTime = '{{ $savedStartTime ?? "" }}' || null;
+    let sYear, sMonth;
+    if (sDate) { const d=new Date(sDate); sYear=d.getFullYear(); sMonth=d.getMonth(); }
+    else { sYear=today.getFullYear(); sMonth=today.getMonth(); }
+
+    // End
+    let eDate = '{{ $savedEndDate ?? "" }}' || null;
+    let eTime = '{{ $savedEndTime ?? "" }}' || null;
+    let eYear, eMonth;
+    if (eDate) { const d=new Date(eDate); eYear=d.getFullYear(); eMonth=d.getMonth(); }
+    else { eYear=today.getFullYear(); eMonth=today.getMonth(); }
+
+    /* ============================================================
+       SLOTS (9 AM – 8:30 PM every 30 min)
+    ============================================================ */
+    const ALL_SLOTS = [];
+    for (let h = 9; h < 21; h++) {
+        for (const m of ['00','30']) {
+            const suffix   = h < 12 ? 'AM' : 'PM';
+            const hDisplay = h > 12 ? h - 12 : h;
+            ALL_SLOTS.push({
+                label: `${String(hDisplay).padStart(2,'0')}:${m} ${suffix}`,
+                value: `${String(h).padStart(2,'0')}:${m}`
+            });
+        }
+    }
+
+    /* ============================================================
+       CALENDAR RENDERER
+       id     = element id prefix  (s- or e-)
+       selDate = currently selected date string
+       onPick = callback(dateStr)
+    ============================================================ */
+    const MONTH_NAMES = ['January','February','March','April','May','June',
+                         'July','August','September','October','November','December'];
+    const DAY_NAMES   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+    function renderCal(gridEl, labelEl, year, month, selDate, minDate, onPick) {
+        gridEl.innerHTML = '';
+        labelEl.textContent = `${MONTH_NAMES[month]} ${year}`;
+
+        DAY_NAMES.forEach(d => {
+            const el = document.createElement('div');
+            el.className = 'cal-day-name';
+            el.textContent = d;
+            gridEl.appendChild(el);
         });
+
+        const firstDay    = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+            const e = document.createElement('div');
+            e.className = 'cal-day cal-day-empty';
+            gridEl.appendChild(e);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const cur = new Date(year, month, d); cur.setHours(0,0,0,0);
+            const min = minDate ? new Date(minDate) : today; min.setHours(0,0,0,0);
+            const isPast     = cur < min;
+            const isToday    = cur.getTime() === today.getTime();
+            const ds         = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const isSel      = selDate === ds;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cal-day'
+                + (isPast  ? ' cal-day-disabled' : '')
+                + (isToday ? ' cal-day-today'    : '')
+                + (isSel   ? ' cal-day-selected' : '');
+            btn.textContent = d;
+            if (!isPast) btn.addEventListener('click', () => onPick(ds, cur));
+            gridEl.appendChild(btn);
+        }
+    }
+
+    /* ============================================================
+       SLOT RENDERER
+    ============================================================ */
+    function renderSlots(gridEl, selTime, enabled, onPick) {
+        gridEl.innerHTML = '';
+        if (!enabled) {
+            const p = document.createElement('p');
+            p.style.cssText = 'color:var(--app-muted);font-size:0.72rem;grid-column:1/-1;text-align:center;margin:0.75rem 0;';
+            p.textContent = 'Pick a date first';
+            gridEl.appendChild(p);
+            return;
+        }
+        ALL_SLOTS.forEach(slot => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'slot-btn' + (selTime === slot.value ? ' slot-selected' : '');
+            btn.textContent = slot.label;
+            btn.addEventListener('click', () => onPick(slot.value));
+            gridEl.appendChild(btn);
+        });
+    }
+
+    /* ============================================================
+       PRICE CALCULATION
+    ============================================================ */
+    function calcTotal() {
+        if (!sDate || !sTime || !eDate || !eTime) return null;
+
+        const start = new Date(`${sDate}T${sTime}:00`);
+        const end   = new Date(`${eDate}T${eTime}:00`);
+        if (end <= start) return null;
+
+        const diffMs   = end - start;
+        const diffHrs  = diffMs / 3_600_000;
+        const diffDays = diffMs / 86_400_000;
+
+        let total = 0;
+        let durationText = '';
+
+        if (PRICING_TYPE === 'hourly') {
+            total = UNIT_PRICE * diffHrs;
+            durationText = `${diffHrs.toFixed(1)} hour${diffHrs !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/hr`;
+        } else if (PRICING_TYPE === 'daily') {
+            const days = Math.ceil(diffDays);
+            total = UNIT_PRICE * days;
+            durationText = `${days} day${days !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/day`;
+        } else if (PRICING_TYPE === 'weekly') {
+            const weeks = Math.ceil(diffDays / 7);
+            total = UNIT_PRICE * weeks;
+            durationText = `${weeks} week${weeks !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/wk`;
+        } else if (PRICING_TYPE === 'monthly') {
+            const months = Math.ceil(diffDays / 30);
+            total = UNIT_PRICE * months;
+            durationText = `${months} month${months !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/mo`;
+        } else {
+            total = UNIT_PRICE;
+            durationText = '';
+        }
+
+        return { total, durationText };
+    }
+
+    function updatePrice() {
+        const priceEl    = document.getElementById('price-display');
+        const durationEl = document.getElementById('duration-label');
+        const result = calcTotal();
+        if (result) {
+            priceEl.textContent    = '£' + result.total.toFixed(2);
+            durationEl.textContent = result.durationText;
+        } else {
+            priceEl.textContent    = '£' + UNIT_PRICE.toFixed(2);
+            durationEl.textContent = sDate && sTime && eDate && eTime ? '⚠ End must be after start' : '—';
+        }
+    }
+
+    /* ============================================================
+       RENDER ALL
+    ============================================================ */
+    function renderAll() {
+        // Start calendar
+        renderCal(
+            document.getElementById('s-cal-grid'),
+            document.getElementById('s-cal-label'),
+            sYear, sMonth, sDate, null,
+            (ds, dateObj) => {
+                sDate = ds;
+                sTime = null;
+                document.getElementById('hidden-start-date').value = ds;
+                document.getElementById('hidden-start-time').value = '';
+                document.getElementById('s-date-label').textContent =
+                    dateObj.toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
+                // End date must not be before start date
+                if (eDate && eDate < sDate) { eDate = null; eTime = null;
+                    document.getElementById('hidden-end-date').value = '';
+                    document.getElementById('hidden-end-time').value = '';
+                    document.getElementById('e-date-label').textContent = 'Select end date';
+                }
+                renderAll(); updatePrice();
+            }
+        );
+
+        // End calendar (min = start date)
+        renderCal(
+            document.getElementById('e-cal-grid'),
+            document.getElementById('e-cal-label'),
+            eYear, eMonth, eDate, sDate || null,
+            (ds, dateObj) => {
+                eDate = ds;
+                eTime = null;
+                document.getElementById('hidden-end-date').value = ds;
+                document.getElementById('hidden-end-time').value = '';
+                document.getElementById('e-date-label').textContent =
+                    dateObj.toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
+                renderAll(); updatePrice();
+            }
+        );
+
+        // Start slots
+        renderSlots(
+            document.getElementById('s-slots-grid'),
+            sTime, !!sDate,
+            (val) => {
+                sTime = val;
+                document.getElementById('hidden-start-time').value = val;
+                renderAll(); updatePrice();
+            }
+        );
+
+        // End slots
+        renderSlots(
+            document.getElementById('e-slots-grid'),
+            eTime, !!eDate,
+            (val) => {
+                eTime = val;
+                document.getElementById('hidden-end-time').value = val;
+                renderAll(); updatePrice();
+            }
+        );
+    }
+
+    /* ============================================================
+       NAVIGATION BUTTONS
+    ============================================================ */
+    function navHandler(prevId, nextId, getYM, setYM) {
+        document.getElementById(prevId).addEventListener('click', () => {
+            let [y, m] = getYM();
+            m--; if (m < 0) { m = 11; y--; }
+            const minM = today.getFullYear() * 12 + today.getMonth();
+            if (y * 12 + m < minM) return;
+            setYM(y, m); renderAll();
+        });
+        document.getElementById(nextId).addEventListener('click', () => {
+            let [y, m] = getYM();
+            m++; if (m > 11) { m = 0; y++; }
+            setYM(y, m); renderAll();
+        });
+    }
+
+    navHandler('s-cal-prev','s-cal-next', () => [sYear,sMonth], (y,m) => { sYear=y; sMonth=m; });
+    navHandler('e-cal-prev','e-cal-next', () => [eYear,eMonth], (y,m) => { eYear=y; eMonth=m; });
+
+    /* ============================================================
+       FORM SUBMIT VALIDATION
+    ============================================================ */
+    document.getElementById('time-form').addEventListener('submit', function(ev) {
+        if (!sDate || !sTime) { ev.preventDefault(); alert('Please select a start date and time.'); return; }
+        if (!eDate || !eTime) { ev.preventDefault(); alert('Please select an end date and time.');   return; }
+        const s = new Date(`${sDate}T${sTime}:00`);
+        const e = new Date(`${eDate}T${eTime}:00`);
+        if (e <= s) { ev.preventDefault(); alert('End must be after start.'); }
     });
+
+    /* ============================================================
+       INIT
+    ============================================================ */
+    renderAll();
+    updatePrice();
+
+    // Restore labels if values were saved
+    if (sDate) {
+        const [y,m,d] = sDate.split('-');
+        document.getElementById('s-date-label').textContent =
+            new Date(y, m-1, d).toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    }
+    if (eDate) {
+        const [y,m,d] = eDate.split('-');
+        document.getElementById('e-date-label').textContent =
+            new Date(y, m-1, d).toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    }
+})();
 </script>
 @endsection

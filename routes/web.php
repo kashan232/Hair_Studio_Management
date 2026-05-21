@@ -14,6 +14,7 @@ Route::prefix('stylist')->name('stylist.')->group(function () {
     Route::get('/book', [HairstylistPortalController::class, 'booking'])->name('book');
     Route::post('/book/chair', [HairstylistPortalController::class, 'selectChair'])->name('book.chair');
     Route::post('/book/pricing', [HairstylistPortalController::class, 'selectPricing'])->name('book.pricing');
+    Route::post('/book/time', [HairstylistPortalController::class, 'selectTime'])->name('book.time');
     Route::post('/book/confirm', [HairstylistPortalController::class, 'confirm'])->name('book.confirm');
     Route::post('/book/reset', [HairstylistPortalController::class, 'clearBooking'])->name('book.reset');
 });
