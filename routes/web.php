@@ -6,17 +6,22 @@ use App\Http\Controllers\HairstylistPortalController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 
 // Hairstylist web app — public booking (no login required)
 Route::prefix('stylist')->name('stylist.')->group(function () {
     Route::get('/', [HairstylistPortalController::class, 'index'])->name('home');
     Route::get('/book', [HairstylistPortalController::class, 'booking'])->name('book');
-    Route::post('/book/chair', [HairstylistPortalController::class, 'selectChair'])->name('book.chair');
-    Route::post('/book/pricing', [HairstylistPortalController::class, 'selectPricing'])->name('book.pricing');
     Route::post('/book/time', [HairstylistPortalController::class, 'selectTime'])->name('book.time');
-    Route::post('/book/confirm', [HairstylistPortalController::class, 'confirm'])->name('book.confirm');
+    Route::post('/book/availability/confirm', [HairstylistPortalController::class, 'confirmAvailability'])->name('book.availability.confirm');
+    Route::post('/book/details', [HairstylistPortalController::class, 'confirmDetails'])->name('book.details');
+    Route::post('/book/payment/intent', [HairstylistPortalController::class, 'createPaymentIntent'])->name('book.payment.intent');
+    Route::get('/book/payment/success', [HairstylistPortalController::class, 'paymentSuccess'])->name('book.payment.success');
     Route::post('/book/reset', [HairstylistPortalController::class, 'clearBooking'])->name('book.reset');
+    
+    // Stylist My Bookings
+    Route::get('/my-bookings', [HairstylistPortalController::class, 'myBookings'])->name('my_bookings')->middleware('auth');
 });
 
 Route::middleware(['auth', 'staff'])->group(function () {
@@ -61,6 +66,14 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/permissions/edit/{id}', [PermissionController::class, 'edit'])->name('permissions.edit');
     Route::post('/permissions/update/{id}', [PermissionController::class, 'update'])->name('permissions.update');
     Route::post('/permissions/delete/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    // Bookings Management CRUD Routes
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::post('/bookings/update-status/{id}', [BookingController::class, 'updateStatus'])->name('bookings.update_status');
 });
+
+// Stylist Public Payment Link for Approved Overnight Bookings
+Route::get('/stylist/bookings/{id}/pay', [BookingController::class, 'payBalance'])->name('stylist.bookings.pay');
+Route::post('/stylist/bookings/{id}/pay/intent', [BookingController::class, 'processBalancePayment'])->name('stylist.bookings.pay.intent');
+Route::get('/stylist/bookings/{id}/pay/success', [BookingController::class, 'balancePaymentSuccess'])->name('stylist.bookings.pay.success');
 
 require __DIR__.'/auth.php';

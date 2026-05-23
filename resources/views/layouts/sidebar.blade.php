@@ -33,6 +33,13 @@
                 </li>
 
                 <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('bookings*') ? 'active' : '' }}" href="{{ route('bookings.index') }}">
+                        <i class="side-menu__icon fe fe-calendar"></i>
+                        <span class="side-menu__label">Bookings</span>
+                    </a>
+                </li>
+
+                <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('chairs*') ? 'active' : '' }}" href="{{ route('chairs.index') }}">
                         <i class="side-menu__icon fe fe-grid"></i>
                         <span class="side-menu__label">Chairs</span>

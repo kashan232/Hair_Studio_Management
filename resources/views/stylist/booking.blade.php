@@ -160,7 +160,7 @@
     .stepper {
         display: flex;
         align-items: flex-start;
-        min-width: 420px;
+        min-width: 520px;
         max-width: 720px;
         margin: 0 auto;
         position: relative;
@@ -171,308 +171,214 @@
         content: '';
         position: absolute;
         top: 14px;
-        left: 10%;
-        right: 10%;
+        left: 30px;
+        right: 30px;
         height: 2px;
         background: var(--app-line);
-        z-index: 0;
-    }
-
-    .stepper-progress {
-        position: absolute;
-        top: 14px;
-        left: 10%;
-        height: 2px;
-        background: var(--app-accent);
         z-index: 1;
-        transition: width 0.3s ease;
     }
 
     .step-item {
         flex: 1;
-        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         position: relative;
         z-index: 2;
-        text-decoration: none;
-        color: inherit;
+        text-align: center;
     }
 
     .step-circle {
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        background: var(--app-surface);
+        background: #fff;
         border: 2px solid var(--app-line);
-        display: inline-flex;
+        display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.72rem;
+        font-size: 0.75rem;
         font-weight: 700;
         color: var(--app-muted);
-        margin: 0 auto 0.4rem;
+        margin-bottom: 0.4rem;
+        transition: all 0.3s;
     }
 
-    .step-item.done .step-circle,
+    .step-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--app-muted);
+        transition: color 0.3s;
+    }
+
     .step-item.active .step-circle {
         border-color: var(--app-accent);
         background: var(--app-accent);
         color: #fff;
     }
 
+    .step-item.active .step-label {
+        color: var(--app-text);
+    }
+
     .step-item.done .step-circle {
-        background: var(--app-surface);
-        color: var(--app-accent-dark);
-    }
-
-    .step-label {
-        font-size: 0.62rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        color: var(--app-muted);
-    }
-
-    .step-item.active .step-label { color: var(--app-text); }
-
-    .step-edit {
-        display: block;
-        font-size: 0.58rem;
-        color: var(--app-accent-dark);
-        margin-top: 2px;
-        text-decoration: underline;
+        border-color: var(--app-accent);
+        color: var(--app-accent);
     }
 
     .app-main {
         max-width: 720px;
         margin: 0 auto;
-        padding: 1.25rem 1.25rem 2rem;
+        padding: 1.5rem 1rem;
     }
 
-    .step-heading {
-        font-size: 1.2rem;
-        font-weight: 600;
-        letter-spacing: 1px;
+    .step-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    /* ===== DETAILS FORM ===== */
+    .details-form {
+        background: var(--app-surface);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--app-line);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .hint {
+        font-size: 0.8rem;
+        color: var(--app-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+
+    .form-field { margin-bottom: 1.2rem; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-field label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
-        text-align: center;
-        margin: 0 0 1.25rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.4rem;
+        color: var(--app-muted);
     }
 
-    .chair-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
-    }
-
-    .chair-option { position: relative; cursor: pointer; }
-    .chair-option input { position: absolute; opacity: 0; pointer-events: none; }
-
-    .chair-tile {
-        aspect-ratio: 1;
-        background: var(--app-accent-soft);
-        border: 2px solid transparent;
+    .form-field input {
+        width: 100%;
+        height: 48px;
+        padding: 0 0.85rem;
+        border: 1.5px solid var(--app-line);
         border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        background: #fff;
+        color: var(--app-text);
+        transition: border-color 0.2s;
+    }
+
+    .form-field input:focus {
+        outline: none;
+        border-color: var(--app-accent);
+    }
+
+    /* ===== FOOTER NAV ===== */
+    .app-footer-nav {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--app-surface);
+        border-top: 1px solid var(--app-line);
+        padding: 1rem 1.25rem;
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+    }
+
+    .btn-app {
+        height: 48px;
+        padding: 0 1.5rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.5rem;
-        text-align: center;
+        text-decoration: none;
         transition: all 0.2s;
+        border: none;
     }
 
-    .chair-option input:checked + .chair-tile {
+    .btn-app-back {
+        background: #fff;
+        border: 1px solid var(--app-line);
+        color: var(--app-muted);
+    }
+
+    .btn-app-back:hover {
+        background: #fdfdfd;
+        color: var(--app-text);
+        border-color: #dcd0c8;
+    }
+
+    .btn-app-next {
         background: var(--app-accent);
-        border-color: var(--app-accent-dark);
         color: #fff;
+        box-shadow: 0 4px 12px rgba(212,160,136,0.3);
     }
 
-    .chair-tile .chair-num { font-size: 1.5rem; font-weight: 700; }
-    .chair-tile .chair-name {
-        font-size: 0.58rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        margin-top: 0.35rem;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    .btn-app-next:hover:not(:disabled) {
+        background: var(--app-accent-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(212,160,136,0.4);
     }
 
-    .chair-type-tag { font-size: 0.55rem; margin-top: 0.2rem; opacity: 0.8; }
-
-    .chair-status-tag {
-        font-size: 0.5rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        margin-top: 0.25rem;
-        padding: 0.1rem 0.35rem;
-        border-radius: 3px;
+    .btn-app-next:disabled {
+        background: var(--app-line);
+        color: #a09791;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
     }
 
-    .chair-status-tag.available { background: #e8f5e9; color: #2e7d32; }
-    .chair-status-tag.booked { background: #ffebee; color: #c62828; }
-
-    .chair-option.is-unavailable { cursor: not-allowed; opacity: 0.55; }
-    .chair-option.is-unavailable .chair-tile { background: #f0f0f0; }
-
-    .chair-price-hint-tile {
-        font-size: 0.5rem;
-        margin-top: 0.2rem;
-        opacity: 0.75;
-        line-height: 1.2;
-    }
-
-    .empty-chairs, .coming-card, .summary-card {
+    /* ===== SUMMARY CARD ===== */
+    .summary-card {
         background: var(--app-surface);
         border: 1px solid var(--app-line);
         border-radius: 12px;
-        padding: 1.5rem;
-        text-align: center;
-        color: var(--app-muted);
+        padding: 1.25rem;
     }
 
-    .summary-card { text-align: left; margin-bottom: 1rem; }
     .summary-card h4 {
-        margin: 0 0 0.75rem;
-        font-size: 0.72rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: var(--app-muted);
+        margin: 0 0 1rem;
+        font-size: 0.95rem;
+        font-weight: 700;
     }
 
     .summary-line {
         display: flex;
         justify-content: space-between;
-        padding: 0.45rem 0;
-        font-size: 0.85rem;
+        padding: 0.65rem 0;
         border-bottom: 1px solid var(--app-line);
+        font-size: 0.85rem;
     }
 
-    .summary-line:last-child { border-bottom: none; }
+    .summary-line:last-child { border-bottom: none; padding-bottom: 0; }
+    .summary-line span:first-child { color: var(--app-muted); font-weight: 600; }
+    .summary-line span:last-child { text-align: right; }
 
-    .details-form .form-field {
-        margin-bottom: 1.1rem;
-    }
-
-    .details-form label {
-        display: block;
-        font-size: 0.68rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--app-muted);
-        margin-bottom: 0.35rem;
-    }
-
-    .details-form input {
-        width: 100%;
-        height: 46px;
-        border: 1px solid var(--app-line);
-        border-radius: 6px;
-        padding: 0 0.85rem;
-        font-size: 0.88rem;
-        background: #fff;
-        color: var(--app-text);
-    }
-
-    .details-form input:focus {
-        outline: none;
-        border-color: var(--app-accent);
-    }
-
-    .details-form .hint {
-        font-size: 0.72rem;
-        color: var(--app-muted);
-        margin: -0.5rem 0 1rem;
-    }
-
-    .details-form .row-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-    }
-
-    .app-footer-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--app-surface);
-        border-top: 1px solid var(--app-line);
-        padding: 0.85rem 1.25rem;
-        display: flex;
-        gap: 0.75rem;
-        justify-content: flex-end;
-        z-index: 100;
-    }
-
-    .btn-app {
-        min-width: 110px;
-        height: 48px;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-app-back { background: var(--app-accent-soft); color: var(--app-accent-dark); }
-    .btn-app-next { background: var(--app-accent); color: #fff; }
-    .btn-app:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .pricing-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-
-    .pricing-option { position: relative; cursor: pointer; }
-    .pricing-option input { position: absolute; opacity: 0; pointer-events: none; }
-
-    .pricing-tile {
-        background: var(--app-surface);
-        border: 2px solid var(--app-line);
-        border-radius: 10px;
-        padding: 1.1rem 0.85rem;
-        text-align: center;
-        transition: all 0.2s;
-        min-height: 110px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .pricing-option input:checked + .pricing-tile {
-        border-color: var(--app-accent-dark);
-        background: var(--app-accent);
-        color: #fff;
-    }
-
-    .pricing-tile .pricing-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-    }
-
-    .pricing-tile .pricing-amount {
-        font-size: 1.35rem;
-        font-weight: 700;
-        margin: 0.35rem 0 0.2rem;
-    }
-
-    .pricing-tile .pricing-sub {
-        font-size: 0.65rem;
-        opacity: 0.85;
-    }
+    .mb-3 { margin-bottom: 1.5rem; }
 
     .alert-error-app {
         max-width: 720px;
@@ -485,448 +391,355 @@
         border-radius: 8px;
     }
 
-    /* ===== CALENDAR STEP 2 ===== */
-    .datetime-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        align-items: start;
-    }
-
-    .cal-card, .slots-card {
-        background: var(--app-surface);
-        border: 1px solid var(--app-line);
-        border-radius: 14px;
-        padding: 1.25rem;
-    }
-
-    .cal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-    }
-
-    .cal-nav-btn {
-        width: 32px;
-        height: 32px;
-        border: none;
-        background: var(--app-accent-soft);
-        color: var(--app-accent-dark);
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.2s;
-    }
-
-    .cal-nav-btn:hover { background: var(--app-accent); color: #fff; }
-
-    .cal-month-label {
-        font-size: 0.82rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--app-text);
-    }
-
-    .cal-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 4px;
-    }
-
-    .cal-day-name {
-        text-align: center;
-        font-size: 0.55rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        color: var(--app-muted);
-        padding: 0.3rem 0;
-    }
-
-    .cal-day {
-        aspect-ratio: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 0.72rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.15s;
-        border: none;
-        background: transparent;
-        color: var(--app-text);
-    }
-
-    .cal-day:hover:not(.cal-day-disabled):not(.cal-day-empty) {
-        background: var(--app-accent-soft);
-        color: var(--app-accent-dark);
-    }
-
-    .cal-day.cal-day-selected {
-        background: var(--app-accent);
-        color: #fff;
-    }
-
-    .cal-day.cal-day-today {
-        border: 2px solid var(--app-accent);
-        color: var(--app-accent-dark);
-    }
-
-    .cal-day.cal-day-today.cal-day-selected {
-        background: var(--app-accent);
-        color: #fff;
-    }
-
-    .cal-day.cal-day-disabled {
-        color: #ddd;
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
-
-    .cal-day.cal-day-empty { cursor: default; }
-
-    /* Time slots */
-    .slots-heading {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--app-muted);
-        margin-bottom: 0.75rem;
-    }
-
-    .slots-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.45rem;
-        max-height: 260px;
-        overflow-y: auto;
-    }
-
-    .slot-btn {
-        padding: 0.4rem 0;
-        font-size: 0.68rem;
-        font-weight: 600;
-        border: 1px solid var(--app-line);
-        border-radius: 6px;
-        background: #fff;
-        color: var(--app-text);
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: center;
-    }
-
-    .slot-btn:hover:not(.slot-unavail) {
-        border-color: var(--app-accent);
-        color: var(--app-accent-dark);
-        background: var(--app-accent-soft);
-    }
-
-    .slot-btn.slot-selected {
-        background: var(--app-accent);
-        border-color: var(--app-accent-dark);
-        color: #fff;
-    }
-
-    .slot-btn.slot-unavail {
-        background: #f5f5f5;
-        color: #bbb;
-        cursor: not-allowed;
-        text-decoration: line-through;
-        font-size: 0.6rem;
-    }
-
-    /* Price summary strip */
-    .price-strip {
-        margin-top: 1.25rem;
-        padding: 1rem 1.25rem;
-        background: var(--app-surface);
-        border: 2px solid var(--app-accent-soft);
+    /* ===== TOTAL AMOUNT HIGHLIGHT ===== */
+    .total-highlight {
+        background: linear-gradient(135deg, var(--app-accent) 0%, var(--app-accent-dark) 100%);
         border-radius: 12px;
+        padding: 1.1rem 1.3rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 4px 16px rgba(212,160,136,0.25);
     }
-
-    .price-strip-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 0.2rem;
-    }
-
-    .price-strip-label {
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--app-muted);
-    }
-
-    .price-strip-duration {
+    .total-highlight-label {
         font-size: 0.75rem;
-        color: var(--app-text);
-        font-weight: 500;
-    }
-
-    .price-strip-amount {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: var(--app-accent-dark);
-        white-space: nowrap;
-    }
-
-    /* datetime two-panel layout */
-    .dt-panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .dt-panel {
-        background: var(--app-surface);
-        border: 1px solid var(--app-line);
-        border-radius: 14px;
-        padding: 1rem;
-    }
-
-    .dt-panel-title {
-        font-size: 0.62rem;
         font-weight: 700;
         letter-spacing: 1.5px;
         text-transform: uppercase;
-        color: var(--app-accent-dark);
-        margin-bottom: 0.85rem;
+        color: rgba(255,255,255,0.85);
+    }
+    .total-highlight-amount {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.5px;
+    }
+
+    /* ===== STRIPE PAYMENT FORM ===== */
+    .stripe-card-wrap {
+        background: var(--app-surface);
+        border: 1px solid var(--app-line);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    .stripe-card-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-muted);
+        margin-bottom: 0.6rem;
+        display: block;
+    }
+    .stripe-input {
+        padding: 0.7rem 0.85rem;
+        border: 1.5px solid var(--app-line);
+        border-radius: 8px;
+        background: #fff;
+        transition: border-color 0.2s;
+    }
+    .stripe-input.StripeElement--focus {
+        border-color: var(--app-accent);
+    }
+    .stripe-input.StripeElement--invalid {
+        border-color: #e53935;
+    }
+    .stripe-row {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .stripe-field {
+        flex: 1;
+    }
+    #stripe-error-msg {
+        color: #c62828;
+        font-size: 0.78rem;
+        margin-top: 0.5rem;
+        min-height: 1.2rem;
+    }
+    .stripe-secure-badge {
         display: flex;
         align-items: center;
         gap: 0.4rem;
+        font-size: 0.65rem;
+        color: var(--app-muted);
+        margin-top: 0.6rem;
     }
-
-    .dt-panel-title::before {
-        content: '';
-        display: inline-block;
-        width: 8px;
-        height: 8px;
+    .stripe-secure-badge svg {
+        width: 14px; height: 14px; flex-shrink: 0;
+    }
+    .btn-pay {
+        width: 100%;
+        height: 52px;
+        background: linear-gradient(135deg, var(--app-accent) 0%, var(--app-accent-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: opacity 0.2s, transform 0.15s;
+        margin-top: 1rem;
+        text-transform: uppercase;
+    }
+    .btn-pay:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    .btn-pay:disabled { opacity: 0.55; cursor: not-allowed; }
+    .pay-spinner {
+        display: none;
+        width: 18px; height: 18px;
+        border: 2.5px solid rgba(255,255,255,0.35);
+        border-top-color: #fff;
         border-radius: 50%;
-        background: var(--app-accent);
+        animation: spin 0.7s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .date-confirm-label {
-        font-size: 0.7rem;
-        text-align: center;
-        margin-top: 0.5rem;
+    /* ===== CONFIRMED CARD ===== */
+    .confirmed-icon {
+        width: 64px; height: 64px;
+        background: #e8f5e9;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    .confirmed-icon svg { width: 32px; height: 32px; color: #2e7d32; }
+
+    /* ===== NEW CALENDAR & DURATION STEP 1 ===== */
+    .schedule-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    @media (max-width: 650px) { .schedule-layout { grid-template-columns: 1fr; } }
+    .schedule-panel {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        border: 1px solid var(--app-line);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    .schedule-panel-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
         color: var(--app-accent-dark);
-        font-weight: 600;
-        min-height: 1.1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1.5px solid var(--app-line);
+        padding-bottom: 0.5rem;
     }
 
-    @media (max-width: 620px) {
-        .dt-panels { grid-template-columns: 1fr; }
-        .slots-grid { grid-template-columns: repeat(3, 1fr); max-height: 160px; }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; }
+    .cal-nav-btn {
+        background: none; border: 1px solid var(--app-line);
+        width: 32px; height: 32px; border-radius: 6px;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; color: var(--app-muted); transition: all 0.2s;
     }
+    .cal-nav-btn:hover { border-color: var(--app-accent); color: var(--app-text); }
+    .cal-month-label { font-size: 0.85rem; font-weight: 700; color: var(--app-text); text-transform: uppercase; letter-spacing: 1px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day-name { text-align: center; font-size: 0.65rem; font-weight: 700; color: var(--app-muted); padding-bottom: 0.5rem; }
+    .cal-day {
+        aspect-ratio: 1; border: 1px solid transparent; background: transparent;
+        font-size: 0.8rem; font-weight: 600; color: var(--app-text);
+        border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        font-family: inherit; display:flex; align-items:center; justify-content:center;
+    }
+    .cal-day:hover:not(.cal-day-disabled) { border-color: var(--app-line); background: #f9f9f9; }
+    .cal-day-disabled { color: #dcd0c8; cursor: not-allowed; }
+    .cal-day-today { font-weight: 800; color: var(--app-accent-dark); }
+    .cal-day-selected { background: var(--app-accent) !important; color: #fff !important; border-color: var(--app-accent) !important; box-shadow: 0 4px 10px rgba(212,160,136,0.3); }
 
-    @media (max-width: 480px) {
-        .pricing-grid { grid-template-columns: 1fr; }
-        .chair-grid { grid-template-columns: repeat(2, 1fr); }
-        .details-form .row-2 { grid-template-columns: 1fr; }
+    .slots-heading { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--app-muted); margin-bottom: 0.75rem; }
+    .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+    .slot-btn {
+        padding: 0.6rem 0; border: 1px solid var(--app-line); background: #fff;
+        border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: var(--app-text);
+        cursor: pointer; transition: all 0.2s; font-family: inherit;
     }
+    .slot-btn:hover { border-color: var(--app-accent); color: var(--app-accent-dark); }
+    .slot-selected { background: var(--app-accent-soft); border-color: var(--app-accent); color: var(--app-accent-dark); font-weight: 700; }
+
+    /* Duration Stepper */
+    .duration-control {
+        display: flex; align-items: center; justify-content: center; gap: 1rem;
+        background: #fdfdfd; border: 1px solid var(--app-line); padding: 1rem; border-radius: 8px; margin-top: 1rem;
+    }
+    .dur-btn {
+        width: 40px; height: 40px; border-radius: 8px;
+        background: #fff; border: 1px solid var(--app-line);
+        font-size: 1.2rem; font-weight: bold; color: var(--app-text);
+        cursor: pointer; transition: all 0.2s;
+    }
+    .dur-btn:hover { border-color: var(--app-accent); }
+    .dur-val { font-size: 1.5rem; font-weight: 800; width: 60px; text-align: center; }
+
+    /* Availability Options UI */
+    .av-card {
+        background: #fff; border: 2px solid var(--app-accent); border-radius: 12px;
+        padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(212,160,136,0.15);
+    }
+    .av-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .av-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.5rem; color: var(--app-text); }
+    .av-desc { font-size: 0.9rem; color: var(--app-muted); line-height: 1.5; margin-bottom: 1.5rem; }
+
 </style>
 @endsection
 
 @section('content')
-@php
-    $progressPercent = $step <= 1 ? 0 : (($step - 1) / 3) * 80;
-    $displayName = $user?->name ?? ($guestDetails['name'] ?? 'Guest');
-    $displayEmail = $user?->email ?? ($guestDetails['email'] ?? 'Details at confirmation');
-    $avatarUrl = $user?->avatar
-        ? (str_starts_with($user->avatar, 'http') ? $user->avatar : asset($user->avatar))
-        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
-@endphp
 
-{{-- Profile bar (always on top) --}}
+{{-- TOP PROFILE BAR --}}
 <div class="top-profile-bar">
     <div class="top-profile-inner">
         <div class="profile-info">
-            <img src="{{ $avatarUrl }}" alt="" class="profile-avatar-sm">
+            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=150" alt="Salon" class="profile-avatar-sm">
             <div class="profile-text">
-                <h3>{{ $displayName }}</h3>
-                <p>{{ $displayEmail }}</p>
-                @if($user)
-                    <span class="profile-badge-sm">Hairstylist</span>
-                @else
-                    <span class="profile-badge-sm">Guest booking</span>
-                @endif
+                <h3>The Studio London</h3>
+                <p>Premium Workspaces</p>
             </div>
         </div>
-        @auth
-            <form action="{{ route('logout') }}" method="POST" class="m-0">
-                @csrf
-                <button type="submit" class="btn-logout">
-                    <i class="fe fe-log-out"></i> Logout
-                </button>
-            </form>
+        @if($user)
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="{{ route('stylist.my_bookings') }}" class="btn-logout" style="text-decoration:none;">
+                    My Bookings
+                </a>
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="btn-logout">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Logout
+                    </button>
+                </form>
+            </div>
         @else
             <a href="{{ route('login') }}" class="btn-signin-link">Sign in</a>
-        @endauth
+        @endif
     </div>
 </div>
 
-<div class="app-brand-strip">Eladé Studio</div>
-
-@if(session('booking_success'))
-    <div class="alert-success-app mx-3">{{ session('booking_success') }}</div>
-@endif
-@if(session('booking_error'))
-    <div class="alert-error-app mx-3">{{ session('booking_error') }}</div>
-@endif
-
+{{-- STEPPER --}}
 <div class="stepper-wrap">
     <div class="stepper">
-        <div class="stepper-progress" style="width: {{ $progressPercent }}%;"></div>
-        @foreach($steps as $num => $info)
-            @php
-                $isActive = $num === $step;
-                $isDone = $num < $step;
-                $canJump = $num <= $step || ($num === 1);
-            @endphp
-            <a href="{{ ($canJump && ($num < $step || $num === 1)) ? route('stylist.book', ['step' => $num]) : 'javascript:void(0)' }}"
-               class="step-item {{ $isActive ? 'active' : '' }} {{ $isDone ? 'done' : '' }}">
+        @foreach($steps as $num => $s)
+            <div class="step-item {{ $step == $num ? 'active' : '' }} {{ $step > $num ? 'done' : '' }}">
                 <div class="step-circle">
-                    @if($isDone)<i class="fe fe-check" style="font-size:0.85rem;"></i>@else{{ $num }}@endif
+                    @if($step > $num) ✓ @else {{ $num }} @endif
                 </div>
-                <div class="step-label">{{ $info['label'] }}</div>
-            </a>
+                <div class="step-label">{{ $s['label'] }}</div>
+            </div>
         @endforeach
     </div>
 </div>
 
 <main class="app-main">
-    <h1 class="step-heading">{{ $steps[$step]['title'] }}</h1>
+    @if(session('booking_error'))
+        <div class="alert-error-app">{{ session('booking_error') }}</div>
+    @endif
+    @if(session('booking_success'))
+        <div class="alert-success-app">{{ session('booking_success') }}</div>
+    @endif
+
+    <h2 class="step-title">{{ $steps[$step]['title'] }}</h2>
 
     @if($step === 1)
-        @if(empty($pricingOptions))
-            <div class="empty-chairs">
-                <i class="fe fe-dollar-sign d-block mb-2" style="font-size:2rem;color:var(--app-accent);"></i>
-                <p class="mb-0">No pricing configured. Please set prices in admin.</p>
-            </div>
-        @else
-            <p class="text-center mb-3" style="font-size:0.8rem;color:var(--app-muted);">Select a pricing plan</p>
-            <form id="pricing-form" method="POST" action="{{ route('stylist.book.pricing') }}">
-                @csrf
-                <div class="pricing-grid">
-                    @foreach($pricingOptions as $option)
-                        <label class="pricing-option">
-                            <input type="radio" name="pricing_type" value="{{ $option['key'] }}"
-                                {{ old('pricing_type', $selectedPricing) === $option['key'] ? 'checked' : '' }} required>
-                            <div class="pricing-tile">
-                                <span class="pricing-label">{{ $option['label'] }}</span>
-                                <span class="pricing-amount">£{{ number_format($option['price'], 2) }}</span>
-                                <span class="pricing-sub">{{ $option['subtitle'] }}</span>
-                            </div>
-                        </label>
-                    @endforeach
+        <form method="POST" action="{{ route('stylist.book.time') }}" id="schedule-form">
+            @csrf
+            <input type="hidden" name="start_date" id="hidden-start-date" value="{{ session('stylist_booking.start_date') }}">
+            <input type="hidden" name="start_time" id="hidden-start-time" value="{{ session('stylist_booking.start_time') }}">
+            <input type="hidden" name="duration"   id="hidden-duration"   value="{{ session('stylist_booking.duration', 2) }}">
+
+            <div class="schedule-layout">
+                <div class="schedule-panel">
+                    <div class="schedule-panel-title">1. Select Date</div>
+                    <div class="cal-header">
+                        <button type="button" class="cal-nav-btn" id="s-cal-prev">&#8249;</button>
+                        <span class="cal-month-label" id="s-cal-label">...</span>
+                        <button type="button" class="cal-nav-btn" id="s-cal-next">&#8250;</button>
+                    </div>
+                    <div class="cal-grid" id="s-cal-grid"></div>
                 </div>
-            </form>
-        @endif
+
+                <div class="schedule-panel">
+                    <div class="schedule-panel-title">2. Select Start Time</div>
+                    <div class="slots-grid" id="s-slots-grid"></div>
+
+                    <div class="schedule-panel-title" style="margin-top:2rem;">3. Duration (Hours)</div>
+                    <div class="duration-control">
+                        <button type="button" class="dur-btn" id="dur-minus">&minus;</button>
+                        <div class="dur-val" id="dur-display">{{ session('stylist_booking.duration', 2) }}</div>
+                        <button type="button" class="dur-btn" id="dur-plus">&plus;</button>
+                    </div>
+                    <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Minimum 2 hours</p>
+                </div>
+            </div>
+        </form>
     @endif
 
     @if($step === 2)
-        @php
-            $isHourly  = $selectedPricingOption && $selectedPricingOption['key'] === 'hourly';
-            $isDaily   = $selectedPricingOption && $selectedPricingOption['key'] === 'daily';
-            $isWeekly  = $selectedPricingOption && $selectedPricingOption['key'] === 'weekly';
-            $isMonthly = $selectedPricingOption && $selectedPricingOption['key'] === 'monthly';
-            $unitPrice = $selectedPricingOption['price'] ?? 0;
-            $savedStartDate = old('start_date', session('stylist_booking.start_date') ?? '');
-            $savedStartTime = old('start_time', session('stylist_booking.start_time') ?? '');
-            $savedEndDate   = old('end_date',   session('stylist_booking.end_date')   ?? '');
-            $savedEndTime   = old('end_time',   session('stylist_booking.end_time')   ?? '');
-        @endphp
-
-        <form method="POST" action="{{ route('stylist.book.time') }}" id="time-form">
-            @csrf
-            <input type="hidden" name="start_date" id="hidden-start-date" value="{{ $savedStartDate }}">
-            <input type="hidden" name="start_time" id="hidden-start-time" value="{{ $savedStartTime }}">
-            <input type="hidden" name="end_date"   id="hidden-end-date"   value="{{ $savedEndDate }}">
-            <input type="hidden" name="end_time"   id="hidden-end-time"   value="{{ $savedEndTime }}">
-        </form>
-
-        <div class="dt-panels">
-
-            {{-- START block --}}
-            <div class="dt-panel">
-                <div class="dt-panel-title">Start</div>
-
-                {{-- Start calendar --}}
-                <div class="cal-header">
-                    <button type="button" class="cal-nav-btn" id="s-cal-prev">&#8249;</button>
-                    <span class="cal-month-label" id="s-cal-label">...</span>
-                    <button type="button" class="cal-nav-btn" id="s-cal-next">&#8250;</button>
-                </div>
-                <div class="cal-grid" id="s-cal-grid"></div>
-                <div class="date-confirm-label" id="s-date-label">
-                    {{ $savedStartDate ? \Carbon\Carbon::parse($savedStartDate)->format('D, d M Y') : 'Select start date' }}
-                </div>
-
-                {{-- Start time slots --}}
-                <div class="slots-heading" style="margin-top:1rem;">Start time</div>
-                <div class="slots-grid" id="s-slots-grid"></div>
+        @if(isset($availabilityState) && $availabilityState['status'] === 'alternative_time')
+            <div class="av-card">
+                <div class="av-icon">🕒</div>
+                <h3 class="av-title">Selected time is fully booked</h3>
+                <p class="av-desc">
+                    We don't have any chairs available for your selected time. 
+                    However, the next available slot is at:
+                    <br><br>
+                    <strong>{{ \Carbon\Carbon::parse($availabilityState['alternative_start'])->format('l, j M Y @ H:i') }}</strong>
+                </p>
+                <form method="POST" action="{{ route('stylist.book.availability.confirm') }}">
+                    @csrf
+                    <input type="hidden" name="action" value="accept_alternative">
+                    <button type="submit" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem;">Accept new time</button>
+                    <button type="submit" name="action" value="cancel" class="btn-app btn-app-back" style="width:100%;">Cancel & Pick another date</button>
+                </form>
             </div>
-
-            {{-- END block --}}
-            <div class="dt-panel">
-                <div class="dt-panel-title">End</div>
-
-                {{-- End calendar --}}
-                <div class="cal-header">
-                    <button type="button" class="cal-nav-btn" id="e-cal-prev">&#8249;</button>
-                    <span class="cal-month-label" id="e-cal-label">...</span>
-                    <button type="button" class="cal-nav-btn" id="e-cal-next">&#8250;</button>
-                </div>
-                <div class="cal-grid" id="e-cal-grid"></div>
-                <div class="date-confirm-label" id="e-date-label">
-                    {{ $savedEndDate ? \Carbon\Carbon::parse($savedEndDate)->format('D, d M Y') : 'Select end date' }}
-                </div>
-
-                {{-- End time slots --}}
-                <div class="slots-heading" style="margin-top:1rem;">End time</div>
-                <div class="slots-grid" id="e-slots-grid"></div>
+        @elseif(isset($availabilityState) && $availabilityState['status'] === 'multi_chair')
+            <div class="av-card">
+                <div class="av-icon">🪑</div>
+                <h3 class="av-title">Multi-Chair Booking</h3>
+                <p class="av-desc">
+                    A single chair is not available for your entire {{ session('stylist_booking.duration') }}-hour duration. 
+                    However, we can accommodate you by having you switch chairs midway through your booking.
+                </p>
+                <form method="POST" action="{{ route('stylist.book.availability.confirm') }}">
+                    @csrf
+                    <input type="hidden" name="action" value="accept_multi_chair">
+                    <button type="submit" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem;">I agree to switch chairs</button>
+                    <button type="submit" name="action" value="cancel" class="btn-app btn-app-back" style="width:100%;">No, let me pick another time</button>
+                </form>
             </div>
-
-        </div>
-
-        {{-- Price strip --}}
-        <div class="price-strip">
-            <div class="price-strip-meta">
-                <span class="price-strip-label">Total amount</span>
-                <span class="price-strip-duration" id="duration-label">—</span>
+        @else
+            <div class="av-card">
+                <div class="av-icon">❌</div>
+                <h3 class="av-title">Unavailable</h3>
+                <p class="av-desc">We are fully booked for the foreseeable future from this start date.</p>
+                <a href="{{ route('stylist.book', ['step' => 1]) }}" class="btn-app btn-app-back">Go back</a>
             </div>
-            <span class="price-strip-amount" id="price-display">£{{ number_format($unitPrice, 2) }}</span>
-        </div>
+        @endif
     @endif
 
     @if($step === 3)
-        @if($selectedPricingOption)
         <div class="summary-card mb-3">
-            <h4>Booking summary</h4>
-            @if($selectedPricingOption)
-                <div class="summary-line"><span>Plan</span><span>{{ $selectedPricingOption['label'] }}</span></div>
-                <div class="summary-line"><span>Rate</span><span>£{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
-            @endif
-            @if(session('stylist_booking.start_date'))
-                <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} @ {{ session('stylist_booking.start_time') }}</span></div>
-                <div class="summary-line"><span>End</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.end_date'))->format('D d M Y') }} @ {{ session('stylist_booking.end_time') }}</span></div>
+            <h4>Booking recap</h4>
+            <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>
+            <div class="summary-line"><span>Duration</span><span>{{ session('stylist_booking.duration') }} hours</span></div>
+            @if($isOvernight)
+                <div class="summary-line" style="border:none;margin-top:0.5rem;color:#d84315;">
+                    <span style="font-size:0.8rem;line-height:1.4;">🌙 Your booking falls between 9 PM and 8 AM. This requires admin approval.</span>
+                </div>
             @endif
         </div>
-        @endif
-        <form method="POST" action="{{ route('stylist.book.confirm') }}" class="details-form" id="confirm-form">
+
+        <form method="POST" action="{{ route('stylist.book.details') }}" class="details-form" id="confirm-form">
             @csrf
             <p class="hint">Enter your details to complete booking. Your account will be created if you are new.</p>
 
@@ -959,76 +772,107 @@
     @endif
 
     @if($step === 4)
+        <div class="total-highlight">
+            <span class="total-highlight-label">Amount due</span>
+            <span class="total-highlight-amount">£{{ number_format($computedTotal, 2) }}</span>
+        </div>
+
+        <div class="stripe-card-wrap">
+            <div class="stripe-field">
+                <span class="stripe-card-label">Card Number</span>
+                <div id="stripe-card-number" class="stripe-input"></div>
+            </div>
+            <div class="stripe-row">
+                <div class="stripe-field">
+                    <span class="stripe-card-label">Expiry Date</span>
+                    <div id="stripe-card-expiry" class="stripe-input"></div>
+                </div>
+                <div class="stripe-field">
+                    <span class="stripe-card-label">CVC</span>
+                    <div id="stripe-card-cvc" class="stripe-input"></div>
+                </div>
+            </div>
+            <div id="stripe-error-msg"></div>
+            <div class="stripe-secure-badge">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Secured by Stripe &mdash; we never store your card details
+            </div>
+        </div>
+
+        <button id="pay-btn" class="btn-pay" type="button">
+            <span class="pay-spinner" id="pay-spinner"></span>
+            <span id="pay-btn-text">Pay £{{ number_format($computedTotal, 2) }}</span>
+        </button>
+    @endif
+
+    @if($step === 5)
+        <div class="confirmed-icon">
+            @if(session('stylist_booking.availability_state.status') === 'pending_approval' || $isOvernight)
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:#f57c00;width:32px;height:32px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            @else
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:#2e7d32;width:32px;height:32px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            @endif
+        </div>
         <div class="summary-card mb-3">
-            <h4>Booking confirmed!</h4>
-            @if($assignedChair)
-                <div class="summary-line"><span>Chair</span><span>{{ $assignedChair->name }}</span></div>
+            @if($isOvernight)
+                <h4 style="text-align:center;color:#f57c00;">Pending Approval</h4>
+                <p style="text-align:center;font-size:0.9rem;margin-bottom:1.5rem;">Your requested overnight booking has been submitted for admin approval. You will receive an email once approved.</p>
+            @else
+                <h4 style="text-align:center;">Booking confirmed!</h4>
             @endif
-            @if($selectedPricingOption)
-                <div class="summary-line"><span>Plan</span><span>{{ $selectedPricingOption['label'] }}</span></div>
-                <div class="summary-line"><span>Rate</span><span>£{{ number_format($selectedPricingOption['price'], 2) }}</span></div>
+            
+            <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>
+            <div class="summary-line"><span>Duration</span><span>{{ session('stylist_booking.duration') }} hours</span></div>
+            @if(!$isOvernight)
+                <div class="summary-line"><span>Amount paid</span><span><strong>£{{ number_format($computedTotal, 2) }}</strong></span></div>
             @endif
-            @if(session('stylist_booking.start_date'))
-                <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} @ {{ session('stylist_booking.start_time') }}</span></div>
-                <div class="summary-line"><span>End</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.end_date'))->format('D d M Y') }} @ {{ session('stylist_booking.end_time') }}</span></div>
-            @endif
+        </div>
+        <div style="text-align:center;margin-top:1.5rem;display:flex;justify-content:center;gap:1rem;">
+            @auth
+                <a href="{{ route('stylist.my_bookings') }}" class="btn-app btn-app-next" style="min-width:180px;text-decoration:none;">View My Bookings</a>
+            @endauth
+            <form method="POST" action="{{ route('stylist.book.reset') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn-app btn-app-back" style="min-width:180px;">Make another booking</button>
+            </form>
         </div>
     @endif
 </main>
 
 <nav class="app-footer-nav">
-    @if($step > 1)
+    @if($step > 1 && $step < 4)
         <a href="{{ route('stylist.book', ['step' => $step - 1]) }}" class="btn-app btn-app-back">Back</a>
     @endif
 
     @if($step === 1)
-        <button type="submit" form="pricing-form" class="btn-app btn-app-next" {{ empty($pricingOptions) ? 'disabled' : '' }}>Next</button>
-    @elseif($step === 2)
-        <button type="submit" form="time-form" class="btn-app btn-app-next">Next</button>
+        <button type="submit" form="schedule-form" class="btn-app btn-app-next">Next &rarr;</button>
     @elseif($step === 3)
-        <button type="submit" form="confirm-form" class="btn-app btn-app-next">Confirm</button>
+        <button type="submit" form="confirm-form" class="btn-app btn-app-next">
+            {{ $isOvernight ? 'Submit for Approval' : 'Next &rarr; Payment' }}
+        </button>
     @endif
 </nav>
 @endsection
 
 @section('scripts')
+@if($step === 1)
 <script>
 (function () {
-    if (!document.getElementById('time-form')) return;
-
-    /* ============================================================
-       CONFIG
-    ============================================================ */
-    const PRICING_TYPE = '{{ $selectedPricingOption["key"] ?? "" }}';
-    const UNIT_PRICE   = {{ $unitPrice ?? 0 }};
-
-    /* ============================================================
-       STATE
-    ============================================================ */
     const today = new Date(); today.setHours(0,0,0,0);
-
-    // Start
-    let sDate = '{{ $savedStartDate ?? "" }}' || null;
-    let sTime = '{{ $savedStartTime ?? "" }}' || null;
+    
+    let sDate = document.getElementById('hidden-start-date').value || null;
+    let sTime = document.getElementById('hidden-start-time').value || null;
+    let duration = parseInt(document.getElementById('hidden-duration').value || 2);
+    
     let sYear, sMonth;
     if (sDate) { const d=new Date(sDate); sYear=d.getFullYear(); sMonth=d.getMonth(); }
     else { sYear=today.getFullYear(); sMonth=today.getMonth(); }
 
-    // End
-    let eDate = '{{ $savedEndDate ?? "" }}' || null;
-    let eTime = '{{ $savedEndTime ?? "" }}' || null;
-    let eYear, eMonth;
-    if (eDate) { const d=new Date(eDate); eYear=d.getFullYear(); eMonth=d.getMonth(); }
-    else { eYear=today.getFullYear(); eMonth=today.getMonth(); }
-
-    /* ============================================================
-       SLOTS (9 AM – 8:30 PM every 30 min)
-    ============================================================ */
     const ALL_SLOTS = [];
-    for (let h = 9; h < 21; h++) {
+    for (let h = 0; h < 24; h++) {
         for (const m of ['00','30']) {
             const suffix   = h < 12 ? 'AM' : 'PM';
-            const hDisplay = h > 12 ? h - 12 : h;
+            const hDisplay = h === 0 ? 12 : (h > 12 ? h - 12 : h);
             ALL_SLOTS.push({
                 label: `${String(hDisplay).padStart(2,'0')}:${m} ${suffix}`,
                 value: `${String(h).padStart(2,'0')}:${m}`
@@ -1036,245 +880,142 @@
         }
     }
 
-    /* ============================================================
-       CALENDAR RENDERER
-       id     = element id prefix  (s- or e-)
-       selDate = currently selected date string
-       onPick = callback(dateStr)
-    ============================================================ */
-    const MONTH_NAMES = ['January','February','March','April','May','June',
-                         'July','August','September','October','November','December'];
+    const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const DAY_NAMES   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
-    function renderCal(gridEl, labelEl, year, month, selDate, minDate, onPick) {
+    function renderCal() {
+        const gridEl = document.getElementById('s-cal-grid');
         gridEl.innerHTML = '';
-        labelEl.textContent = `${MONTH_NAMES[month]} ${year}`;
+        document.getElementById('s-cal-label').textContent = `${MONTH_NAMES[sMonth]} ${sYear}`;
 
         DAY_NAMES.forEach(d => {
-            const el = document.createElement('div');
-            el.className = 'cal-day-name';
-            el.textContent = d;
+            const el = document.createElement('div'); el.className = 'cal-day-name'; el.textContent = d;
             gridEl.appendChild(el);
         });
 
-        const firstDay    = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDay = new Date(sYear, sMonth, 1).getDay();
+        const daysInMonth = new Date(sYear, sMonth + 1, 0).getDate();
 
         for (let i = 0; i < firstDay; i++) {
-            const e = document.createElement('div');
-            e.className = 'cal-day cal-day-empty';
-            gridEl.appendChild(e);
+            const e = document.createElement('div'); e.className = 'cal-day cal-day-empty'; gridEl.appendChild(e);
         }
 
         for (let d = 1; d <= daysInMonth; d++) {
-            const cur = new Date(year, month, d); cur.setHours(0,0,0,0);
-            const min = minDate ? new Date(minDate) : today; min.setHours(0,0,0,0);
-            const isPast     = cur < min;
-            const isToday    = cur.getTime() === today.getTime();
-            const ds         = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const isSel      = selDate === ds;
+            const cur = new Date(sYear, sMonth, d); cur.setHours(0,0,0,0);
+            const isPast = cur < today;
+            const ds = `${sYear}-${String(sMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const isSel = sDate === ds;
 
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'cal-day'
-                + (isPast  ? ' cal-day-disabled' : '')
-                + (isToday ? ' cal-day-today'    : '')
-                + (isSel   ? ' cal-day-selected' : '');
+            btn.className = 'cal-day' + (isPast ? ' cal-day-disabled' : '') + (isSel ? ' cal-day-selected' : '');
             btn.textContent = d;
-            if (!isPast) btn.addEventListener('click', () => onPick(ds, cur));
+            if (!isPast) {
+                btn.addEventListener('click', () => { sDate = ds; document.getElementById('hidden-start-date').value = ds; renderCal(); renderSlots(); });
+            }
             gridEl.appendChild(btn);
         }
     }
 
-    /* ============================================================
-       SLOT RENDERER
-    ============================================================ */
-    function renderSlots(gridEl, selTime, enabled, onPick) {
+    function renderSlots() {
+        const gridEl = document.getElementById('s-slots-grid');
         gridEl.innerHTML = '';
-        if (!enabled) {
-            const p = document.createElement('p');
-            p.style.cssText = 'color:var(--app-muted);font-size:0.72rem;grid-column:1/-1;text-align:center;margin:0.75rem 0;';
-            p.textContent = 'Pick a date first';
-            gridEl.appendChild(p);
+        if (!sDate) {
+            const p = document.createElement('p'); p.style.cssText = 'color:var(--app-muted);font-size:0.75rem;grid-column:1/-1;text-align:center;margin:1rem 0;';
+            p.textContent = 'Pick a date first'; gridEl.appendChild(p);
             return;
         }
         ALL_SLOTS.forEach(slot => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'slot-btn' + (selTime === slot.value ? ' slot-selected' : '');
+            btn.className = 'slot-btn' + (sTime === slot.value ? ' slot-selected' : '');
             btn.textContent = slot.label;
-            btn.addEventListener('click', () => onPick(slot.value));
+            btn.addEventListener('click', () => { sTime = slot.value; document.getElementById('hidden-start-time').value = slot.value; renderSlots(); });
             gridEl.appendChild(btn);
         });
     }
 
-    /* ============================================================
-       PRICE CALCULATION
-    ============================================================ */
-    function calcTotal() {
-        if (!sDate || !sTime || !eDate || !eTime) return null;
-
-        const start = new Date(`${sDate}T${sTime}:00`);
-        const end   = new Date(`${eDate}T${eTime}:00`);
-        if (end <= start) return null;
-
-        const diffMs   = end - start;
-        const diffHrs  = diffMs / 3_600_000;
-        const diffDays = diffMs / 86_400_000;
-
-        let total = 0;
-        let durationText = '';
-
-        if (PRICING_TYPE === 'hourly') {
-            total = UNIT_PRICE * diffHrs;
-            durationText = `${diffHrs.toFixed(1)} hour${diffHrs !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/hr`;
-        } else if (PRICING_TYPE === 'daily') {
-            const days = Math.ceil(diffDays);
-            total = UNIT_PRICE * days;
-            durationText = `${days} day${days !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/day`;
-        } else if (PRICING_TYPE === 'weekly') {
-            const weeks = Math.ceil(diffDays / 7);
-            total = UNIT_PRICE * weeks;
-            durationText = `${weeks} week${weeks !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/wk`;
-        } else if (PRICING_TYPE === 'monthly') {
-            const months = Math.ceil(diffDays / 30);
-            total = UNIT_PRICE * months;
-            durationText = `${months} month${months !== 1 ? 's' : ''} × £${UNIT_PRICE.toFixed(2)}/mo`;
-        } else {
-            total = UNIT_PRICE;
-            durationText = '';
-        }
-
-        return { total, durationText };
-    }
-
-    function updatePrice() {
-        const priceEl    = document.getElementById('price-display');
-        const durationEl = document.getElementById('duration-label');
-        const result = calcTotal();
-        if (result) {
-            priceEl.textContent    = '£' + result.total.toFixed(2);
-            durationEl.textContent = result.durationText;
-        } else {
-            priceEl.textContent    = '£' + UNIT_PRICE.toFixed(2);
-            durationEl.textContent = sDate && sTime && eDate && eTime ? '⚠ End must be after start' : '—';
-        }
-    }
-
-    /* ============================================================
-       RENDER ALL
-    ============================================================ */
-    function renderAll() {
-        // Start calendar
-        renderCal(
-            document.getElementById('s-cal-grid'),
-            document.getElementById('s-cal-label'),
-            sYear, sMonth, sDate, null,
-            (ds, dateObj) => {
-                sDate = ds;
-                sTime = null;
-                document.getElementById('hidden-start-date').value = ds;
-                document.getElementById('hidden-start-time').value = '';
-                document.getElementById('s-date-label').textContent =
-                    dateObj.toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
-                // End date must not be before start date
-                if (eDate && eDate < sDate) { eDate = null; eTime = null;
-                    document.getElementById('hidden-end-date').value = '';
-                    document.getElementById('hidden-end-time').value = '';
-                    document.getElementById('e-date-label').textContent = 'Select end date';
-                }
-                renderAll(); updatePrice();
-            }
-        );
-
-        // End calendar (min = start date)
-        renderCal(
-            document.getElementById('e-cal-grid'),
-            document.getElementById('e-cal-label'),
-            eYear, eMonth, eDate, sDate || null,
-            (ds, dateObj) => {
-                eDate = ds;
-                eTime = null;
-                document.getElementById('hidden-end-date').value = ds;
-                document.getElementById('hidden-end-time').value = '';
-                document.getElementById('e-date-label').textContent =
-                    dateObj.toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
-                renderAll(); updatePrice();
-            }
-        );
-
-        // Start slots
-        renderSlots(
-            document.getElementById('s-slots-grid'),
-            sTime, !!sDate,
-            (val) => {
-                sTime = val;
-                document.getElementById('hidden-start-time').value = val;
-                renderAll(); updatePrice();
-            }
-        );
-
-        // End slots
-        renderSlots(
-            document.getElementById('e-slots-grid'),
-            eTime, !!eDate,
-            (val) => {
-                eTime = val;
-                document.getElementById('hidden-end-time').value = val;
-                renderAll(); updatePrice();
-            }
-        );
-    }
-
-    /* ============================================================
-       NAVIGATION BUTTONS
-    ============================================================ */
-    function navHandler(prevId, nextId, getYM, setYM) {
-        document.getElementById(prevId).addEventListener('click', () => {
-            let [y, m] = getYM();
-            m--; if (m < 0) { m = 11; y--; }
-            const minM = today.getFullYear() * 12 + today.getMonth();
-            if (y * 12 + m < minM) return;
-            setYM(y, m); renderAll();
-        });
-        document.getElementById(nextId).addEventListener('click', () => {
-            let [y, m] = getYM();
-            m++; if (m > 11) { m = 0; y++; }
-            setYM(y, m); renderAll();
-        });
-    }
-
-    navHandler('s-cal-prev','s-cal-next', () => [sYear,sMonth], (y,m) => { sYear=y; sMonth=m; });
-    navHandler('e-cal-prev','e-cal-next', () => [eYear,eMonth], (y,m) => { eYear=y; eMonth=m; });
-
-    /* ============================================================
-       FORM SUBMIT VALIDATION
-    ============================================================ */
-    document.getElementById('time-form').addEventListener('submit', function(ev) {
-        if (!sDate || !sTime) { ev.preventDefault(); alert('Please select a start date and time.'); return; }
-        if (!eDate || !eTime) { ev.preventDefault(); alert('Please select an end date and time.');   return; }
-        const s = new Date(`${sDate}T${sTime}:00`);
-        const e = new Date(`${eDate}T${eTime}:00`);
-        if (e <= s) { ev.preventDefault(); alert('End must be after start.'); }
+    document.getElementById('s-cal-prev').addEventListener('click', () => {
+        sMonth--; if (sMonth < 0) { sMonth = 11; sYear--; }
+        const minM = today.getFullYear() * 12 + today.getMonth();
+        if (sYear * 12 + sMonth < minM) return;
+        renderCal();
+    });
+    document.getElementById('s-cal-next').addEventListener('click', () => {
+        sMonth++; if (sMonth > 11) { sMonth = 0; sYear++; }
+        renderCal();
     });
 
-    /* ============================================================
-       INIT
-    ============================================================ */
-    renderAll();
-    updatePrice();
+    document.getElementById('dur-minus').addEventListener('click', () => {
+        if (duration > 2) { duration--; document.getElementById('dur-display').textContent = duration; document.getElementById('hidden-duration').value = duration; }
+    });
+    document.getElementById('dur-plus').addEventListener('click', () => {
+        duration++; document.getElementById('dur-display').textContent = duration; document.getElementById('hidden-duration').value = duration;
+    });
 
-    // Restore labels if values were saved
-    if (sDate) {
-        const [y,m,d] = sDate.split('-');
-        document.getElementById('s-date-label').textContent =
-            new Date(y, m-1, d).toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    }
-    if (eDate) {
-        const [y,m,d] = eDate.split('-');
-        document.getElementById('e-date-label').textContent =
-            new Date(y, m-1, d).toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    }
+    document.getElementById('schedule-form').addEventListener('submit', function(ev) {
+        if (!sDate || !sTime) { ev.preventDefault(); alert('Please select a start date and time.'); }
+    });
+
+    renderCal(); renderSlots();
 })();
 </script>
+@endif
+
+{{-- ===== STRIPE PAYMENT (Step 4 only) ===== --}}
+@if(isset($step) && $step === 4)
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(function() {
+    const stripe = Stripe('{{ config("services.stripe.key") }}');
+    const elements = stripe.elements();
+
+    const cardStyle = {
+        base: { fontFamily: "'Montserrat', sans-serif", fontSize: '15px', color: '#2a2420', '::placeholder': { color: '#b0a49e' } },
+        invalid: { color: '#c62828' },
+    };
+
+    const cardNumber = elements.create('cardNumber', { style: cardStyle }); cardNumber.mount('#stripe-card-number');
+    const cardExpiry = elements.create('cardExpiry', { style: cardStyle }); cardExpiry.mount('#stripe-card-expiry');
+    const cardCvc = elements.create('cardCvc', { style: cardStyle }); cardCvc.mount('#stripe-card-cvc');
+
+    const displayError = document.getElementById('stripe-error-msg');
+    const handleChange = (e) => { displayError.textContent = e.error ? e.error.message : ''; };
+
+    cardNumber.on('change', handleChange);
+    cardExpiry.on('change', handleChange);
+    cardCvc.on('change', handleChange);
+
+    const payBtn = document.getElementById('pay-btn');
+    const paySpinner = document.getElementById('pay-spinner');
+    const payText = document.getElementById('pay-btn-text');
+
+    payBtn.addEventListener('click', async function() {
+        payBtn.disabled = true; paySpinner.style.display = 'block'; payText.textContent = 'Processing…';
+        try {
+            const intentRes = await fetch('{{ route("stylist.book.payment.intent") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({}),
+            });
+            const intentData = await intentRes.json();
+            if (intentData.error) throw new Error(intentData.error);
+
+            const { error, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
+                payment_method: { card: cardNumber },
+            });
+            if (error) throw new Error(error.message);
+
+            if (paymentIntent.status === 'succeeded') {
+                window.location.href = '{{ route("stylist.book.payment.success") }}';
+            }
+        } catch(err) {
+            displayError.textContent = err.message || 'Payment failed. Please try again.';
+            payBtn.disabled = false; paySpinner.style.display = 'none';
+            payText.textContent = 'Pay £{{ number_format($computedTotal, 2) }}';
+        }
+    });
+})();
+</script>
+@endif
 @endsection
