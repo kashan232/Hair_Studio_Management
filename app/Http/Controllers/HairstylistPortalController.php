@@ -87,12 +87,10 @@ class HairstylistPortalController extends Controller
         session(['stylist_booking.availability_state' => $availability]);
 
         if ($availability['status'] === 'single_chair') {
-            // Instant move to step 3 since a single chair is available
             session(['stylist_booking.assigned_chair_ids' => [$availability['chair_id']]]);
-            return redirect()->route('stylist.book', ['step' => 3]);
         }
 
-        // Otherwise go to step 2 to show alternatives or ask for multi-chair approval
+        // Always go to step 2 to show SVG map for selection / preview
         return redirect()->route('stylist.book', ['step' => 2]);
     }
 
@@ -100,6 +98,14 @@ class HairstylistPortalController extends Controller
     {
         $action = $request->input('action');
         $availability = session('stylist_booking.availability_state');
+
+        if ($action === 'accept_single_chair') {
+            $selectedChair = $request->input('selected_chair_id');
+            if ($selectedChair) {
+                session(['stylist_booking.assigned_chair_ids' => [$selectedChair]]);
+            }
+            return redirect()->route('stylist.book', ['step' => 3]);
+        }
 
         if ($action === 'accept_alternative') {
             $newStart = Carbon::parse($availability['alternative_start']);
@@ -191,15 +197,58 @@ class HairstylistPortalController extends Controller
         return response()->json(['clientSecret' => $intent->client_secret]);
     }
 
+    private function verifyChairsAreFree(): bool
+    {
+        $start = Carbon::parse(session('stylist_booking.start_date') . ' ' . session('stylist_booking.start_time'));
+        $end = Carbon::parse(session('stylist_booking.end_date') . ' ' . session('stylist_booking.end_time'));
+        $assignedChairs = session('stylist_booking.assigned_chair_ids', []);
+        
+        if (empty($assignedChairs)) return false;
+
+        $durationPerChair = ceil(session('stylist_booking.duration') / count($assignedChairs));
+        $currentStart = $start->copy();
+
+        foreach ($assignedChairs as $chairId) {
+            $currentEnd = $currentStart->copy()->addHours($durationPerChair);
+            if ($currentEnd->gt($end)) $currentEnd = $end->copy();
+
+            $conflict = \Illuminate\Support\Facades\DB::table('booking_chairs')
+                ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
+                ->where('booking_chairs.chair_id', $chairId)
+                ->where('bookings.status', 'confirmed')
+                ->where(function ($query) use ($currentStart, $currentEnd) {
+                    $query->where('booking_chairs.start_time', '<', $currentEnd)
+                          ->where('booking_chairs.end_time', '>', $currentStart);
+                })
+                ->exists();
+
+            if ($conflict) return false;
+            
+            $currentStart = $currentEnd->copy();
+        }
+        
+        return true;
+    }
+
     public function paymentSuccess(Request $request): RedirectResponse
     {
+        if (session('stylist_booking.completed')) {
+            return redirect()->route('stylist.book', ['step' => 5]);
+        }
+
         if (!session('stylist_booking.start_date')) {
             return redirect()->route('stylist.book', ['step' => 1]);
+        }
+
+        if (!$this->verifyChairsAreFree()) {
+            return redirect()->route('stylist.book', ['step' => 1])
+                ->with('error', 'Sorry, the selected chairs are no longer available. They might have just been booked. Your payment was not processed or will be refunded.');
         }
 
         $user = $this->getOrCreateUser($request);
         
         $this->createBookingRecord($user, 'confirmed');
+        session(['stylist_booking.completed' => true]);
 
         return redirect()->route('stylist.book', ['step' => 5])
             ->with('booking_success', 'Payment successful! Your workspace is confirmed.');
@@ -207,8 +256,18 @@ class HairstylistPortalController extends Controller
 
     private function processPendingApproval(Request $request): RedirectResponse
     {
+        if (session('stylist_booking.completed')) {
+            return redirect()->route('stylist.book', ['step' => 5]);
+        }
+
+        if (!$this->verifyChairsAreFree()) {
+            return redirect()->route('stylist.book', ['step' => 1])
+                ->with('error', 'Sorry, the selected chairs are no longer available. You may have already submitted this booking or it was booked by someone else.');
+        }
+
         $user = $this->getOrCreateUser($request);
         $this->createBookingRecord($user, 'pending_approval');
+        session(['stylist_booking.completed' => true]);
 
         return redirect()->route('stylist.book', ['step' => 5])
             ->with('booking_success', 'Booking submitted. Pending Admin Approval for overnight hours.');
@@ -317,9 +376,11 @@ class HairstylistPortalController extends Controller
 
         // Find bookings that overlap with requested time
         $overlappingBookings = DB::table('booking_chairs')
-            ->where('start_time', '<', $end)
-            ->where('end_time', '>', $start)
-            ->get();
+            ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
+            ->where('bookings.status', 'confirmed')
+            ->where('booking_chairs.start_time', '<', $end)
+            ->where('booking_chairs.end_time', '>', $start)
+            ->get(['booking_chairs.*']);
 
         $busyChairIds = $overlappingBookings->pluck('chair_id')->unique()->toArray();
 
@@ -329,7 +390,8 @@ class HairstylistPortalController extends Controller
         if ($freeChairs->isNotEmpty()) {
             return [
                 'status' => 'single_chair',
-                'chair_id' => $freeChairs->first()->id
+                'chair_id' => $freeChairs->first()->id,
+                'available_chair_ids' => $freeChairs->pluck('id')->toArray()
             ];
         }
 
@@ -356,7 +418,8 @@ class HairstylistPortalController extends Controller
         if ($canMultiChair) {
             return [
                 'status' => 'multi_chair',
-                'chair_ids' => array_unique($usedChairs)
+                'chair_ids' => array_unique($usedChairs),
+                'schedule' => $usedChairs // Store array of chair IDs per hour for visual mapping
             ];
         }
 
@@ -367,9 +430,11 @@ class HairstylistPortalController extends Controller
             $nextEnd = $nextSlot->copy()->addHours($durationHours);
 
             $futureOverlaps = DB::table('booking_chairs')
-                ->where('start_time', '<', $nextEnd)
-                ->where('end_time', '>', $nextSlot)
-                ->pluck('chair_id')->toArray();
+                ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
+                ->where('bookings.status', 'confirmed')
+                ->where('booking_chairs.start_time', '<', $nextEnd)
+                ->where('booking_chairs.end_time', '>', $nextSlot)
+                ->pluck('booking_chairs.chair_id')->toArray();
 
             $futureFree = $allChairs->whereNotIn('id', $futureOverlaps);
             if ($futureFree->isNotEmpty()) {

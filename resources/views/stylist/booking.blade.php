@@ -685,7 +685,183 @@
     @endif
 
     @if($step === 2)
-        @if(isset($availabilityState) && $availabilityState['status'] === 'alternative_time')
+        @php
+            $avail = $availabilityState ?? ['status' => 'unavailable'];
+        @endphp
+
+        @if($avail['status'] === 'single_chair' || $avail['status'] === 'multi_chair')
+            <div class="av-card" style="max-width:600px; margin:0 auto;">
+                <h3 class="av-title" style="text-align:center; margin-bottom:0.25rem;">SALON SEATING SUMMARY</h3>
+                <p style="text-align:center; font-size:0.85rem; color:var(--app-muted); margin-bottom:1.5rem;">
+                    Your {{ session('stylist_booking.duration') }}-Hour Booking Details ({{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }} - {{ \Carbon\Carbon::parse(session('stylist_booking.end_time'))->format('h:i A') }})
+                </p>
+                
+                <div style="background:#f4f6f8; border-radius:12px; border:1px solid var(--app-line); padding: 1rem; position: relative;">
+                    <svg viewBox="0 0 600 900" width="100%" height="auto">
+                        <!-- Walls -->
+                        <path d="M 40 100 L 560 60 L 560 750 L 400 750 M 300 750 L 40 750 Z" fill="none" stroke="#b0bec5" stroke-width="6"/>
+                        <!-- Door Cutout -->
+                        <path d="M 300 750 A 100 100 0 0 1 400 850 L 400 750 Z" fill="#e0e0e0" stroke="#b0bec5" stroke-width="2"/>
+                        
+                        <!-- Wash Area (Top Right) -->
+                        <rect x="360" y="60" width="200" height="180" fill="#e0e0e0" stroke="#b0bec5" stroke-width="2"/>
+                        <rect x="360" y="100" width="100" height="80" fill="#cfd8dc" stroke="#b0bec5" stroke-width="2"/>
+                        <circle cx="400" cy="140" r="20" fill="#f4f6f8" stroke="#b0bec5"/>
+                        <rect x="490" y="160" width="40" height="60" fill="#b0bec5"/>
+                        
+                        <!-- Desk Area (Bottom Right) -->
+                        <rect x="420" y="620" width="140" height="130" fill="#e0e0e0" stroke="#b0bec5" stroke-width="2"/>
+                        <rect x="480" y="660" width="40" height="50" fill="#cfd8dc" rx="6" stroke="#b0bec5" stroke-width="2"/>
+                        
+                        <!-- Sofa Waiting Area (Bottom Left) -->
+                        <path d="M 60 700 Q 180 700 180 850 L 220 850 Q 220 660 60 660 Z" fill="#cfd8dc" stroke="#b0bec5" stroke-width="2"/>
+                        <circle cx="200" cy="750" r="40" fill="#cfd8dc" stroke="#b0bec5" stroke-width="2"/>
+                        <circle cx="200" cy="750" r="30" fill="#e0e0e0" stroke="#b0bec5" stroke-width="2"/>
+
+                        <!-- Island Mirror -->
+                        <rect x="390" y="320" width="20" height="300" fill="#cfd8dc" stroke="#b0bec5" stroke-width="2"/>
+                        <!-- Connectors from Mirror to Chairs -->
+                        <line x1="320" y1="380" x2="390" y2="380" stroke="#b0bec5" stroke-width="6"/>
+                        <line x1="480" y1="380" x2="410" y2="380" stroke="#b0bec5" stroke-width="6"/>
+                        <line x1="320" y1="560" x2="390" y2="560" stroke="#b0bec5" stroke-width="6"/>
+                        <line x1="480" y1="560" x2="410" y2="560" stroke="#b0bec5" stroke-width="6"/>
+
+                        <!-- Left Wall Mirror & Connectors -->
+                        <rect x="40" y="150" width="10" height="480" fill="#cfd8dc" stroke="#b0bec5" stroke-width="2"/>
+                        <line x1="120" y1="200" x2="50" y2="200" stroke="#b0bec5" stroke-width="6"/>
+                        <line x1="120" y1="380" x2="50" y2="380" stroke="#b0bec5" stroke-width="6"/>
+                        <line x1="120" y1="560" x2="50" y2="560" stroke="#b0bec5" stroke-width="6"/>
+                        
+                        <!-- Connecting Dashed Line for Multi-Chair Split -->
+                        @php
+                            $multiChairSplit = $avail['status'] === 'multi_chair' ? $avail['schedule'] : [];
+                            $chairCoords = [
+                                1 => ['x' => 120, 'y' => 200, 'rot' => 0,   'label' => 'Chair 1'],
+                                2 => ['x' => 120, 'y' => 380, 'rot' => 0,   'label' => 'Chair 2'],
+                                3 => ['x' => 120, 'y' => 560, 'rot' => 0,   'label' => 'Chair 3'],
+                                4 => ['x' => 320, 'y' => 380, 'rot' => 180, 'label' => 'Chair 4'],
+                                5 => ['x' => 320, 'y' => 560, 'rot' => 180, 'label' => 'Chair 5'],
+                                6 => ['x' => 480, 'y' => 380, 'rot' => 0,   'label' => 'Chair 6'],
+                                7 => ['x' => 480, 'y' => 560, 'rot' => 0,   'label' => 'Chair 7'],
+                            ];
+                        @endphp
+                        @if($avail['status'] === 'multi_chair' && count($multiChairSplit) >= 2)
+                            @php
+                                $firstId = $multiChairSplit[0];
+                                $secondId = $multiChairSplit[1];
+                                if (isset($chairCoords[$firstId]) && isset($chairCoords[$secondId])) {
+                                    $x1 = $chairCoords[$firstId]['x'];
+                                    $y1 = $chairCoords[$firstId]['y'];
+                                    $x2 = $chairCoords[$secondId]['x'];
+                                    $y2 = $chairCoords[$secondId]['y'];
+                                    echo '<line x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="8,8" />';
+                                }
+                            @endphp
+                        @endif
+
+                        <!-- Chairs Rendering -->
+                        @php
+                            // Force null so user MUST click a chair manually
+                            $singleChairSelected = null;
+                            $availableIds = $avail['available_chair_ids'] ?? [];
+                        @endphp
+                        
+                        @foreach($chairCoords as $cid => $coords)
+                            @php
+                                $isAvailable = in_array($cid, $availableIds);
+                                $isMultiAssigned = in_array($cid, $multiChairSplit);
+                                $fill = '#9e9e9e'; // Default gray
+                                $class = 'chair-path';
+                                
+                                if ($avail['status'] === 'single_chair') {
+                                    if ($cid == $singleChairSelected) {
+                                        $fill = '#00c853'; // Green
+                                        $class .= ' chair-selected';
+                                    } elseif ($isAvailable) {
+                                        $fill = '#9e9e9e'; // Gray available
+                                        $class .= ' chair-available';
+                                    } else {
+                                        $fill = '#e53935'; // Red unavailable
+                                    }
+                                } elseif ($avail['status'] === 'multi_chair') {
+                                    if ($isMultiAssigned) {
+                                        $fill = '#00c853'; // Green split
+                                        $class .= ' chair-selected';
+                                    } else {
+                                        $fill = '#e53935'; // Red unavailable
+                                    }
+                                }
+                            @endphp
+                            <!-- Chair SVG Group -->
+                            <g transform="translate({{ $coords['x'] }}, {{ $coords['y'] }})" 
+                               class="svg-chair {{ $class }}" 
+                               data-id="{{ $cid }}"
+                               style="cursor: {{ ($avail['status'] === 'single_chair' && $isAvailable) ? 'pointer' : 'default' }}; transition: all 0.2s;">
+                                
+                                <g transform="rotate({{ $coords['rot'] }})">
+                                    <!-- Seat -->
+                                    <rect x="-24" y="-24" width="48" height="48" fill="{{ $fill }}" rx="12" stroke="#fff" stroke-width="3" style="transition: fill 0.3s;"/>
+                                    <!-- Backrest -->
+                                    <rect x="-36" y="-18" width="16" height="36" fill="{{ $fill }}" rx="6" style="transition: fill 0.3s;"/>
+                                    <!-- Armrests -->
+                                    <rect x="-18" y="-34" width="28" height="12" fill="{{ $fill }}" rx="4" style="transition: fill 0.3s;"/>
+                                    <rect x="-18" y="22" width="28" height="12" fill="{{ $fill }}" rx="4" style="transition: fill 0.3s;"/>
+                                    <!-- Footrest -->
+                                    <rect x="28" y="-18" width="12" height="36" fill="{{ $fill }}" rx="4" style="transition: fill 0.3s;"/>
+                                </g>
+                                
+                                <!-- Chair ID (Always Upright) -->
+                                <text x="0" y="6" font-size="18" fill="#fff" text-anchor="middle" font-weight="bold">{{ $cid }}</text>
+                                
+                                <!-- Tooltip if multi-chair -->
+                                @if($avail['status'] === 'multi_chair' && $isMultiAssigned)
+                                    @php
+                                        // Which hour?
+                                        $hourIndex = array_search($cid, $multiChairSplit);
+                                        $startHour = \Carbon\Carbon::parse(session('stylist_booking.start_time'))->addHours($hourIndex)->format('h:i A');
+                                        $endHour = \Carbon\Carbon::parse(session('stylist_booking.start_time'))->addHours($hourIndex + 1)->format('h:i A');
+                                        $hourLabel = ($hourIndex == 0) ? '1st Hour' : (($hourIndex == 1) ? '2nd Hour' : 'Hour '.($hourIndex+1));
+                                        
+                                        // Position tooltip intelligently based on chair position
+                                        $tx = ($coords['rot'] == 180) ? -165 : 45;
+                                        $ty = -45;
+                                    @endphp
+                                    <rect x="{{ $tx }}" y="{{ $ty }}" width="155" height="45" fill="#fff" rx="8" stroke="#cfd8dc" filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.1))"/>
+                                    <text x="{{ $tx + 10 }}" y="{{ $ty + 18 }}" font-size="12" fill="#333" font-weight="bold">{{ $coords['label'] }}: {{ $startHour }} - {{ $endHour }}</text>
+                                    <text x="{{ $tx + 10 }}" y="{{ $ty + 34 }}" font-size="11" fill="#666">({{ $hourLabel }})</text>
+                                @endif
+                            </g>
+                        @endforeach
+                    </svg>
+                </div>
+                
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; font-size: 0.75rem; font-weight:700; color:var(--app-muted); flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:6px;"><span style="display:inline-block; width:14px; height:14px; background:#00c853; border-radius:50%;"></span> Selected</div>
+                    <div style="display:flex; align-items:center; gap:6px;"><span style="display:inline-block; width:14px; height:14px; background:#9e9e9e; border-radius:50%;"></span> Available</div>
+                    <div style="display:flex; align-items:center; gap:6px;"><span style="display:inline-block; width:14px; height:14px; background:#e53935; border-radius:50%;"></span> Already Booked</div>
+                </div>
+
+                @if($avail['status'] === 'single_chair')
+                    <form method="POST" action="{{ route('stylist.book.availability.confirm') }}" id="single-chair-form" style="margin-top: 2rem;">
+                        @csrf
+                        <input type="hidden" name="action" value="accept_single_chair">
+                        <input type="hidden" name="selected_chair_id" id="selected_chair_id" value="">
+                        <p id="selection-text" style="text-align:center; font-size:0.85rem; color:var(--app-text); margin-bottom:1.5rem;">Please click an available (gray) chair from the map above.</p>
+                        <button type="submit" id="continue-btn" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem; opacity:0.5;" disabled>Select a chair to continue</button>
+                        <a href="{{ route('stylist.book', ['step' => 1]) }}" class="btn-app btn-app-back" style="width:100%;text-align:center;display:block;text-decoration:none;border-color:transparent;background:transparent;">Go back</a>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('stylist.book.availability.confirm') }}" style="margin-top: 2rem;">
+                        @csrf
+                        <input type="hidden" name="action" value="accept_multi_chair">
+                        <p style="text-align:center; font-size:0.85rem; color:var(--app-text); margin-bottom:1.5rem;">A single chair is not available for the entire duration, so we will split your booking as shown above.</p>
+                        <button type="submit" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem;">I agree to switch chairs</button>
+                        <button type="submit" name="action" value="cancel" class="btn-app btn-app-back" style="width:100%;">No, let me pick another time</button>
+                    </form>
+                @endif
+            </div>
+
+        @elseif($avail['status'] === 'alternative_time')
             <div class="av-card">
                 <div class="av-icon">🕒</div>
                 <h3 class="av-title">Selected time is fully booked</h3>
@@ -693,28 +869,13 @@
                     We don't have any chairs available for your selected time. 
                     However, the next available slot is at:
                     <br><br>
-                    <strong>{{ \Carbon\Carbon::parse($availabilityState['alternative_start'])->format('l, j M Y @ H:i') }}</strong>
+                    <strong>{{ \Carbon\Carbon::parse($avail['alternative_start'])->format('l, j M Y @ h:i A') }}</strong>
                 </p>
                 <form method="POST" action="{{ route('stylist.book.availability.confirm') }}">
                     @csrf
                     <input type="hidden" name="action" value="accept_alternative">
                     <button type="submit" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem;">Accept new time</button>
                     <button type="submit" name="action" value="cancel" class="btn-app btn-app-back" style="width:100%;">Cancel & Pick another date</button>
-                </form>
-            </div>
-        @elseif(isset($availabilityState) && $availabilityState['status'] === 'multi_chair')
-            <div class="av-card">
-                <div class="av-icon">🪑</div>
-                <h3 class="av-title">Multi-Chair Booking</h3>
-                <p class="av-desc">
-                    A single chair is not available for your entire {{ session('stylist_booking.duration') }}-hour duration. 
-                    However, we can accommodate you by having you switch chairs midway through your booking.
-                </p>
-                <form method="POST" action="{{ route('stylist.book.availability.confirm') }}">
-                    @csrf
-                    <input type="hidden" name="action" value="accept_multi_chair">
-                    <button type="submit" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem;">I agree to switch chairs</button>
-                    <button type="submit" name="action" value="cancel" class="btn-app btn-app-back" style="width:100%;">No, let me pick another time</button>
                 </form>
             </div>
         @else
@@ -732,6 +893,12 @@
             <h4>Booking recap</h4>
             <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>
             <div class="summary-line"><span>Duration</span><span>{{ session('stylist_booking.duration') }} hours</span></div>
+            @php
+                $assignedIds = session('stylist_booking.assigned_chair_ids', []);
+            @endphp
+            @if(!empty($assignedIds))
+                <div class="summary-line"><span>Chairs</span><span>{{ 'Chair ' . implode(', Chair ', $assignedIds) }}</span></div>
+            @endif
             @if($isOvernight)
                 <div class="summary-line" style="border:none;margin-top:0.5rem;color:#d84315;">
                     <span style="font-size:0.8rem;line-height:1.4;">🌙 Your booking falls between 9 PM and 8 AM. This requires admin approval.</span>
@@ -1018,4 +1185,64 @@
 })();
 </script>
 @endif
+
+@if($step === 2)
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // We need to attach listeners to both initially available AND initially selected chairs.
+        // Because if you click away from the initially selected chair, it should still be clickable.
+        const chairs = document.querySelectorAll('.svg-chair.chair-available, .svg-chair.chair-selected');
+        const selectedInput = document.getElementById('selected_chair_id');
+        
+        chairs.forEach(chair => {
+            chair.addEventListener('click', function() {
+                const firstRect = this.querySelector('rect');
+                if (!firstRect) return;
+                
+                // Ignore if it is somehow disabled/red
+                const fillVal = firstRect.style.fill || firstRect.getAttribute('fill');
+                if (fillVal === 'rgb(229, 57, 53)' || fillVal === '#e53935') return;
+
+                // Reset all currently selected chairs back to available
+                document.querySelectorAll('.svg-chair.chair-selected').forEach(c => {
+                    c.classList.remove('chair-selected');
+                    c.classList.add('chair-available');
+                    c.querySelectorAll('rect').forEach(r => {
+                        // Only target chair parts, not tooltip rects (tooltip width is 155)
+                        if(parseInt(r.getAttribute('width')) < 100) {
+                            r.style.fill = '#9e9e9e';
+                            r.setAttribute('fill', '#9e9e9e');
+                        }
+                    });
+                });
+                
+                // Set this chair to selected
+                this.classList.remove('chair-available');
+                this.classList.add('chair-selected');
+                this.querySelectorAll('rect').forEach(r => {
+                    if(parseInt(r.getAttribute('width')) < 100) {
+                        r.style.fill = '#00c853';
+                        r.setAttribute('fill', '#00c853');
+                    }
+                });
+                
+                // Update hidden input
+                selectedInput.value = this.getAttribute('data-id');
+                
+                // Update text
+                const textElem = document.getElementById('selection-text');
+                if(textElem) textElem.innerHTML = 'You selected <strong>Chair ' + this.getAttribute('data-id') + '</strong>.';
+                
+                const btn = document.getElementById('continue-btn');
+                if(btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Continue with Chair ' + this.getAttribute('data-id');
+                    btn.style.opacity = '1';
+                }
+            });
+        });
+    });
+</script>
+@endif
+
 @endsection
