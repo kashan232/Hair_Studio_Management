@@ -903,7 +903,7 @@
         <button type="submit" form="schedule-form" class="btn-app btn-app-next">Next &rarr;</button>
     @elseif($step === 3)
         <button type="submit" form="confirm-form" class="btn-app btn-app-next">
-            {{ $isOvernight ? 'Submit for Approval' : 'Next &rarr; Payment' }}
+            {!! $isOvernight ? 'Submit for Approval' : 'Payment' !!}
         </button>
     @endif
 </nav>

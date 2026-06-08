@@ -173,7 +173,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($coupons as $coupon)
+                            @foreach ($coupons as $coupon)
                                 <tr>
                                     <td><strong>{{ $coupon->code }}</strong></td>
                                     <td>
@@ -208,13 +208,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        No coupons found.
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -284,7 +278,7 @@
             confirmButtonText: 'Yes, Delete',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
+            if (result.value || result.isConfirmed) {
                 button.closest('form').submit();
             }
         });

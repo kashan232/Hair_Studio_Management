@@ -47,7 +47,7 @@
         @endphp
         
         <use id="chair-{{ $cid }}" x="{{ $data['x'] }}" y="{{ $data['y'] }}" xlink:href="{{ $data['href'] }}" @if($isSelected) filter="url(#chair-green)" @endif/>
-        <text x="{{ $data['x'] - 10 }}" y="{{ $data['y'] + 80 }}" font-size="22" font-family="Arial, sans-serif" fill="#333333" font-weight="bold" text-anchor="end" style="pointer-events:none;">{{ $loop->iteration }}</text>
+        <text x="{{ $data['x'] > 400 ? $data['x'] + 160 : $data['x'] - 10 }}" y="{{ $data['y'] + 80 }}" font-size="22" font-family="Arial, sans-serif" fill="#333333" font-weight="bold" text-anchor="{{ $data['x'] > 400 ? 'start' : 'end' }}" style="pointer-events:none;">{{ $loop->iteration }}</text>
         
         @if($isSelected)
             @php

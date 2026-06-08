@@ -15,9 +15,11 @@
                 </svg>
             </a>
             <!-- sidebar-toggle-->
-            <a class="logo-horizontal" href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 40px; width: auto; object-fit: contain;">
-            </a>
+            <div class="position-absolute w-100 text-center d-lg-none" style="left: 0; top: 15px; pointer-events: none;">
+                <a href="{{ route('dashboard') }}" style="pointer-events: auto; display: inline-block;">
+                    <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 40px; width: auto; object-fit: contain;">
+                </a>
+            </div>
             <!-- LOGO -->
             <div class="main-header-center ms-3 d-none d-lg-block">
                 <input type="text" class="form-control" id="typehead" placeholder="Search appointments...">

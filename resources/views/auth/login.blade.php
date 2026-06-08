@@ -84,6 +84,7 @@
 
         /* Header Area */
         .auth-header {
+            width: 100%;
             text-align: center;
             padding: 3rem 2rem 1.5rem;
         }
@@ -338,7 +339,7 @@
         <div class="auth-container">
             
             <div class="auth-header">
-                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 60px; width: auto; margin-bottom: 10px;">
+                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 60px; width: auto; display: block; margin: 0 auto 10px;">
                 <p>Premium Workspace</p>
             </div>
 

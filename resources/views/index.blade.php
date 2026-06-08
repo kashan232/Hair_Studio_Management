@@ -215,12 +215,14 @@
         text-decoration: none;
         transition: all 0.2s;
         margin-bottom: 0.5rem;
+        white-space: normal;
+        word-break: break-word;
     }
 
     .quick-action-btn:hover {
-        background: var(--salon-gold);
+        background: #800020;
         color: #fff;
-        border-color: var(--salon-gold);
+        border-color: #800020;
         transform: translateX(3px);
     }
 
@@ -247,7 +249,7 @@
                     <div class="col-md-8">
                         <h1>Welcome to Eladé Studio</h1>
                         <p class="subtitle mb-2">Manage appointments, stylists, services, and check real-time business performance.</p>
-                        <span class="badge px-3 py-2" style="background: var(--salon-gold); color: #fff; font-weight: 600; letter-spacing: 0.5px;">PREMIUM SALON PORTAL</span>
+                        <span class="badge px-3 py-2" style="background: #ffffff; color: #800020; font-weight: 600; letter-spacing: 0.5px;">PREMIUM SALON PORTAL</span>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <p class="mb-1 small opacity-75">Today's Estimated Revenue</p>
@@ -361,10 +363,10 @@
                     <!-- Quick Actions -->
                     <div class="panel-card">
                         <h5>Quick Actions</h5>
-                        <a href="javascript:void(0)" class="quick-action-btn"><i class="fe fe-plus-circle"></i> Book New Appointment</a>
-                        <a href="javascript:void(0)" class="quick-action-btn"><i class="fe fe-user-plus"></i> Add Salon Customer</a>
-                        <a href="javascript:void(0)" class="quick-action-btn"><i class="fe fe-scissors"></i> Manage Salon Services</a>
-                        <a href="javascript:void(0)" class="quick-action-btn"><i class="fe fe-settings"></i> Edit Salon Settings</a>
+                        <a href="{{ route('stylist.book') }}" class="quick-action-btn"><i class="fe fe-plus-circle"></i> Book New Appointment</a>
+                        <a href="{{ route('users.create') }}" class="quick-action-btn"><i class="fe fe-user-plus"></i> Add Salon Customer</a>
+                        <a href="{{ route('pricing.index') }}" class="quick-action-btn"><i class="fe fe-scissors"></i> Manage Salon Services</a>
+                        <a href="{{ route('dashboard') }}" class="quick-action-btn"><i class="fe fe-settings"></i> Edit Salon Settings</a>
                     </div>
 
                     <!-- Stylists Roster -->
