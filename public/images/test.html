@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div style="position:relative; width:714px; height:1280px; border:1px solid red;" id="container">
+    <img src="chairs-main.svg" width="714" height="1280" style="position:absolute; top:0; left:0; pointer-events:none;">
+    <script>
+        document.getElementById('container').addEventListener('click', function(e) {
+            console.log('X: ' + e.offsetX + ', Y: ' + e.offsetY);
+        });
+    </script>
+</div>
+</body>
+</html>

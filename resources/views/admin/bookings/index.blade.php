@@ -49,7 +49,12 @@
                                                 <strong>End:</strong> {{ \Carbon\Carbon::parse($b->end_datetime)->format('d M Y, h:i A') }}
                                             </td>
                                             <td>{{ $b->duration_hours }} hrs</td>
-                                            <td>£{{ number_format($b->total_amount, 2) }}</td>
+                                            <td>
+                                                £{{ number_format($b->total_amount, 2) }}
+                                                @if($b->coupon_code)
+                                                    <br><small class="text-success"><i class="fe fe-tag"></i> {{ $b->coupon_code }} (-£{{ number_format($b->discount_amount, 2) }})</small>
+                                                @endif
+                                            </td>
                                             <td>
                                                 @foreach($b->chairs as $c)
                                                     <span class="badge bg-light text-dark border">{{ $c->name }}</span>
@@ -60,10 +65,15 @@
                                                     <span class="badge bg-warning text-dark">Pending Approval</span>
                                                 @elseif($b->status === 'pending_payment')
                                                     <span class="badge bg-info text-dark">Pending Payment</span>
+                                                    @if($b->expires_at)
+                                                        <br><small class="text-danger admin-timer" data-expires="{{ \Carbon\Carbon::parse($b->expires_at)->toIso8601String() }}">Wait: --:--</small>
+                                                    @endif
                                                 @elseif($b->status === 'confirmed')
                                                     <span class="badge bg-success">Confirmed</span>
                                                 @elseif($b->status === 'cancelled')
                                                     <span class="badge bg-danger">Cancelled</span>
+                                                @elseif($b->status === 'cancelled_late_response')
+                                                    <span class="badge bg-danger">Cancelled (Late Response)</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -97,4 +107,32 @@
         </div>
     </div>
 </div>
+
+@section('JScript')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const timers = document.querySelectorAll('.admin-timer');
+        if (timers.length > 0) {
+            setInterval(() => {
+                const now = new Date().getTime();
+                timers.forEach(timer => {
+                    const expiresAt = new Date(timer.getAttribute('data-expires')).getTime();
+                    const distance = expiresAt - now;
+                    
+                    if (distance <= 0) {
+                        timer.innerHTML = "Expired";
+                        timer.classList.replace('text-danger', 'text-muted');
+                    } else {
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        timer.innerHTML = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+                        if (minutes < 5) {
+                            timer.style.fontWeight = 'bold';
+                        }
+                    }
+                });
+            }, 1000);
+        }
+    });
+</script>
 @endsection

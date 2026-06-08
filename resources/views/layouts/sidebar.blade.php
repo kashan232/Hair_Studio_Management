@@ -4,7 +4,7 @@
     <div class="app-sidebar">
         <div class="side-header">
             <a class="header-brand1" href="{{ route('dashboard') }}">
-                <h3 class="mb-0 fw-bold" style="letter-spacing: 2px; color: #c6a34d !important;">ELADÉ STUDIO</h3>
+                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 40px; width: auto; object-fit: contain;">
             </a>
         </div>
         <div class="main-sidemenu">
@@ -36,6 +36,19 @@
                     <a class="sidenav-menu-item {{ Route::is('bookings*') ? 'active' : '' }}" href="{{ route('bookings.index') }}">
                         <i class="side-menu__icon fe fe-calendar"></i>
                         <span class="side-menu__label">Bookings</span>
+                        @php
+                            $pendingCount = \App\Models\Booking::where('status', 'pending_approval')->count();
+                        @endphp
+                        @if($pendingCount > 0)
+                            <span class="badge bg-danger rounded-pill ms-auto">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('coupons*') ? 'active' : '' }}" href="{{ route('coupons.index') }}">
+                        <i class="side-menu__icon fe fe-tag"></i>
+                        <span class="side-menu__label">Coupons</span>
                     </a>
                 </li>
 

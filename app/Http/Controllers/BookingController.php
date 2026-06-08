@@ -10,6 +10,11 @@ class BookingController extends Controller
 {
     public function index()
     {
+        // Auto-cancel past bookings that were left in pending_approval
+        Booking::where('status', 'pending_approval')
+            ->whereDate('start_datetime', '<', today())
+            ->update(['status' => 'cancelled_late_response']);
+
         // Get all bookings with latest first
         $bookings = Booking::with('user', 'chairs')->orderBy('created_at', 'desc')->get();
         return view('admin.bookings.index', compact('bookings'));
@@ -23,6 +28,13 @@ class BookingController extends Controller
 
         $booking = Booking::findOrFail($id);
         $booking->status = $request->status;
+        
+        if ($request->status === 'pending_payment') {
+            $booking->expires_at = now()->addMinutes(15);
+        } elseif ($request->status === 'cancelled' || $request->status === 'confirmed') {
+            $booking->expires_at = null;
+        }
+
         $booking->save();
 
         // If approved (pending_payment), we ideally send an email to user to pay.
@@ -46,10 +58,15 @@ class BookingController extends Controller
             return redirect()->route('stylist.book')->with('booking_error', 'This booking cannot be paid right now.');
         }
 
+        if ($booking->expires_at && $booking->expires_at < now()) {
+            $booking->status = 'cancelled';
+            $booking->save();
+            return redirect()->route('stylist.book')->with('booking_error', 'Your booking reservation has expired due to timeout. Please try booking again.');
+        }
+
         return view('stylist.pay_balance', compact('booking'));
     }
 
-    // Process the payment intent for the balance
     public function processBalancePayment(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
@@ -58,10 +75,34 @@ class BookingController extends Controller
             return response()->json(['error' => 'Invalid booking status'], 400);
         }
 
+        $finalAmount = $booking->total_amount;
+        $discountAmount = 0;
+
+        if ($request->has('coupon_code')) {
+            $coupon = \App\Models\Coupon::where('code', $request->coupon_code)->first();
+            if ($coupon && $coupon->is_active && $coupon->expires_at->gte(\Carbon\Carbon::today())) {
+                $hasUsed = $coupon->users()->where('user_id', $booking->user_id)->exists();
+                if (!$hasUsed) {
+                    if ($coupon->discount_type === 'fixed') {
+                        $discountAmount = (float) $coupon->discount_value;
+                    } else {
+                        $discountAmount = $finalAmount * ((float) $coupon->discount_value / 100);
+                    }
+                    if ($discountAmount > $finalAmount) $discountAmount = $finalAmount;
+                    $finalAmount -= $discountAmount;
+                    
+                    session(['pay_balance_coupon' => $coupon->code, 'pay_balance_discount' => $discountAmount]);
+                }
+            }
+        } else {
+            session()->forget('pay_balance_coupon');
+            session()->forget('pay_balance_discount');
+        }
+
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
         $intent = \Stripe\PaymentIntent::create([
-            'amount'   => (int) round($booking->total_amount * 100),
+            'amount'   => (int) round($finalAmount * 100),
             'currency' => 'gbp',
             'metadata' => [
                 'booking_id' => $booking->id,
@@ -75,6 +116,21 @@ class BookingController extends Controller
     {
         $booking = Booking::findOrFail($id);
         $booking->status = 'confirmed';
+
+        if (session()->has('pay_balance_coupon')) {
+            $couponCode = session('pay_balance_coupon');
+            $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+            if ($coupon) {
+                $booking->coupon_code = $couponCode;
+                $booking->discount_amount = session('pay_balance_discount');
+                $coupon->users()->attach($booking->user_id);
+                $coupon->is_active = false;
+                $coupon->save();
+            }
+            session()->forget('pay_balance_coupon');
+            session()->forget('pay_balance_discount');
+        }
+
         $booking->save();
 
         return view('stylist.pay_balance_success', compact('booking'));

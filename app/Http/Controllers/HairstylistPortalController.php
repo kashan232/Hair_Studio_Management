@@ -181,6 +181,46 @@ class HairstylistPortalController extends Controller
             return response()->json(['error' => 'Invalid amount.'], 400);
         }
 
+        $discount = 0;
+        $couponCode = null;
+
+        if ($request->has('coupon_code')) {
+            $code = strtoupper(trim($request->coupon_code));
+            $coupon = \App\Models\Coupon::where('code', $code)->first();
+            if ($coupon && $coupon->is_active && $coupon->expires_at->gte(\Carbon\Carbon::today())) {
+                // If user is authenticated, check if used
+                $user = $request->user();
+                if (!$user) {
+                    // Try to find if guest email exists
+                    $guestEmail = session('stylist_booking.guest.email');
+                    if ($guestEmail) {
+                        $user = \App\Models\User::where('email', $guestEmail)->first();
+                    }
+                }
+                
+                $hasUsed = false;
+                if ($user) {
+                    $hasUsed = $coupon->users()->where('user_id', $user->id)->exists();
+                }
+
+                if (!$hasUsed) {
+                    $discountAmount = $coupon->discount_type === 'fixed' 
+                        ? (float) $coupon->discount_value 
+                        : $total * ((float) $coupon->discount_value / 100);
+                    
+                    $discount = min($discountAmount, $total);
+                    $total = $total - $discount;
+                    $couponCode = $code;
+                }
+            }
+        }
+
+        session([
+            'stylist_booking.coupon_code' => $couponCode,
+            'stylist_booking.discount' => $discount,
+            'stylist_booking.final_total' => $total
+        ]);
+
         Stripe::setApiKey(config('services.stripe.secret'));
 
         $intent = PaymentIntent::create([
@@ -189,12 +229,13 @@ class HairstylistPortalController extends Controller
             'metadata' => [
                 'start_date' => session('stylist_booking.start_date'),
                 'end_date'   => session('stylist_booking.end_date'),
+                'coupon'     => $couponCode
             ],
         ]);
 
         session(['stylist_booking.payment_intent_id' => $intent->id]);
 
-        return response()->json(['clientSecret' => $intent->client_secret]);
+        return response()->json(['clientSecret' => $intent->client_secret, 'finalTotal' => $total]);
     }
 
     private function verifyChairsAreFree(): bool
@@ -283,9 +324,26 @@ class HairstylistPortalController extends Controller
             'start_datetime' => $start,
             'end_datetime' => $end,
             'duration_hours' => session('stylist_booking.duration'),
-            'total_amount' => $this->calculateTotal(),
+            'total_amount' => session('stylist_booking.final_total', $this->calculateTotal()),
             'status' => $status,
+            'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
+
+        // Attach coupon if used
+        $couponCode = session('stylist_booking.coupon_code');
+        if ($couponCode) {
+            $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+            if ($coupon) {
+                // Ensure no duplicate entry
+                if (!$coupon->users()->where('user_id', $user->id)->exists()) {
+                    $coupon->users()->attach($user->id, [
+                        'booking_id' => $booking->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+        }
 
         $assignedChairs = session('stylist_booking.assigned_chair_ids', []);
         
@@ -356,6 +414,11 @@ class HairstylistPortalController extends Controller
 
     public function myBookings(Request $request): View
     {
+        // Auto-cancel past bookings that were left in pending_approval
+        Booking::where('status', 'pending_approval')
+            ->whereDate('start_datetime', '<', today())
+            ->update(['status' => 'cancelled_late_response']);
+
         $user = $request->user();
         $bookings = Booking::where('user_id', $user->id)
             ->with('chairs')
@@ -363,6 +426,21 @@ class HairstylistPortalController extends Controller
             ->get();
 
         return view('stylist.my_bookings', compact('bookings', 'user'));
+    }
+
+    public function cancelBooking(Request $request, $id): RedirectResponse
+    {
+        $user = $request->user();
+        $booking = Booking::where('id', $id)->where('user_id', $user->id)->firstOrFail();
+
+        // Allow cancellation if pending approval
+        if ($booking->status === 'pending_approval') {
+            $booking->status = 'cancelled';
+            $booking->save();
+            return back()->with('success', 'Booking cancelled successfully.');
+        }
+
+        return back()->with('error', 'Booking cannot be cancelled.');
     }
 
     /* ─────────────────────────────────────────────
@@ -374,10 +452,17 @@ class HairstylistPortalController extends Controller
         $allChairs = Chair::where('status', '!=', 'maintenance')->get();
         if ($allChairs->isEmpty()) return ['status' => 'unavailable'];
 
-        // Find bookings that overlap with requested time
+        $now = now();
         $overlappingBookings = DB::table('booking_chairs')
             ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
-            ->where('bookings.status', 'confirmed')
+            ->where(function($query) use ($now) {
+                $query->where('bookings.status', 'confirmed')
+                      ->orWhere('bookings.status', 'pending_approval')
+                      ->orWhere(function($q) use ($now) {
+                          $q->where('bookings.status', 'pending_payment')
+                            ->where('bookings.expires_at', '>', $now);
+                      });
+            })
             ->where('booking_chairs.start_time', '<', $end)
             ->where('booking_chairs.end_time', '>', $start)
             ->get(['booking_chairs.*']);

@@ -35,8 +35,6 @@
     <link rel="stylesheet" href="{{asset('assets/plugins/sweetalert2/sweetalert2.min.css')}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('css')
-
-
 </head>
 
 <body class="app sidebar-mini ltr light-mode">

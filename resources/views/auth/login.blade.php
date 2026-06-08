@@ -9,584 +9,509 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
-    <title>Login | Eladé Studio</title>
+    <title>Welcome | Eladé Studio</title>
 
-    <link id="style" href="{{ asset('assets/css/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --elade-gold: #c6a34d;
-            --elade-dark: #121212;
-            --elade-sand: #f4efe6;
-            --elade-border: #eae2d5;
-            --elade-muted: #8c7e6c;
+            --brand-primary: #461111;
+            --brand-primary-light: rgba(70, 17, 17, 0.85);
+            --brand-primary-faint: rgba(70, 17, 17, 0.1);
+            --text-dark: #1a1a1a;
+            --text-muted: #666666;
+            --border-light: rgba(255, 255, 255, 0.3);
+            --border-dark: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.85);
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
         html, body {
             margin: 0;
             padding: 0;
-            min-height: 100%;
-            background: var(--elade-sand);
+            min-height: 100vh;
             font-family: 'Montserrat', sans-serif;
+            background-color: #111;
         }
 
-        .login-page-container {
-            display: flex;
-            min-height: 100vh;
-            width: 100%;
-        }
-
-        .login-hero-side {
-            flex: 1.25;
-            min-height: 100vh;
-            background: linear-gradient(rgba(18, 18, 18, 0.35), rgba(18, 18, 18, 0.75)),
-                url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+        /* Immersive Background */
+        .page-wrapper {
             position: relative;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: clamp(2rem, 5vw, 5rem);
-            color: #fff;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: #461111;
         }
 
-        .login-hero-side::before {
+        .page-wrapper::before {
             content: '';
             position: absolute;
-            inset: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            pointer-events: none;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            z-index: 1;
         }
 
-        .hero-top-meta {
-            font-size: 0.75rem;
+        /* Glassmorphism Container */
+        .auth-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            animation: floatIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes floatIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header Area */
+        .auth-header {
+            text-align: center;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .auth-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: var(--brand-primary);
+            margin: 0 0 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .auth-header p {
+            font-size: 0.85rem;
+            font-weight: 400;
             letter-spacing: 4px;
             text-transform: uppercase;
-            color: var(--elade-gold);
-            font-weight: 600;
-            z-index: 1;
-        }
-
-        .hero-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.2rem, 4vw, 3.8rem);
-            font-weight: 300;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            margin-bottom: 1.25rem;
-            z-index: 1;
-        }
-
-        .hero-tagline {
-            font-size: 1rem;
-            max-width: 480px;
-            line-height: 1.7;
-            font-weight: 300;
-            color: #e0d5c1;
-            z-index: 1;
-        }
-
-        .login-form-side {
-            flex: 1;
-            min-height: 100vh;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            padding: clamp(1.5rem, 4vw, 3rem);
-        }
-
-        .login-shell {
-            width: 100%;
-            max-width: 460px;
-            display: flex;
-            flex-direction: column;
-            min-height: calc(100vh - clamp(3rem, 8vw, 6rem));
-            max-height: 100vh;
-        }
-
-        .login-shell-header {
-            flex-shrink: 0;
-            padding-bottom: 1.75rem;
-        }
-
-        .login-shell-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.8rem, 3vw, 2.4rem);
-            font-weight: 400;
-            letter-spacing: 5px;
-            color: var(--elade-dark);
-            margin: 0 0 0.35rem;
-            text-transform: uppercase;
-        }
-
-        .login-shell-header p {
+            color: var(--text-muted);
             margin: 0;
-            font-size: 0.68rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--elade-muted);
-            font-weight: 600;
         }
 
+        /* Tab Navigation */
         .auth-tabs {
-            flex-shrink: 0;
             display: flex;
-            background: #faf8f5;
-            border: 1px solid var(--elade-border);
-            margin-bottom: 0;
+            border-bottom: 1px solid var(--border-dark);
+            margin: 0 2rem;
         }
 
-        .auth-tab-btn {
+        .tab-btn {
             flex: 1;
-            border: none;
             background: transparent;
-            padding: 0.85rem 0.5rem;
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--elade-muted);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .auth-tab-btn.active {
-            background: var(--elade-dark);
-            color: #fff;
-        }
-
-        .auth-body {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            border: 1px solid var(--elade-border);
-            border-top: none;
-            background: #fff;
-            padding: 1.75rem 1.5rem 1.25rem;
-            scrollbar-width: thin;
-            scrollbar-color: #dcd3be transparent;
-        }
-
-        .auth-body::-webkit-scrollbar { width: 5px; }
-        .auth-body::-webkit-scrollbar-thumb { background: #dcd3be; }
-
-        .auth-panel { display: none; }
-        .auth-panel.active { display: block; }
-
-        .register-intro {
-            font-size: 0.78rem;
-            color: var(--elade-muted);
-            line-height: 1.55;
-            margin: 0 0 1.25rem;
-            padding: 0.85rem 1rem;
-            background: #faf8f5;
-            border-left: 3px solid var(--elade-gold);
-        }
-
-        .form-group-custom {
-            position: relative;
-            margin-bottom: 1.35rem;
-            border-bottom: 1px solid #dcd3be;
-            transition: border-color 0.2s;
-        }
-
-        .form-group-custom:focus-within {
-            border-bottom-color: var(--elade-gold);
-        }
-
-        .form-group-custom label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--elade-muted);
+            border: none;
+            padding: 1rem 0;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--brand-primary);
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-primary);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+
+        /* Forms */
+        .auth-body {
+            padding: 2rem;
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .auth-form.active {
             display: block;
         }
 
-        .form-group-custom input {
-            width: 100%;
-            border: none !important;
-            background: transparent !important;
-            outline: none !important;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.8rem;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
             font-size: 0.9rem;
-            color: var(--elade-dark);
-            padding: 0.4rem 2rem 0.4rem 0;
-            font-weight: 500;
-            box-shadow: none !important;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            letter-spacing: 1px;
         }
 
-        .form-group-custom input::placeholder {
-            color: #b8ac95;
-            opacity: 0.7;
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem 0;
+            border: none;
+            border-bottom: 1px solid var(--border-dark);
+            background: transparent;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            outline: none;
+            transition: border-color 0.3s ease;
         }
 
-        .password-toggle-btn {
+        .input-group input:focus,
+        .input-group input:not(:placeholder-shown) {
+            border-bottom-color: var(--brand-primary);
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 0.7rem;
+            color: var(--brand-primary);
+            font-weight: 600;
+        }
+
+        .input-group .toggle-password {
             position: absolute;
             right: 0;
-            bottom: 0.45rem;
-            color: var(--elade-muted);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            background: var(--brand-primary);
+            color: #fff;
+            border: none;
+            padding: 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(70, 17, 17, 0.2);
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: #2b0a0a;
+            box-shadow: 0 6px 20px rgba(70, 17, 17, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:disabled {
+            background: #8a6a6a;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            display: block;
+            width: 100%;
+            text-align: center;
             text-decoration: none;
-            font-size: 1rem;
+            background: transparent;
+            color: var(--brand-primary);
+            border: 1px solid var(--brand-primary);
+            padding: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
         }
 
-        .password-toggle-btn:hover { color: var(--elade-gold); }
-
-        .register-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0 1rem;
+        .btn-outline:hover {
+            background: var(--brand-primary-faint);
         }
 
-        .register-grid .span-full { grid-column: 1 / -1; }
-
-        .form-check-label {
-            font-size: 0.7rem !important;
-            font-weight: 600 !important;
-            color: var(--elade-muted) !important;
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 2rem 0 1rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        .form-check-input {
-            border-radius: 0 !important;
-            border-color: #dcd3be !important;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--elade-gold) !important;
-            border-color: var(--elade-gold) !important;
-        }
-
-        .login100-form-btn {
-            width: 100%;
-            background: var(--elade-dark) !important;
-            color: #fff !important;
-            border: 1px solid var(--elade-dark) !important;
-            border-radius: 0 !important;
-            font-weight: 600 !important;
-            height: 50px !important;
-            letter-spacing: 2px !important;
-            text-transform: uppercase !important;
-            font-size: 0.72rem !important;
-            transition: all 0.25s !important;
-            box-shadow: none !important;
-            cursor: pointer;
-            margin-top: 0.5rem;
-        }
-
-        .login100-form-btn:hover {
-            background: var(--elade-gold) !important;
-            border-color: var(--elade-gold) !important;
-            transform: translateY(-1px);
-        }
-
-        .auth-switch-link {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: var(--elade-gold);
-            background: none;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-        }
-
-        .auth-switch-link:hover { color: var(--elade-dark); }
-
-        .btn-book-now {
-            display: block;
-            width: 100%;
-            text-align: center;
-            text-decoration: none;
-            background: var(--elade-gold) !important;
-            color: #fff !important;
-            border: 1px solid var(--elade-gold) !important;
-            height: 52px !important;
-            line-height: 52px;
-            font-size: 0.72rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 2px !important;
-            text-transform: uppercase !important;
-            margin-bottom: 0.25rem;
-        }
-
-        .btn-book-now:hover {
-            background: var(--elade-dark) !important;
-            border-color: var(--elade-dark) !important;
-            color: #fff !important;
-        }
-
-        .book-now-hint {
-            font-size: 0.72rem;
-            color: var(--elade-muted);
-            text-align: center;
-            margin: 0 0 1.5rem;
-            line-height: 1.5;
-        }
-
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin: 1.5rem 0 1.25rem;
-            font-size: 0.65rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #a0937d;
-        }
-
-        .auth-divider::before,
-        .auth-divider::after {
+        .divider::before, .divider::after {
             content: '';
             flex: 1;
-            height: 1px;
-            background: #eae2d5;
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .login-shell-footer {
-            flex-shrink: 0;
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid #f4efe6;
-            font-size: 0.62rem;
-            color: #a0937d;
-            letter-spacing: 1.2px;
-            line-height: 1.7;
-            text-transform: uppercase;
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        @media (max-width: 991px) {
-            .login-hero-side { display: none; }
-            .login-shell {
-                min-height: auto;
-                max-height: none;
-            }
+        .checkbox-group input {
+            accent-color: var(--brand-primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
+        .checkbox-group label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Mobile specific adjustments */
         @media (max-width: 480px) {
-            .register-grid { grid-template-columns: 1fr; gap: 0; }
-            .auth-body { padding: 1.25rem 1rem; }
+            .auth-container {
+                border-radius: 0;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .page-wrapper {
+                padding: 0;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="login-page-container">
-
-        <div class="login-hero-side">
-            <div class="hero-top-meta">LONDON, UK</div>
-            <div>
-                <div class="hero-brand">Eladé Studio</div>
-                <div class="hero-tagline">
-                    Control your schedule. Elevate your standard. Book luxury workspace without long-term commitments.
-                </div>
+    <div class="page-wrapper">
+        <div class="auth-container">
+            
+            <div class="auth-header">
+                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 60px; width: auto; margin-bottom: 10px;">
+                <p>Premium Workspace</p>
             </div>
-            <div class="hero-top-meta">&copy; 2026 ELADÉ STUDIO</div>
-        </div>
 
-        <div class="login-form-side">
-            <div class="login-shell">
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-target="login">Sign In</button>
+                <button class="tab-btn" data-target="register">Register</button>
+            </div>
 
-                <div class="login-shell-header">
-                    <h2>Eladé Studio</h2>
-                    <p id="auth-subtitle">Book your workspace</p>
-                </div>
-
-                <a href="{{ route('stylist.book') }}" class="login100-form-btn btn-book-now" style="margin-bottom:0;">
-                    Book chairs — continue without account
-                </a>
-                <p class="book-now-hint">Or sign in / register below to save your profile.</p>
-
-                <div class="auth-tabs" style="margin-top:1.25rem;">
-                    <button type="button" class="auth-tab-btn active" data-auth-tab="login">Sign In</button>
-                    <button type="button" class="auth-tab-btn" data-auth-tab="register">Register</button>
-                </div>
-
-                <div class="auth-body">
-                    <div id="login-panel" class="auth-panel active">
-                        <form method="POST" action="{{ route('login') }}" class="ajaxForm" id="login-form">
-                            @csrf
-
-                            <div class="form-group-custom">
-                                <label for="email">Email Address</label>
-                                <input name="email" type="email" placeholder="e.g. name@eladeuk.com" id="email" required>
-                            </div>
-
-                            <div class="form-group-custom">
-                                <label for="password">Password</label>
-                                <input name="password" type="password" placeholder="Enter password" id="password" required>
-                                <a href="javascript:void(0)" class="password-toggle-btn toggle-password" data-target="#password">
-                                    <i class="zmdi zmdi-eye-off"></i>
-                                </a>
-                            </div>
-
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="user-checkbox">
-                                <label class="form-check-label" for="user-checkbox">Remember this device</label>
-                            </div>
-
-                            <button type="submit" class="login100-form-btn">Secure Sign In</button>
-
-                            <button type="button" class="auth-switch-link" data-auth-tab="register">
-                                New hairstylist? Register here
-                            </button>
-                        </form>
+            <div class="auth-body">
+                
+                <!-- LOGIN FORM -->
+                <form id="login-form" class="auth-form active ajaxForm" method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    <div class="input-group">
+                        <input type="email" name="email" id="login-email" placeholder=" " required>
+                        <label for="login-email">Email Address</label>
                     </div>
 
-                    <div id="register-panel" class="auth-panel">
-                        <p class="register-intro">
-                            Create your hairstylist account, then book available chairs in the studio portal.
-                        </p>
-
-                        <form method="POST" action="{{ route('register.hairstylist') }}" class="ajaxForm" id="register-form">
-                            @csrf
-
-                            <div class="register-grid">
-                                <div class="form-group-custom span-full">
-                                    <label for="reg_name">Full Name</label>
-                                    <input name="name" type="text" placeholder="Your full name" id="reg_name" required>
-                                </div>
-
-                                <div class="form-group-custom span-full">
-                                    <label for="reg_email">Email Address</label>
-                                    <input name="email" type="email" placeholder="stylist@email.com" id="reg_email" required>
-                                </div>
-
-                                <div class="form-group-custom span-full">
-                                    <label for="reg_mobile">Mobile Number</label>
-                                    <input name="mobile" type="text" placeholder="+44 7700 900000" id="reg_mobile">
-                                </div>
-
-                                <div class="form-group-custom">
-                                    <label for="reg_password">Password</label>
-                                    <input name="password" type="password" placeholder="Min. 6 chars" id="reg_password" required>
-                                    <a href="javascript:void(0)" class="password-toggle-btn toggle-password" data-target="#reg_password">
-                                        <i class="zmdi zmdi-eye-off"></i>
-                                    </a>
-                                </div>
-
-                                <div class="form-group-custom">
-                                    <label for="reg_password_confirmation">Confirm</label>
-                                    <input name="password_confirmation" type="password" placeholder="Re-enter" id="reg_password_confirmation" required>
-                                    <a href="javascript:void(0)" class="password-toggle-btn toggle-password" data-target="#reg_password_confirmation">
-                                        <i class="zmdi zmdi-eye-off"></i>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="login100-form-btn">Register as Hairstylist</button>
-
-                            <button type="button" class="auth-switch-link" data-auth-tab="login">
-                                Already have an account? Sign in
-                            </button>
-                        </form>
+                    <div class="input-group">
+                        <input type="password" name="password" id="login-password" placeholder=" " required>
+                        <label for="login-password">Password</label>
+                        <i class="zmdi zmdi-eye-off toggle-password" data-input="#login-password"></i>
                     </div>
-                </div>
 
-                <div class="login-shell-footer">
-                    &copy; 2026 <strong>Eladé Studio</strong> &mdash; Premium Quality &bull; Stylists First
-                </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Remember this device</label>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Secure Sign In</button>
+
+                    <div class="divider">or</div>
+
+                    <a href="{{ route('stylist.book') }}" class="btn-outline">
+                        Book Chair as Guest
+                    </a>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="register-form" class="auth-form ajaxForm" method="POST" action="{{ route('register.hairstylist') }}">
+                    @csrf
+
+                    <div class="input-group">
+                        <input type="text" name="name" id="reg-name" placeholder=" " required>
+                        <label for="reg-name">Full Name</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="email" name="email" id="reg-email" placeholder=" " required>
+                        <label for="reg-email">Email Address</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="text" name="mobile" id="reg-mobile" placeholder=" ">
+                        <label for="reg-mobile">Mobile Number</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="password" id="reg-password" placeholder=" " required>
+                        <label for="reg-password">Password</label>
+                        <i class="zmdi zmdi-eye-off toggle-password" data-input="#reg-password"></i>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="password_confirmation" id="reg-confirm" placeholder=" " required>
+                        <label for="reg-confirm">Confirm Password</label>
+                        <i class="zmdi zmdi-eye-off toggle-password" data-input="#reg-confirm"></i>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
 
             </div>
         </div>
     </div>
 
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}">
-    <script src="{{ asset('assets/js/myhelper-script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
-            const $authBody = $('.auth-body');
-
-            function switchAuthTab(tab) {
-                $('.auth-tab-btn').removeClass('active');
-                $('.auth-tab-btn[data-auth-tab="' + tab + '"]').addClass('active');
-                $('.auth-panel').removeClass('active');
-                $('#' + tab + '-panel').addClass('active');
-                $('#auth-subtitle').text(tab === 'register' ? 'Hairstylist Registration' : 'Book your workspace');
-                $authBody.scrollTop(0);
-            }
-
-            $(document).on('click', '[data-auth-tab]', function() {
-                switchAuthTab($(this).data('auth-tab'));
+            
+            // Tab Switching
+            $('.tab-btn').on('click', function() {
+                $('.tab-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const target = $(this).data('target');
+                $('.auth-form').removeClass('active');
+                $('#' + target + '-form').addClass('active');
             });
 
-            if (new URLSearchParams(window.location.search).get('tab') === 'register') {
-                switchAuthTab('register');
-            }
+            // Password Toggle
+            $('.toggle-password').on('click', function() {
+                const input = $($(this).data('input'));
+                const type = input.attr('type') === 'password' ? 'text' : 'password';
+                input.attr('type', type);
+                $(this).toggleClass('zmdi-eye-off zmdi-eye');
+            });
 
+            // Remember Me LocalStorage
+            const remembered = localStorage.getItem('elade_email');
+            if (remembered) {
+                $('#login-email').val(remembered);
+                $('#remember-me').prop('checked', true);
+            }
+            
+            $('#remember-me').on('change', function() {
+                if(this.checked) {
+                    localStorage.setItem('elade_email', $('#login-email').val());
+                } else {
+                    localStorage.removeItem('elade_email');
+                }
+            });
+
+            // Form Submit handling
             $('.ajaxForm').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
                 const btn = form.find('button[type="submit"]');
                 const originalText = btn.text();
-                const isRegister = form.attr('id') === 'register-form';
-
-                btn.prop('disabled', true).text(isRegister ? 'Registering...' : 'Signing in...');
+                
+                btn.prop('disabled', true).text('Processing...');
 
                 $.ajax({
                     url: form.attr('action'),
                     method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     data: new FormData(this),
                     contentType: false,
                     processData: false,
-                    dataType: 'json',
-                    complete: function() {
-                        btn.prop('disabled', false).text(originalText);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        ajaxErrorHandling(jqXHR, errorThrown);
-                    },
-                    success: function(data) {
-                        if (data.redirect !== undefined) {
-                            toast(data.success, 'Success!', 'success', 1200);
-                            setTimeout(function() { window.location = data.redirect; }, 600);
-                        } else if (data.error !== undefined) {
-                            toast(data.error, 'Error!', 'error');
-                        } else if (data.errors !== undefined) {
-                            multiple_errors_ajax_handling(data.errors);
+                    success: function(response) {
+                        if (response.redirect) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.success || 'Welcome to Eladé Studio',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = response.redirect;
+                            });
+                        } else if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.error,
+                                confirmButtonColor: '#461111'
+                            });
+                            btn.prop('disabled', false).text(originalText);
                         }
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).text(originalText);
+                        let errMsg = 'Something went wrong. Please try again.';
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            const errors = xhr.responseJSON.errors;
+                            errMsg = Object.values(errors)[0][0]; // Show first validation error
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errMsg = xhr.responseJSON.message;
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: errMsg,
+                            confirmButtonColor: '#461111'
+                        });
                     }
                 });
-            });
-
-            $(document).on('click', '.toggle-password', function(e) {
-                e.preventDefault();
-                const input = $($(this).data('target'));
-                const icon = $(this).find('i');
-                const isPassword = input.attr('type') === 'password';
-                input.attr('type', isPassword ? 'text' : 'password');
-                icon.toggleClass('zmdi-eye-off zmdi-eye', isPassword);
-            });
-
-            const remembered = localStorage.getItem('rememberedEmail');
-            if (remembered) {
-                $('#email').val(remembered);
-                $('#user-checkbox').prop('checked', true);
-            }
-            $('#user-checkbox').on('change', function() {
-                if (this.checked) {
-                    localStorage.setItem('rememberedEmail', $('#email').val());
-                } else {
-                    localStorage.removeItem('rememberedEmail');
-                }
             });
         });
     </script>
 </body>
-
 </html>

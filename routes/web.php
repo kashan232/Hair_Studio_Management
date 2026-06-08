@@ -22,6 +22,7 @@ Route::prefix('stylist')->name('stylist.')->group(function () {
     
     // Stylist My Bookings
     Route::get('/my-bookings', [HairstylistPortalController::class, 'myBookings'])->name('my_bookings')->middleware('auth');
+    Route::post('/my-bookings/{id}/cancel', [HairstylistPortalController::class, 'cancelBooking'])->name('cancel_booking')->middleware('auth');
 });
 
 Route::middleware(['auth', 'staff'])->group(function () {
@@ -69,11 +70,32 @@ Route::middleware(['auth', 'staff'])->group(function () {
     // Bookings Management CRUD Routes
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::post('/bookings/update-status/{id}', [BookingController::class, 'updateStatus'])->name('bookings.update_status');
+
+    // Coupons Management CRUD Routes
+    Route::get('/coupons', [\App\Http\Controllers\CouponController::class, 'index'])->name('coupons.index');
+    Route::post('/coupons/store', [\App\Http\Controllers\CouponController::class, 'store'])->name('coupons.store');
+    Route::post('/coupons/delete/{id}', [\App\Http\Controllers\CouponController::class, 'destroy'])->name('coupons.destroy');
 });
 
 // Stylist Public Payment Link for Approved Overnight Bookings
 Route::get('/stylist/bookings/{id}/pay', [BookingController::class, 'payBalance'])->name('stylist.bookings.pay');
+Route::post('/stylist/coupon/apply', [\App\Http\Controllers\CouponController::class, 'apply'])->name('stylist.coupon.apply');
 Route::post('/stylist/bookings/{id}/pay/intent', [BookingController::class, 'processBalancePayment'])->name('stylist.bookings.pay.intent');
 Route::get('/stylist/bookings/{id}/pay/success', [BookingController::class, 'balancePaymentSuccess'])->name('stylist.bookings.pay.success');
 
 require __DIR__.'/auth.php';
+
+Route::get('/test-multi', function () {
+    session([
+        'stylist_booking.start_time' => \Carbon\Carbon::today()->setHour(13)->format('Y-m-d H:i:s'),
+        'stylist_booking.end_time' => \Carbon\Carbon::today()->setHour(15)->format('Y-m-d H:i:s'),
+        'stylist_booking.availability' => [
+            'status' => 'multi_chair',
+            'chair_ids' => [1, 2],
+            'schedule' => [1, 2],
+        ],
+        'stylist_booking.step' => 2
+    ]);
+    return redirect('/stylist/book?step=2');
+});
+

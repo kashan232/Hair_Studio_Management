@@ -251,7 +251,7 @@
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <p class="mb-1 small opacity-75">Today's Estimated Revenue</p>
-                        <p class="mb-0 display-6 fw-bold" style="color: #fff;">Rs. {{ number_format($stats['today_revenue']) }}</p>
+                        <p class="mb-0 display-6 fw-bold" style="color: #fff;">£{{ number_format($stats['today_revenue']) }}</p>
                         <p class="small opacity-75 mb-0">From {{ $stats['today_appointments'] }} bookings</p>
                     </div>
                 </div>
@@ -338,7 +338,7 @@
                                             <td class="fw-semibold">{{ $appt['customer'] }}</td>
                                             <td>{{ $appt['service'] }}</td>
                                             <td>{{ $appt['stylist'] }}</td>
-                                            <td class="fw-bold">Rs. {{ number_format($appt['price']) }}</td>
+                                            <td class="fw-bold">£{{ number_format($appt['price']) }}</td>
                                             <td>
                                                 @if($appt['status'] == 'Completed')
                                                     <span class="badge-appt completed">{{ $appt['status'] }}</span>

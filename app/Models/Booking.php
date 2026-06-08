@@ -18,6 +18,7 @@ class Booking extends Model
     protected $casts = [
         'start_datetime' => 'datetime',
         'end_datetime' => 'datetime',
+        'expires_at' => 'datetime',
     ];
 
     public function user()

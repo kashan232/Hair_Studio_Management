@@ -5,13 +5,14 @@
 @section('css')
 <style>
     :root {
-        --app-bg: #f9f6f4;
+        --app-bg: #fdf8f6;
         --app-surface: #ffffff;
-        --app-accent: #d4a088;
-        --app-accent-dark: #b88670;
-        --app-text: #2c2724;
-        --app-text-muted: #8c827a;
-        --app-line: #ede5df;
+        --app-accent: rgba(70, 17, 17, 0.9);
+        --app-accent-dark: #461111;
+        --app-accent-soft: rgba(70, 17, 17, 0.1);
+        --app-text: #2a2420;
+        --app-muted: #8a7d72;
+        --app-line: #efe4dc;
         --glass-bg: rgba(255, 255, 255, 0.85);
         --shadow-sm: 0 4px 15px rgba(0,0,0,0.03);
         --shadow-md: 0 10px 30px rgba(0,0,0,0.05);
@@ -177,6 +178,7 @@
     .b-card.status-pending_approval::before { background: #ffa726; }
     .b-card.status-confirmed::before { background: #66bb6a; }
     .b-card.status-cancelled::before { background: #ef5350; }
+    .b-card.status-cancelled_late_response::before { background: #ef5350; }
 
     @media(min-width: 768px) {
         .b-card {
@@ -212,6 +214,7 @@
     .badge-pending_payment { background: #e3f2fd; color: #1565c0; }
     .badge-confirmed { background: #e8f5e9; color: #2e7d32; }
     .badge-cancelled { background: #ffebee; color: #c62828; }
+    .badge-cancelled_late_response { background: #ffebee; color: #c62828; }
 
     .b-details-grid {
         display: grid;
@@ -405,11 +408,24 @@
                                     @endif
                                 </span>
                             </div>
+                            @if($b->coupon_code)
+                            <div class="b-detail-item" style="grid-column: span 2;">
+                                <span class="b-detail-label">Discount Applied</span>
+                                <span class="b-detail-val text-success" style="color: #2e7d32; font-weight: 700;">
+                                    {{ $b->coupon_code }} (-£{{ number_format($b->discount_amount, 2) }})
+                                </span>
+                            </div>
+                            @endif
                         </div>
                     </div>
                     
                     <div class="b-actions">
                         @if($b->status === 'pending_payment')
+                            @if($b->expires_at)
+                                <div style="font-size: 0.85rem; color: #d32f2f; margin-bottom: 0.5rem; text-align: center;">
+                                    Expires in <span class="stylist-timer" style="font-weight:bold;" data-expires="{{ \Carbon\Carbon::parse($b->expires_at)->toIso8601String() }}">--:--</span>
+                                </div>
+                            @endif
                             <a href="{{ route('stylist.bookings.pay', $b->id) }}" class="btn-pay">
                                 Pay £{{ number_format($b->total_amount, 2) }}
                             </a>
@@ -420,8 +436,15 @@
                         @if($b->status === 'pending_approval')
                             <button class="btn-outline btn-disabled" disabled>Awaiting Admin</button>
                         @endif
-                        @if($b->status === 'cancelled')
+                        @if($b->status === 'cancelled' || $b->status === 'cancelled_late_response')
                             <button class="btn-outline btn-disabled" disabled>Cancelled</button>
+                        @endif
+                        
+                        @if($b->status === 'pending_approval')
+                            <form action="{{ route('stylist.cancel_booking', $b->id) }}" method="POST" style="margin:0; text-align:center;">
+                                @csrf
+                                <button type="submit" class="btn-outline" style="width:100%; border-color:#ffcdd2; color:#d32f2f; font-size:0.7rem;" onclick="return confirm('Are you sure you want to cancel this booking?');">Cancel Booking</button>
+                            </form>
                         @endif
                     </div>
                 </div>
@@ -429,4 +452,28 @@
         </div>
     @endif
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const timers = document.querySelectorAll('.stylist-timer');
+        if (timers.length > 0) {
+            setInterval(() => {
+                const now = new Date().getTime();
+                timers.forEach(timer => {
+                    const expiresAt = new Date(timer.getAttribute('data-expires')).getTime();
+                    const distance = expiresAt - now;
+                    
+                    if (distance <= 0) {
+                        timer.innerHTML = "Expired";
+                        timer.parentElement.style.color = "#8a7d72";
+                    } else {
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        timer.innerHTML = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+                    }
+                });
+            }, 1000);
+        }
+    });
+</script>
 @endsection
