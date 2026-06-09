@@ -23,17 +23,17 @@
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
     
     .summary-card { background: #fdfdfd; border: 1px solid var(--app-line); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
-    .summary-line { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--app-line); font-size: 0.9rem; }
+    .summary-line { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--app-line); font-size: 0.9rem; gap: 0.5rem; }
     .summary-line:last-child { border: none; padding-bottom: 0; }
-    .summary-line span:first-child { color: var(--app-muted); font-weight: 600; }
-    .summary-line span:last-child { font-weight: 700; }
+    .summary-line span:first-child { color: var(--app-muted); font-weight: 600; flex-shrink: 0; }
+    .summary-line span:last-child { font-weight: 700; text-align: right; word-break: break-all; }
 
     .total-highlight {
         background: linear-gradient(135deg, var(--app-accent) 0%, var(--app-accent-dark) 100%);
-        border-radius: 12px; padding: 1.1rem 1.3rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; color: #fff;
+        border-radius: 12px; padding: 1.1rem 1.3rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; color: #fff; flex-wrap: wrap; gap: 0.5rem;
     }
     .total-highlight-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; }
-    .total-highlight-amount { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; }
+    .total-highlight-amount { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; word-break: break-word; }
 
     /* Stripe Card UI */
     .stripe-card-wrap { background: var(--app-surface); border: 1px solid var(--app-line); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }

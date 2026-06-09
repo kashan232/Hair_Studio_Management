@@ -709,7 +709,7 @@
 
         @if($avail['status'] === 'single_chair' || $avail['status'] === 'multi_chair')
             <div class="av-card" style="max-width:800px; margin:0 auto; position: relative;">
-                <h3 class="av-title" style="text-align:center; margin-bottom:0.25rem;">SALON SEATING SUMMARY<br>- OPTION A: VISUAL SPLIT</h3>
+
                 <p style="text-align:center; font-size:0.95rem; font-weight:600; color:var(--app-text); margin-bottom:1.5rem;">
                     Your {{ session('stylist_booking.duration') }}-Hour Booking Details ({{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('g A') }} - {{ \Carbon\Carbon::parse(session('stylist_booking.end_time'))->format('g A') }}):
                 </p>
