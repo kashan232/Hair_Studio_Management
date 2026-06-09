@@ -39,6 +39,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        flex-wrap: wrap;
     }
 
     .profile-info {
@@ -111,6 +112,21 @@
     .btn-logout:hover {
         border-color: var(--app-accent);
         color: var(--app-accent-dark);
+    }
+    
+    @media (max-width: 480px) {
+        .top-profile-inner {
+            justify-content: center;
+        }
+        .profile-info {
+            flex: none;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 0.25rem;
+        }
+        .row-2 {
+            grid-template-columns: 1fr;
+        }
     }
 
     .btn-signin-link {
@@ -728,7 +744,6 @@
                         <input type="hidden" name="action" value="accept_single_chair">
                         <input type="hidden" name="selected_chair_id" id="selected_chair_id" value="{{ $assignedChair }}">
                         <button type="submit" id="continue-btn" class="btn-app btn-app-next" style="width:100%;margin-bottom:1rem;">Confirm & Continue</button>
-                        <a href="{{ route('stylist.book', ['step' => 1]) }}" class="btn-app btn-app-back" style="width:100%;text-align:center;display:block;text-decoration:none;border-color:transparent;background:transparent;">Go back</a>
                     </form>
                 @else
                     <form method="POST" action="{{ route('stylist.book.availability.confirm') }}" style="margin-top: 1.5rem;">
@@ -763,7 +778,6 @@
                 <div class="av-icon">❌</div>
                 <h3 class="av-title">Unavailable</h3>
                 <p class="av-desc">We are fully booked for the foreseeable future from this start date.</p>
-                <a href="{{ route('stylist.book', ['step' => 1]) }}" class="btn-app btn-app-back">Go back</a>
             </div>
         @endif
     @endif
@@ -819,9 +833,9 @@
     @endif
 
     @if($step === 4)
-        <div class="coupon-wrap" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-            <input type="text" id="coupon_code" class="coupon-input" placeholder="enter promo code" style="flex: 1; padding: 0.7rem 0.85rem; border: 1.5px solid var(--app-line); border-radius: 8px; font-size: 0.9rem;">
-            <button type="button" id="apply-coupon-btn" class="btn-apply-coupon" style="background: var(--app-muted); color: #fff; border: none; border-radius: 8px; padding: 0 1.5rem; font-weight: 600; cursor: pointer;">Apply</button>
+        <div class="coupon-wrap" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <input type="text" id="coupon_code" class="coupon-input" placeholder="enter promo code" style="flex: 1 1 200px; padding: 0.7rem 0.85rem; border: 1.5px solid var(--app-line); border-radius: 8px; font-size: 0.9rem;">
+            <button type="button" id="apply-coupon-btn" class="btn-apply-coupon" style="flex: 1 1 auto; background: var(--app-muted); color: #fff; border: none; border-radius: 8px; padding: 0.7rem 1.5rem; font-weight: 600; cursor: pointer;">Apply</button>
         </div>
         <div id="discount-line" style="display: none; justify-content: space-between; margin-bottom: 1rem; color: #2e7d32; font-weight: 600;">
             <span>Discount</span><span id="discount-amount-text">-£0.00</span>
