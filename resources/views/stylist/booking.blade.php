@@ -408,6 +408,16 @@
     .summary-line span:first-child { color: var(--app-muted); font-weight: 600; }
     .summary-line span:last-child { text-align: right; }
 
+    .step-5-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .step-5-actions .btn-app {
+        min-width: 180px;
+    }
+
     @media (max-width: 480px) {
         .summary-card {
             padding: 1rem;
@@ -422,6 +432,13 @@
         .summary-line span:last-child {
             text-align: left;
             font-weight: 600;
+        }
+        .step-5-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .step-5-actions .btn-app {
+            width: 100%;
         }
     }
 
@@ -955,13 +972,13 @@
                 <div class="summary-line"><span>Amount paid</span><span><strong>£{{ number_format($computedTotal, 2) }}</strong></span></div>
             @endif
         </div>
-        <div style="text-align:center;margin-top:1.5rem;display:flex;justify-content:center;gap:1rem;">
+        <div class="step-5-actions">
             @auth
-                <a href="{{ route('stylist.my_bookings') }}" class="btn-app btn-app-next" style="min-width:180px;text-decoration:none;">View My Bookings</a>
+                <a href="{{ route('stylist.my_bookings') }}" class="btn-app btn-app-next">View My Bookings</a>
             @endauth
-            <form method="POST" action="{{ route('stylist.book.reset') }}" style="display:inline;">
+            <form method="POST" action="{{ route('stylist.book.reset') }}" style="width: 100%;">
                 @csrf
-                <button type="submit" class="btn-app btn-app-back" style="min-width:180px;">Make another booking</button>
+                <button type="submit" class="btn-app btn-app-back" style="width: 100%;">Make another booking</button>
             </form>
         </div>
     @endif
