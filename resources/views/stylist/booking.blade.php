@@ -459,12 +459,13 @@
         display: block;
     }
     .stripe-input {
-        padding: 12px 14px;
+        padding: 14px 12px;
         border: 1.5px solid var(--app-line);
         border-radius: 8px;
         background: #fff;
         transition: border-color 0.2s;
-        height: 48px;
+        display: block;
+        width: 100%;
         box-sizing: border-box;
     }
     .stripe-input.StripeElement--focus {
