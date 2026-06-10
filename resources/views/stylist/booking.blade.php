@@ -342,6 +342,11 @@
             padding: 0 0.75rem;
             font-size: 0.7rem;
             letter-spacing: 0.5px;
+            width: 100%;
+        }
+        .app-footer-nav {
+            flex-direction: column-reverse;
+            gap: 1rem;
         }
     }
 
@@ -396,12 +401,29 @@
         justify-content: space-between;
         padding: 0.65rem 0;
         border-bottom: 1px solid var(--app-line);
+        word-break: break-word;
         font-size: 0.85rem;
     }
-
     .summary-line:last-child { border-bottom: none; padding-bottom: 0; }
     .summary-line span:first-child { color: var(--app-muted); font-weight: 600; }
     .summary-line span:last-child { text-align: right; }
+
+    @media (max-width: 480px) {
+        .summary-card {
+            padding: 1rem;
+        }
+        .summary-line {
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .summary-line span:first-child {
+            font-size: 0.8rem;
+        }
+        .summary-line span:last-child {
+            text-align: left;
+            font-weight: 600;
+        }
+    }
 
     .mb-3 { margin-bottom: 1.5rem; }
 
