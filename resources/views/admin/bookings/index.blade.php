@@ -42,7 +42,7 @@
                                 <tbody>
                                     @foreach($bookings as $b)
                                         <tr>
-                                            <td>#{{ $b->id }}</td>
+                                            <td data-order="{{ $b->id }}">#{{ $b->id }}</td>
                                             <td>{{ $b->user->name }}<br><small class="text-muted">{{ $b->user->email }}</small></td>
                                             <td>
                                                 <strong>Start:</strong> {{ \Carbon\Carbon::parse($b->start_datetime)->format('d M Y, h:i A') }}<br>
