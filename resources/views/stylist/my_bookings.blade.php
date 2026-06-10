@@ -45,6 +45,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
     }
     .profile-wrap {
         display: flex;
@@ -111,6 +112,43 @@
     .btn-logout:hover {
         background: #ffebee;
         border-color: #ef5350;
+    }
+
+    .header-logo-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    @media (max-width: 850px) {
+        .top-nav-inner {
+            flex-direction: column;
+            gap: 1.2rem;
+            position: relative;
+            padding-top: 0.5rem;
+        }
+        .header-logo-center {
+            position: static;
+            transform: none;
+            order: -1;
+            width: 100%;
+            text-align: center;
+        }
+        .profile-wrap {
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        .nav-actions {
+            width: 100%;
+            justify-content: center;
+            flex-direction: row;
+            gap: 0.5rem;
+        }
+        .nav-actions .btn-outline {
+            flex: 1;
+            text-align: center;
+        }
     }
 
     /* -------------------------------------
@@ -346,11 +384,16 @@
                 <p>Stylist Portal</p>
             </div>
         </div>
+
+        <div class="header-logo-center">
+            <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 45px; width: auto; object-fit: contain;">
+        </div>
+
         <div class="nav-actions">
             <a href="{{ route('stylist.book') }}" class="btn-outline btn-new-booking">New Booking</a>
-            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+            <form method="POST" action="{{ route('logout') }}" style="margin:0; flex:1; display:flex;">
                 @csrf
-                <button type="submit" class="btn-outline btn-logout">Logout</button>
+                <button type="submit" class="btn-outline btn-logout" style="width:100%;">Logout</button>
             </form>
         </div>
     </div>
