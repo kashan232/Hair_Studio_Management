@@ -466,9 +466,20 @@
         display: flex;
         gap: 1rem;
         margin-top: 1rem;
+        flex-wrap: wrap;
     }
     .stripe-field {
         flex: 1;
+        min-width: 120px;
+    }
+    @media (max-width: 480px) {
+        .stripe-row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .stripe-field {
+            width: 100%;
+        }
     }
     #stripe-error-msg {
         color: #c62828;

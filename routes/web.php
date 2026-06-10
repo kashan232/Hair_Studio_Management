@@ -42,6 +42,9 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/chairs/update/{id}', [ChairController::class, 'update'])->name('chairs.update');
     Route::post('/chairs/delete/{id}', [ChairController::class, 'destroy'])->name('chairs.destroy');
 
+    // Advanced Reporting Route
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+
     // Pricing & Slots Management Routes
     Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing.index');
     Route::post('/pricing/store', [\App\Http\Controllers\PricingController::class, 'store'])->name('pricing.store');

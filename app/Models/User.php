@@ -78,4 +78,12 @@ class User extends Authenticatable
 
         return $this->roleRelation && $this->roleRelation->slug === 'hairstylist';
     }
+
+    /**
+     * Get the bookings associated with the user.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

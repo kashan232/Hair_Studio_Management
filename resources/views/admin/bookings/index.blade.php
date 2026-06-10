@@ -110,6 +110,21 @@
 
 @section('JScript')
 <script>
+    $(document).ready(function() {
+        $('#basic-datatable').DataTable({
+            "order": [[ 0, "desc" ]],
+            "pageLength": 10,
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Search bookings...",
+                "paginate": {
+                    "next": '<i class="fe fe-chevron-right"></i>',
+                    "previous": '<i class="fe fe-chevron-left"></i>'
+                }
+            }
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", function() {
         const timers = document.querySelectorAll('.admin-timer');
         if (timers.length > 0) {

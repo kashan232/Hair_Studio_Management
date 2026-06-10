@@ -365,9 +365,14 @@
                         <i class="zmdi zmdi-eye-off toggle-password" data-input="#login-password"></i>
                     </div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="remember-me">
-                        <label for="remember-me">Remember this device</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div class="checkbox-group" style="margin-bottom: 0;">
+                            <input type="checkbox" id="remember-me" name="remember">
+                            <label for="remember-me">Remember me</label>
+                        </div>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" style="font-size: 0.8rem; color: var(--brand-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                        @endif
                     </div>
 
                     <button type="submit" class="btn-primary">Secure Sign In</button>

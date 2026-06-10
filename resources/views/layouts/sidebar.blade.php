@@ -46,6 +46,13 @@
                 </li>
 
                 <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('reports*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
+                        <i class="side-menu__icon fe fe-pie-chart"></i>
+                        <span class="side-menu__label">Advanced Reports</span>
+                    </a>
+                </li>
+
+                <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('coupons*') ? 'active' : '' }}" href="{{ route('coupons.index') }}">
                         <i class="side-menu__icon fe fe-tag"></i>
                         <span class="side-menu__label">Coupons</span>

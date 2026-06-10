@@ -3,51 +3,102 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Booking;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $today = Carbon::today();
+        
         // Premium Hair Studio Dashboard Stats
+        $today_appointments = Booking::whereDate('start_datetime', $today)->count();
+        $today_revenue = Booking::whereDate('start_datetime', $today)
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->sum('total_amount');
+            
+        $active_stylists = User::where(function($q) {
+            $q->where('role', 'hairstylist')
+              ->orWhereHas('roleRelation', function($query) {
+                  $query->where('slug', 'hairstylist');
+              });
+        })->count();
+        
+        $total_customers = User::where(function($q) {
+            $q->whereNotIn('role', ['admin', 'hairstylist'])
+              ->whereDoesntHave('roleRelation', function($query) {
+                  $query->whereIn('slug', ['admin', 'hairstylist']);
+              });
+        })->count();
+
         $stats = [
-            'today_appointments' => 18,
-            'active_stylists' => 6,
-            'today_revenue' => 45800,
-            'total_customers' => 342,
+            'today_appointments' => $today_appointments,
+            'active_stylists' => $active_stylists,
+            'today_revenue' => $today_revenue,
+            'total_customers' => $total_customers,
             'total_users' => User::count(),
             
             // Stylists info
-            'stylists' => [
-                ['name' => 'Aisha Khan', 'role' => 'Master Stylist', 'status' => 'Active', 'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'],
-                ['name' => 'Zain Ahmed', 'role' => 'Senior Hair Artist', 'status' => 'Active', 'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'],
-                ['name' => 'Sara Ali', 'role' => 'Color Specialist', 'status' => 'On Break', 'avatar' => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'],
-                ['name' => 'Bilal Mustafa', 'role' => 'Barber Expert', 'status' => 'Active', 'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'],
-            ],
+            'stylists' => User::where(function($q) {
+                $q->where('role', 'hairstylist')
+                  ->orWhereHas('roleRelation', function($query) {
+                      $query->where('slug', 'hairstylist');
+                  });
+            })->take(4)->get()->map(function($user) {
+                return [
+                    'name' => $user->name,
+                    'role' => 'Stylist',
+                    'status' => 'Active',
+                    'avatar' => 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=c6a34d&color=fff'
+                ];
+            })->toArray(),
 
             // Today's appointments schedule
-            'appointments' => [
-                ['time' => '10:00 AM', 'customer' => 'Mariam Saeed', 'service' => 'Balayage & Haircut', 'stylist' => 'Aisha Khan', 'price' => 12500, 'status' => 'Completed'],
-                ['time' => '11:30 AM', 'customer' => 'Hamza Lodhi', 'service' => 'Classic Beard Trim', 'stylist' => 'Bilal Mustafa', 'price' => 3500, 'status' => 'Completed'],
-                ['time' => '01:00 PM', 'customer' => 'Kinza Bashir', 'service' => 'Deep Conditioning Spa', 'stylist' => 'Sara Ali', 'price' => 6000, 'status' => 'In Progress'],
-                ['time' => '02:30 PM', 'customer' => 'Daniyal Shah', 'service' => 'Gentleman Haircut', 'stylist' => 'Zain Ahmed', 'price' => 4000, 'status' => 'Scheduled'],
-                ['time' => '04:00 PM', 'customer' => 'Sana Malik', 'service' => 'Global Color & Styling', 'stylist' => 'Aisha Khan', 'price' => 15000, 'status' => 'Scheduled'],
-                ['time' => '05:30 PM', 'customer' => 'Omar Farooq', 'service' => 'Keratin Treatment', 'stylist' => 'Zain Ahmed', 'price' => 18000, 'status' => 'Scheduled'],
-            ],
+            'appointments' => Booking::with(['user', 'chairs'])
+                ->whereDate('start_datetime', $today)
+                ->orderBy('start_datetime')
+                ->take(6)->get()->map(function($b) {
+                    return [
+                        'time' => Carbon::parse($b->start_datetime)->format('h:i A'),
+                        'customer' => $b->user ? $b->user->name : 'Guest',
+                        'service' => $b->chairs->pluck('name')->implode(', '),
+                        'stylist' => 'N/A', // Update if bookings have specific stylists assigned
+                        'price' => $b->total_amount,
+                        'status' => ucfirst(str_replace('_', ' ', $b->status))
+                    ];
+                })->toArray(),
 
-            // Services distribution (for chart)
+            // Services distribution (for chart) - static for now or can be derived from chairs booked
             'services_chart' => [
                 'labels' => ['Haircut & Beard', 'Hair Coloring', 'Treatments', 'Hair Styling', 'Spa & Massage'],
                 'data' => [45, 25, 15, 10, 5],
             ],
 
-            // Revenue chart (weekly)
-            'revenue_chart' => [
-                'categories' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                'data' => [32000, 48000, 41000, 55000, 68000, 85000, 72000],
-            ]
+            // Revenue chart (weekly) - Calculate last 7 days revenue
+            'revenue_chart' => $this->getWeeklyRevenue(),
         ];
 
         return view('index', compact('stats'));
+    }
+    
+    private function getWeeklyRevenue()
+    {
+        $categories = [];
+        $data = [];
+        
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $categories[] = $date->format('D');
+            $data[] = Booking::whereDate('start_datetime', $date)
+                ->whereIn('status', ['confirmed', 'completed'])
+                ->sum('total_amount');
+        }
+        
+        return [
+            'categories' => $categories,
+            'data' => $data
+        ];
     }
 }
