@@ -459,15 +459,12 @@
         display: block;
     }
     .stripe-input {
-        padding: 0.7rem 0.85rem;
+        padding: 12px 14px;
         border: 1.5px solid var(--app-line);
         border-radius: 8px;
         background: #fff;
         transition: border-color 0.2s;
-        min-height: 48px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        height: 48px;
         box-sizing: border-box;
     }
     .stripe-input.StripeElement--focus {
@@ -1086,7 +1083,7 @@
     const elements = stripe.elements();
 
     const cardStyle = {
-        base: { fontFamily: "'Montserrat', sans-serif", fontSize: '15px', color: '#2a2420', '::placeholder': { color: '#b0a49e' } },
+        base: { fontFamily: "'Montserrat', sans-serif", fontSize: '16px', color: '#2a2420', '::placeholder': { color: '#b0a49e' } },
         invalid: { color: '#c62828' },
     };
 
