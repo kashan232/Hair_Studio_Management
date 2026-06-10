@@ -464,6 +464,11 @@
         border-radius: 8px;
         background: #fff;
         transition: border-color 0.2s;
+        min-height: 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
     }
     .stripe-input.StripeElement--focus {
         border-color: var(--app-accent);
