@@ -336,6 +336,15 @@
         border: none;
     }
 
+    @media (max-width: 480px) {
+        .btn-app {
+            height: 40px;
+            padding: 0 0.75rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+    }
+
     .btn-app-back {
         background: #fff;
         border: 1px solid var(--app-line);
@@ -830,15 +839,13 @@
                 <input type="text" name="mobile" id="mobile"
                     value="{{ old('mobile', $user?->mobile ?? ($guestDetails['mobile'] ?? '')) }}">
             </div>
-            <div class="row-2">
-                <div class="form-field">
-                    <label for="password">{{ $user ? 'New password (optional)' : 'Password *' }}</label>
-                    <input type="password" name="password" id="password" {{ $user ? '' : 'required' }} minlength="6" placeholder="Min. 6 characters">
-                </div>
-                <div class="form-field">
-                    <label for="password_confirmation">Confirm password</label>
-                    <input type="password" name="password_confirmation" id="password_confirmation" {{ $user ? '' : 'required' }} minlength="6">
-                </div>
+            <div class="form-field">
+                <label for="password">{{ $user ? 'New password (optional)' : 'Password *' }}</label>
+                <input type="password" name="password" id="password" {{ $user ? '' : 'required' }} minlength="6" placeholder="Min. 6 characters">
+            </div>
+            <div class="form-field">
+                <label for="password_confirmation">Confirm password</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" {{ $user ? '' : 'required' }} minlength="6">
             </div>
             
             <div style="margin-top: 1.5rem; display: flex; align-items: flex-start; gap: 0.6rem;">
