@@ -48,6 +48,14 @@
         
         <use id="chair-{{ $cid }}" x="{{ $data['x'] }}" y="{{ $data['y'] }}" xlink:href="{{ $data['href'] }}" @if($isSelected) filter="url(#chair-green)" @endif/>
         <text x="{{ $data['x'] > 400 ? $data['x'] + 160 : $data['x'] - 10 }}" y="{{ $data['y'] + 80 }}" font-size="22" font-family="Arial, sans-serif" fill="#333333" font-weight="bold" text-anchor="{{ $data['x'] > 400 ? 'start' : 'end' }}" style="pointer-events:none;">{{ $loop->iteration }}</text>
+    @endforeach
+
+    @foreach($chairData as $cid => $data)
+        @php
+            $isMultiAssigned = in_array($cid, $multiChairSplit);
+            $isSelected = ($avail['status'] === 'single_chair' && $cid == $assignedChair) || ($avail['status'] === 'multi_chair' && $isMultiAssigned);
+            $chairName = $allChairs[$cid] ?? 'Chair ' . $cid;
+        @endphp
         
         @if($isSelected)
             @php
@@ -62,7 +70,7 @@
                     $hourLabel = 'Full Duration';
                 }
             @endphp
-            <rect x="{{ $data['x'] - 20 }}" y="{{ $data['y'] - 60 }}" width="190" height="45" fill="#fff" rx="6" filter="drop-shadow(0px 4px 10px rgba(0,0,0,0.15))"/>
+            <rect x="{{ $data['x'] - 20 }}" y="{{ $data['y'] - 60 }}" width="230" height="45" fill="#fff" rx="6" filter="drop-shadow(0px 4px 10px rgba(0,0,0,0.15))"/>
             <text x="{{ $data['x'] - 10 }}" y="{{ $data['y'] - 42 }}" font-size="12" fill="#111" font-weight="bold">{{ $chairName }}: {{ $startHour }} - {{ $endHour }}</text>
             <text x="{{ $data['x'] - 10 }}" y="{{ $data['y'] - 26 }}" font-size="11" fill="#666">({{ $hourLabel }})</text>
         @endif
