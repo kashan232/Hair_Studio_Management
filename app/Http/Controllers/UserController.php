@@ -13,6 +13,12 @@ class UserController extends Controller
     {
         $query = User::with('roleRelation');
 
+        // Exclude Super Admins from being listed to prevent accidental modification
+        $query->where(function($q) {
+            $q->where('designation', '!=', 'Super Admin')
+              ->orWhereNull('designation');
+        })->where('role', '!=', 'super_admin');
+
         // Search filter
         if ($request->filled('search')) {
             $search = $request->input('search');
