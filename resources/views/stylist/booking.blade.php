@@ -659,7 +659,8 @@
         cursor: pointer; transition: all 0.2s;
     }
     .dur-btn:hover { border-color: var(--app-accent); }
-    .dur-val { font-size: 1.5rem; font-weight: 800; width: 60px; text-align: center; }
+    .dur-val { font-size: 1.5rem; font-weight: 800; width: 60px; text-align: center; border: none; background: transparent; outline: none; -moz-appearance: textfield; }
+    .dur-val::-webkit-outer-spin-button, .dur-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
     /* Availability Options UI */
     .av-card {
@@ -771,7 +772,7 @@
                     <div class="schedule-panel-title" style="margin-top:2rem;">3. Duration (Hours)</div>
                     <div class="duration-control">
                         <button type="button" class="dur-btn" id="dur-minus">&minus;</button>
-                        <div class="dur-val" id="dur-display">{{ session('stylist_booking.duration', 2) }}</div>
+                        <input type="number" class="dur-val" id="dur-display" value="{{ session('stylist_booking.duration', 2) }}" min="2">
                         <button type="button" class="dur-btn" id="dur-plus">&plus;</button>
                     </div>
                     <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Minimum 2 hours</p>
@@ -881,14 +882,26 @@
                 <input type="text" name="mobile" id="mobile"
                     value="{{ old('mobile', $user?->mobile ?? ($guestDetails['mobile'] ?? '')) }}">
             </div>
-            <div class="form-field">
-                <label for="password">{{ $user ? 'New password (optional)' : 'Password *' }}</label>
-                <input type="password" name="password" id="password" {{ $user ? '' : 'required' }} minlength="6" placeholder="Min. 6 characters">
-            </div>
-            <div class="form-field">
-                <label for="password_confirmation">Confirm password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" {{ $user ? '' : 'required' }} minlength="6">
-            </div>
+            @if(!$user)
+                <div class="form-field">
+                    <label for="password">Password *</label>
+                    <input type="password" name="password" id="password" required minlength="6" placeholder="Min. 6 characters">
+                </div>
+                <div class="form-field">
+                    <label for="password_confirmation">Confirm password *</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" required minlength="6">
+                </div>
+            @else
+                <div style="margin-top: 1rem; padding: 0.85rem; background: #fdfdfd; border: 1px solid var(--app-line); border-radius: 8px; font-size: 0.8rem; color: var(--app-muted);">
+                    <strong>Note:</strong> You are booking this session using your logged-in account (<strong>{{ $user->email }}</strong>). 
+                    <br>
+                    Want to use another account? 
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-quick').submit();" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Log out and create a new one</a>.
+                </div>
+                <form id="logout-form-quick" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            @endif
             
             <div style="margin-top: 1.5rem; display: flex; align-items: flex-start; gap: 0.6rem;">
                 <input type="checkbox" id="agree_terms" name="agree_terms" required style="margin-top: 0.25rem; width: 18px; height: 18px; accent-color: var(--app-accent-dark); cursor: pointer;">
@@ -897,6 +910,13 @@
                     <a href="https://eladeuk.com/terms-and-conditions/" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Terms & Conditions</a> and 
                     <a href="https://eladeuk.com/booking-cancellation-policy/" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Booking & Cancellation Policy</a>, 
                     including the 24-hour cancellation and rescheduling terms.
+                </label>
+            </div>
+            
+            <div style="margin-top: 1rem; display: flex; align-items: flex-start; gap: 0.6rem;">
+                <input type="checkbox" id="consent_photography" name="consent_photography" value="1" style="margin-top: 0.25rem; width: 18px; height: 18px; accent-color: var(--app-accent-dark); cursor: pointer;">
+                <label for="consent_photography" style="font-size: 0.8rem; line-height: 1.5; color: var(--app-text); cursor: pointer;">
+                    I consent to photography and videography <span style="color: var(--app-muted);">(optional)</span>
                 </label>
             </div>
             
@@ -972,13 +992,13 @@
                 <div class="summary-line"><span>Amount paid</span><span><strong>£{{ number_format($computedTotal, 2) }}</strong></span></div>
             @endif
         </div>
-        <div class="step-5-actions">
+        <div class="step-5-actions" style="display: flex; gap: 1rem; width: 100%;">
             @auth
-                <a href="{{ route('stylist.my_bookings') }}" class="btn-app btn-app-next">View My Bookings</a>
+                <a href="{{ route('stylist.my_bookings') }}" class="btn-app btn-app-next" style="flex: 1; text-align: center; white-space: nowrap;">View My Bookings</a>
             @endauth
-            <form method="POST" action="{{ route('stylist.book.reset') }}" style="width: 100%;">
+            <form method="POST" action="{{ route('stylist.book.reset') }}" style="flex: 1; display: flex; margin: 0;">
                 @csrf
-                <button type="submit" class="btn-app btn-app-back" style="width: 100%;">Make another booking</button>
+                <button type="submit" class="btn-app btn-app-back" style="width: 100%; white-space: nowrap;">Make another booking</button>
             </form>
         </div>
     @endif
@@ -1099,14 +1119,33 @@
     });
 
     document.getElementById('dur-minus').addEventListener('click', () => {
-        if (duration > 2) { duration--; document.getElementById('dur-display').textContent = duration; document.getElementById('hidden-duration').value = duration; }
+        if (duration > 2) { duration--; document.getElementById('dur-display').value = duration; document.getElementById('hidden-duration').value = duration; }
     });
     document.getElementById('dur-plus').addEventListener('click', () => {
-        duration++; document.getElementById('dur-display').textContent = duration; document.getElementById('hidden-duration').value = duration;
+        duration++; document.getElementById('dur-display').value = duration; document.getElementById('hidden-duration').value = duration;
+    });
+    document.getElementById('dur-display').addEventListener('change', (e) => {
+        let val = parseInt(e.target.value);
+        if (isNaN(val) || val < 2) val = 2;
+        duration = val;
+        e.target.value = duration;
+        document.getElementById('hidden-duration').value = duration;
     });
 
     document.getElementById('schedule-form').addEventListener('submit', function(ev) {
-        if (!sDate || !sTime) { ev.preventDefault(); alert('Please select a start date and time.'); }
+        if (!sDate || !sTime) { 
+            ev.preventDefault(); 
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Missing Selection', 
+                    text: 'Please select a start date and time before continuing.', 
+                    confirmButtonColor: '#461111' 
+                });
+            } else {
+                alert('Please select a start date and time.'); 
+            }
+        }
     });
 
     renderCal(); renderSlots();

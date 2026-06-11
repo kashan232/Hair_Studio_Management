@@ -13,9 +13,24 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        // Default date range: Last 30 days
-        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : Carbon::today()->subDays(29)->startOfDay();
-        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : Carbon::today()->endOfDay();
+        $filter = $request->input('filter');
+        if ($filter) {
+            $endDate = Carbon::today()->endOfDay();
+            if ($filter === 'daily') {
+                $startDate = Carbon::today()->startOfDay();
+            } elseif ($filter === 'weekly') {
+                $startDate = Carbon::today()->subDays(6)->startOfDay();
+            } elseif ($filter === 'monthly') {
+                $startDate = Carbon::today()->subDays(29)->startOfDay();
+            } elseif ($filter === 'yearly') {
+                $startDate = Carbon::today()->subDays(364)->startOfDay();
+            } else {
+                $startDate = Carbon::today()->subDays(29)->startOfDay();
+            }
+        } else {
+            $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : Carbon::today()->subDays(29)->startOfDay();
+            $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : Carbon::today()->endOfDay();
+        }
 
         // 1. Core Metrics
         $totalBookings = Booking::whereBetween('start_datetime', [$startDate, $endDate])->count();
@@ -37,12 +52,24 @@ class ReportController extends Controller
         ->whereIn('status', ['confirmed', 'completed'])
         ->groupBy('date')
         ->orderBy('date')
-        ->get();
+        ->pluck('revenue', 'date')
+        ->toArray();
 
-        $trendDates = $revenueTrends->pluck('date')->map(function($date) {
-            return Carbon::parse($date)->format('M d');
-        })->toArray();
-        $trendRevenues = $revenueTrends->pluck('revenue')->toArray();
+        $trendDates = [];
+        $trendRevenues = [];
+
+        // Generate all dates in the range
+        $currentDate = $startDate->copy()->startOfDay();
+        $end = $endDate->copy()->startOfDay();
+
+        while ($currentDate->lte($end)) {
+            $dateString = $currentDate->format('Y-m-d');
+            $trendDates[] = $currentDate->format('M d');
+            // If we have revenue for this date, use it, else 0
+            $trendRevenues[] = isset($revenueTrends[$dateString]) ? (float) $revenueTrends[$dateString] : 0.0;
+            
+            $currentDate->addDay();
+        }
 
         // 3. Top Stylists (Customers) - Since the system currently doesn't link stylist to booking directly,
         // we'll show Top Customers who made the most bookings/revenue in this period.

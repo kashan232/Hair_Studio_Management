@@ -55,6 +55,17 @@
         <!-- PAGE-HEADER END -->
 
         <!-- FILTERS -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex gap-2">
+                    <a href="{{ route('reports.index', ['filter' => 'daily']) }}" class="btn btn-sm {{ request('filter') == 'daily' ? 'btn-dark' : 'btn-outline-dark' }}">Daily</a>
+                    <a href="{{ route('reports.index', ['filter' => 'weekly']) }}" class="btn btn-sm {{ request('filter') == 'weekly' ? 'btn-dark' : 'btn-outline-dark' }}">Weekly</a>
+                    <a href="{{ route('reports.index', ['filter' => 'monthly']) }}" class="btn btn-sm {{ request('filter') == 'monthly' || (!request()->has('filter') && !request()->has('start_date')) ? 'btn-dark' : 'btn-outline-dark' }}">Monthly</a>
+                    <a href="{{ route('reports.index', ['filter' => 'yearly']) }}" class="btn btn-sm {{ request('filter') == 'yearly' ? 'btn-dark' : 'btn-outline-dark' }}">Yearly</a>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
@@ -122,61 +133,42 @@
             </div>
         </div>
 
-        <!-- TABLES -->
-        <div class="row">
+        <!-- PREMIUM ANIMATED CHARTS -->
+        <div class="row mb-4">
+            <!-- Top Customers Column Chart -->
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card h-100" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
                     <div class="card-header border-bottom-0">
-                        <h3 class="card-title">Top Customers</h3>
+                        <h3 class="card-title">Top Customers by Revenue</h3>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-nowrap border-bottom datatable">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Bookings</th>
-                                        <th>Spent</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($topCustomers as $customer)
-                                    <tr>
-                                        <td>{{ $customer->name }}</td>
-                                        <td>{{ $customer->bookings_count }}</td>
-                                        <td class="text-success font-weight-bold">£{{ number_format($customer->bookings_sum_total_amount, 2) }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                        <div id="top-customers-chart"></div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Chair Utilization Bar Chart -->
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card h-100" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
                     <div class="card-header border-bottom-0">
                         <h3 class="card-title">Chair Utilization</h3>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-nowrap border-bottom datatable">
-                                <thead>
-                                    <tr>
-                                        <th>Chair</th>
-                                        <th>Times Booked</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($chairUtilization as $chair)
-                                    <tr>
-                                        <td>{{ $chair->name }}</td>
-                                        <td><span class="badge bg-primary rounded-pill">{{ $chair->bookings_count }}</span></td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                        <div id="chair-utilization-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Booking Status Distribution Donut Chart -->
+            <div class="col-lg-6 col-md-12 mb-4">
+                <div class="card h-100" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div class="card-header border-bottom-0">
+                        <h3 class="card-title">Booking Status Distribution</h3>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <div id="status-distribution-chart" style="width: 100%;"></div>
                     </div>
                 </div>
             </div>
@@ -187,64 +179,175 @@
 @endsection
 
 @section('JScript')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1"></script>
 <script>
     $(document).ready(function() {
-        $('.datatable').DataTable({
-            "pageLength": 5,
-            "lengthChange": false,
-            "language": {
-                "search": "",
-                "searchPlaceholder": "Search...",
-                "paginate": {
-                    "next": '<i class="fe fe-chevron-right"></i>',
-                    "previous": '<i class="fe fe-chevron-left"></i>'
-                }
-            }
-        });
 
-        // Revenue Chart
-        var options = {
+        // Revenue Chart (Clear Bar Chart)
+        var trendRevenues = {!! json_encode($trendRevenues) !!}.map(Number);
+        var optionsRevenue = {
             series: [{
                 name: 'Revenue',
-                data: {!! json_encode($trendRevenues) !!}
+                data: trendRevenues
             }],
             chart: {
                 height: 350,
-                type: 'area',
+                type: 'bar',
                 toolbar: { show: false },
                 fontFamily: 'Montserrat, sans-serif'
             },
-            colors: ['#c6a34d'],
-            dataLabels: { enabled: false },
-            stroke: { curve: 'smooth', width: 2 },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.4,
-                    opacityTo: 0.05,
-                    stops: [0, 90, 100]
+            colors: ['#2ecc71'],
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    columnWidth: '60%',
+                    dataLabels: {
+                        position: 'top',
+                    },
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) { return val > 0 ? "£" + val : ""; },
+                offsetY: -25,
+                style: {
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    colors: ["#121212"]
                 }
             },
             xaxis: {
                 categories: {!! json_encode($trendDates) !!},
-                axisBorder: { show: false },
-                axisTicks: { show: false }
+                axisBorder: { show: true, color: '#f1ece1' },
+                axisTicks: { show: false },
+                title: { text: 'Date', style: { color: '#8c7e6c', fontSize: '13px', fontWeight: 600 } }
             },
             yaxis: {
                 labels: {
                     formatter: function (value) { return "£" + value; }
-                }
+                },
+                title: { text: 'Revenue Earned', style: { color: '#8c7e6c', fontSize: '13px', fontWeight: 600 } }
             },
             grid: {
                 borderColor: '#f1ece1',
                 strokeDashArray: 4,
+                yaxis: { lines: { show: true } }
+            },
+            tooltip: {
+                theme: 'light',
+                y: { formatter: function (val) { return "£" + val; } }
             }
         };
+        new ApexCharts(document.querySelector("#revenue-chart"), optionsRevenue).render();
 
-        var chart = new ApexCharts(document.querySelector("#revenue-chart"), options);
-        chart.render();
+        // Top Customers Chart
+        var topCustomersNames = {!! json_encode($topCustomers->pluck('name')) !!};
+        var topCustomersSpent = {!! json_encode($topCustomers->pluck('bookings_sum_total_amount')) !!}.map(Number);
+        var optionsTopCustomers = {
+            series: [{
+                name: 'Total Spent',
+                data: topCustomersSpent
+            }],
+            chart: {
+                height: 300,
+                type: 'bar',
+                toolbar: { show: false },
+                fontFamily: 'Montserrat, sans-serif'
+            },
+            colors: ['#121212'],
+            plotOptions: {
+                bar: {
+                    borderRadius: 6,
+                    columnWidth: '40%',
+                    distributed: true
+                }
+            },
+            dataLabels: { enabled: false },
+            legend: { show: false },
+            xaxis: {
+                categories: topCustomersNames,
+                labels: { style: { fontSize: '12px' } }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function(val) { return "£" + val; }
+                }
+            },
+            tooltip: {
+                theme: 'dark'
+            }
+        };
+        new ApexCharts(document.querySelector("#top-customers-chart"), optionsTopCustomers).render();
+
+        // Chair Utilization Chart
+        var chairNames = {!! json_encode($chairUtilization->pluck('name')) !!};
+        var chairBookings = {!! json_encode($chairUtilization->pluck('bookings_count')) !!}.map(Number);
+        var optionsChairs = {
+            series: [{
+                name: 'Times Booked',
+                data: chairBookings
+            }],
+            chart: {
+                height: 300,
+                type: 'bar',
+                toolbar: { show: false },
+                fontFamily: 'Montserrat, sans-serif'
+            },
+            colors: ['#3498db', '#9b59b6', '#e74c3c', '#f1c40f', '#1abc9c', '#34495e'],
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: true,
+                    distributed: true
+                }
+            },
+            dataLabels: { enabled: true },
+            legend: { show: false },
+            xaxis: {
+                categories: chairNames,
+            },
+            tooltip: {
+                theme: 'light'
+            }
+        };
+        new ApexCharts(document.querySelector("#chair-utilization-chart"), optionsChairs).render();
+
+        // Status Distribution Chart
+        var statusKeys = {!! json_encode(array_keys($statusDistribution)) !!};
+        var statusValues = {!! json_encode(array_values($statusDistribution)) !!}.map(Number);
+        var optionsStatus = {
+            series: statusValues,
+            chart: {
+                height: 300,
+                type: 'donut',
+                fontFamily: 'Montserrat, sans-serif'
+            },
+            labels: statusKeys.map(key => key.replace('_', ' ').toUpperCase()),
+            colors: ['#2ecc71', '#e74c3c', '#f1c40f', '#3498db', '#95a5a6'],
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%',
+                        labels: {
+                            show: true,
+                            name: { show: true },
+                            value: { show: true }
+                        }
+                    }
+                }
+            },
+            dataLabels: { enabled: false },
+            legend: {
+                position: 'right',
+                offsetY: 0,
+                height: 230,
+            },
+            tooltip: {
+                theme: 'light'
+            }
+        };
+        new ApexCharts(document.querySelector("#status-distribution-chart"), optionsStatus).render();
+
     });
 </script>
 @endsection

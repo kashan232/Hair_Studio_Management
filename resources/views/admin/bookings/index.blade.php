@@ -26,17 +26,17 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered text-nowrap border-bottom" id="basic-datatable">
+                            <table class="table table-bordered border-bottom" id="basic-datatable">
                                 <thead>
                                     <tr>
-                                        <th class="wd-15p border-bottom-0">ID</th>
-                                        <th class="wd-15p border-bottom-0">Stylist</th>
+                                        <th class="wd-10p border-bottom-0">ID</th>
+                                        <th class="wd-10p border-bottom-0">Stylist</th>
                                         <th class="wd-20p border-bottom-0">Time</th>
-                                        <th class="wd-15p border-bottom-0">Duration</th>
+                                        <th class="wd-10p border-bottom-0">Duration</th>
                                         <th class="wd-10p border-bottom-0">Amount</th>
                                         <th class="wd-10p border-bottom-0">Chairs</th>
-                                        <th class="wd-10p border-bottom-0">Status</th>
-                                        <th class="wd-10p border-bottom-0">Actions</th>
+                                        <th class="wd-15p border-bottom-0">Status</th>
+                                        <th class="wd-15p border-bottom-0">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -45,8 +45,10 @@
                                             <td data-order="{{ $b->id }}">#{{ $b->id }}</td>
                                             <td>{{ $b->user->name }}<br><small class="text-muted">{{ $b->user->email }}</small></td>
                                             <td>
-                                                <strong>Start:</strong> {{ \Carbon\Carbon::parse($b->start_datetime)->format('d M Y, h:i A') }}<br>
-                                                <strong>End:</strong> {{ \Carbon\Carbon::parse($b->end_datetime)->format('d M Y, h:i A') }}
+                                                <small>
+                                                    <strong>Start:</strong> {{ \Carbon\Carbon::parse($b->start_datetime)->format('d M Y, h:i A') }}<br>
+                                                    <strong>End:</strong> {{ \Carbon\Carbon::parse($b->end_datetime)->format('d M Y, h:i A') }}
+                                                </small>
                                             </td>
                                             <td>{{ $b->duration_hours }} hrs</td>
                                             <td>
@@ -78,20 +80,22 @@
                                             </td>
                                             <td>
                                                 @if($b->status === 'pending_approval')
-                                                    <form method="POST" action="{{ route('bookings.update_status', $b->id) }}" style="display:inline;">
-                                                        @csrf
-                                                        <input type="hidden" name="status" value="pending_payment">
-                                                        <button type="submit" class="btn btn-sm btn-success" title="Approve">
-                                                            <i class="fe fe-check"></i> Approve
-                                                        </button>
-                                                    </form>
-                                                    <form method="POST" action="{{ route('bookings.update_status', $b->id) }}" style="display:inline;">
-                                                        @csrf
-                                                        <input type="hidden" name="status" value="cancelled">
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Reject">
-                                                            <i class="fe fe-x"></i> Reject
-                                                        </button>
-                                                    </form>
+                                                    <div class="d-flex flex-column gap-2">
+                                                        <form method="POST" action="{{ route('bookings.update_status', $b->id) }}">
+                                                            @csrf
+                                                            <input type="hidden" name="status" value="pending_payment">
+                                                            <button type="submit" class="btn btn-sm btn-success w-100" title="Approve">
+                                                                <i class="fe fe-check"></i> Approve
+                                                            </button>
+                                                        </form>
+                                                        <form method="POST" action="{{ route('bookings.update_status', $b->id) }}">
+                                                            @csrf
+                                                            <input type="hidden" name="status" value="cancelled">
+                                                            <button type="submit" class="btn btn-sm btn-danger w-100" title="Reject">
+                                                                <i class="fe fe-x"></i> Reject
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 @else
                                                     <span class="text-muted">No actions</span>
                                                 @endif
