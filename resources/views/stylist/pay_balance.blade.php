@@ -78,8 +78,8 @@
 
     <div class="summary-card">
         <div class="summary-line"><span>Booking ID</span><span>#{{ $booking->id }}</span></div>
-        <div class="summary-line"><span>Stylist / Client</span><span>{{ $booking->user->name }}</span></div>
-        <div class="summary-line"><span>Email</span><span>{{ $booking->user->email }}</span></div>
+        <div class="summary-line"><span>Stylist / Client</span><span>{{ $booking->user ? $booking->user->name : $booking->guest_name }} (Guest)</span></div>
+        <div class="summary-line"><span>Email</span><span>{{ $booking->user ? $booking->user->email : $booking->guest_email }}</span></div>
         <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse($booking->start_datetime)->format('D d M Y, h:i A') }}</span></div>
         <div class="summary-line"><span>Duration</span><span>{{ $booking->duration_hours }} hours</span></div>
         <div class="summary-line discount-line" id="discount-line"><span>Discount</span><span id="discount-amount-text">-£0.00</span></div>

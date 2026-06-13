@@ -37,6 +37,11 @@ class HairstylistRegistrationController extends Controller
             'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         ]);
 
+        // Link past guest bookings to this new user account
+        \App\Models\Booking::whereNull('user_id')
+            ->where('guest_email', $user->email)
+            ->update(['user_id' => $user->id]);
+
         Auth::login($user);
 
         return response()->json([

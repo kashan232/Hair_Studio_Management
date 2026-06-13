@@ -883,14 +883,41 @@
                     value="{{ old('mobile', $user?->mobile ?? ($guestDetails['mobile'] ?? '')) }}">
             </div>
             @if(!$user)
-                <div class="form-field">
-                    <label for="password">Password *</label>
-                    <input type="password" name="password" id="password" required minlength="6" placeholder="Min. 6 characters">
+                <div class="form-field" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; background: var(--app-accent-soft); padding: 1rem; border-radius: 8px;">
+                    <input type="checkbox" name="is_guest" id="is_guest" value="1" style="width: 20px; height: 20px; accent-color: var(--app-accent);" {{ !empty($guestDetails['is_guest']) ? 'checked' : '' }}>
+                    <label for="is_guest" style="margin: 0; text-transform: none; font-size: 0.85rem; font-weight: 600; color: var(--app-text); cursor: pointer;">
+                        Checkout as Guest (No account creation)
+                    </label>
                 </div>
-                <div class="form-field">
-                    <label for="password_confirmation">Confirm password *</label>
-                    <input type="password" name="password_confirmation" id="password_confirmation" required minlength="6">
+
+                <div id="password-group" style="display: {{ !empty($guestDetails['is_guest']) ? 'none' : 'block' }};">
+                    <div class="form-field">
+                        <label for="password">Password *</label>
+                        <input type="password" name="password" id="password" minlength="6" placeholder="Min. 6 characters" {{ !empty($guestDetails['is_guest']) ? '' : 'required' }}>
+                    </div>
+                    <div class="form-field">
+                        <label for="password_confirmation">Confirm password *</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" minlength="6" {{ !empty($guestDetails['is_guest']) ? '' : 'required' }}>
+                    </div>
                 </div>
+
+                <script>
+                    document.getElementById('is_guest').addEventListener('change', function() {
+                        const pwdGroup = document.getElementById('password-group');
+                        const pwdInput = document.getElementById('password');
+                        const pwdConfirm = document.getElementById('password_confirmation');
+                        
+                        if(this.checked) {
+                            pwdGroup.style.display = 'none';
+                            pwdInput.removeAttribute('required');
+                            pwdConfirm.removeAttribute('required');
+                        } else {
+                            pwdGroup.style.display = 'block';
+                            pwdInput.setAttribute('required', 'required');
+                            pwdConfirm.setAttribute('required', 'required');
+                        }
+                    });
+                </script>
             @else
                 <div style="margin-top: 1rem; padding: 0.85rem; background: #fdfdfd; border: 1px solid var(--app-line); border-radius: 8px; font-size: 0.8rem; color: var(--app-muted);">
                     <strong>Note:</strong> You are booking this session using your logged-in account (<strong>{{ $user->email }}</strong>). 

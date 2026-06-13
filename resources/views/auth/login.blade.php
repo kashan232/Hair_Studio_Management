@@ -338,9 +338,9 @@
     <div class="page-wrapper">
         <div class="auth-container">
             
-            <div class="auth-header">
-                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 60px; width: auto; display: block; margin: 0 auto 10px;">
-                <p>Premium Workspace</p>
+            <div class="auth-header" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 60px; width: auto; margin-bottom: 10px;">
+                <p style="text-align: center; width: 100%;">Premium Workspace</p>
             </div>
 
             <div class="auth-tabs">

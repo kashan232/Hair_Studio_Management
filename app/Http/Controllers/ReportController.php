@@ -101,9 +101,35 @@ class ReportController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
+        // 6. Peak Hours
+        $peakHoursData = Booking::select(DB::raw('HOUR(start_datetime) as hour'), DB::raw('count(*) as count'))
+            ->whereBetween('start_datetime', [$startDate, $endDate])
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->get();
+            
+        $peakHours = [];
+        foreach($peakHoursData as $row) {
+            $amPm = Carbon::createFromTime($row->hour, 0, 0)->format('g A');
+            $peakHours[$amPm] = $row->count;
+        }
+
+        // 7. Common Durations
+        $commonDurationsData = Booking::select('duration_hours', DB::raw('count(*) as count'))
+            ->whereBetween('start_datetime', [$startDate, $endDate])
+            ->groupBy('duration_hours')
+            ->orderBy('duration_hours')
+            ->get();
+            
+        $commonDurations = [];
+        foreach($commonDurationsData as $row) {
+            $commonDurations[$row->duration_hours . ' Hours'] = $row->count;
+        }
+
         return view('admin.reports.index', compact(
             'startDate', 'endDate', 'totalBookings', 'totalRevenue', 'totalDiscounts',
-            'trendDates', 'trendRevenues', 'topCustomers', 'chairUtilization', 'statusDistribution'
+            'trendDates', 'trendRevenues', 'topCustomers', 'chairUtilization', 'statusDistribution',
+            'peakHours', 'commonDurations'
         ));
     }
 }

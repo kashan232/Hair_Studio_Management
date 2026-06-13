@@ -43,7 +43,15 @@
                                     @foreach($bookings as $b)
                                         <tr>
                                             <td data-order="{{ $b->id }}">#{{ $b->id }}</td>
-                                            <td>{{ $b->user->name }}<br><small class="text-muted">{{ $b->user->email }}</small></td>
+                                            <td>
+                                                @if($b->user)
+                                                    {{ $b->user->name }}
+                                                @else
+                                                    {{ $b->guest_name }} <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">Guest</span>
+                                                @endif
+                                                <br>
+                                                <small class="text-muted">{{ $b->user ? $b->user->email : $b->guest_email }}</small>
+                                            </td>
                                             <td>
                                                 <small>
                                                     <strong>Start:</strong> {{ \Carbon\Carbon::parse($b->start_datetime)->format('d M Y, h:i A') }}<br>

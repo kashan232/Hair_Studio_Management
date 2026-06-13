@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingApprovedPaymentRequired;
 
 class BookingController extends Controller
 {
@@ -38,10 +39,17 @@ class BookingController extends Controller
         $booking->save();
 
         // If approved (pending_payment), we ideally send an email to user to pay.
-        // For now, we just redirect back with success message.
         $message = 'Booking status updated successfully.';
         if ($request->status === 'pending_payment') {
             $message = 'Booking approved. Stylist can now pay.';
+            try {
+                $emailToSend = $booking->user ? $booking->user->email : $booking->guest_email;
+                if ($emailToSend) {
+                    Mail::to($emailToSend)->send(new BookingApprovedPaymentRequired($booking));
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send booking approval email: ' . $e->getMessage());
+            }
         } elseif ($request->status === 'cancelled') {
             $message = 'Booking rejected and cancelled.';
         }

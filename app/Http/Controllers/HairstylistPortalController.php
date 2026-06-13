@@ -16,6 +16,8 @@ use Illuminate\View\View;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingConfirmed;
 
 class HairstylistPortalController extends Controller
 {
@@ -136,28 +138,33 @@ class HairstylistPortalController extends Controller
 
     public function confirmDetails(Request $request): RedirectResponse
     {
+        $isGuest = $request->boolean('is_guest');
+
         $rules = [
             'name'   => ['required', 'string', 'max:255'],
             'email'  => ['required', 'string', 'lowercase', 'email', 'max:255'],
             'mobile' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ];
 
-        if ($request->user()) {
-            $rules['email'][]    = 'unique:users,email,' . $request->user()->id;
-            $rules['password']   = ['nullable', 'string', 'min:6', 'confirmed'];
-        } else {
-            $rules['email'][] = 'unique:users,email';
+        if (!$isGuest) {
+            $rules['password'] = ['required', 'string', 'min:6', 'confirmed'];
+            if ($request->user()) {
+                $rules['email'][]  = 'unique:users,email,' . $request->user()->id;
+                $rules['password'] = ['nullable', 'string', 'min:6', 'confirmed'];
+            } else {
+                $rules['email'][] = 'unique:users,email';
+            }
         }
 
         $validated = $request->validate($rules);
 
         session([
             'stylist_booking.guest' => [
-                'name'   => $validated['name'],
-                'email'  => $validated['email'],
-                'mobile' => $validated['mobile'] ?? null,
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
+                'mobile'   => $validated['mobile'] ?? null,
                 'password' => $validated['password'] ?? null,
+                'is_guest' => $isGuest,
             ],
         ]);
 
@@ -318,9 +325,13 @@ class HairstylistPortalController extends Controller
     {
         $start = Carbon::parse(session('stylist_booking.start_date') . ' ' . session('stylist_booking.start_time'));
         $end = Carbon::parse(session('stylist_booking.end_date') . ' ' . session('stylist_booking.end_time'));
+        $guestDetails = session('stylist_booking.guest', []);
 
         $booking = Booking::create([
-            'user_id' => $user->id,
+            'user_id' => $user ? $user->id : null,
+            'guest_name' => $user ? null : ($guestDetails['name'] ?? null),
+            'guest_email' => $user ? null : ($guestDetails['email'] ?? null),
+            'guest_phone' => $user ? null : ($guestDetails['mobile'] ?? null),
             'start_datetime' => $start,
             'end_datetime' => $end,
             'duration_hours' => session('stylist_booking.duration'),
@@ -364,17 +375,30 @@ class HairstylistPortalController extends Controller
         }
 
         session(['stylist_booking.final_booking_id' => $booking->id]);
+
+        try {
+            $emailToSend = $user ? $user->email : $booking->guest_email;
+            if ($emailToSend) {
+                Mail::to($emailToSend)->send(new BookingConfirmed($booking));
+            }
+        } catch (\Exception $e) {
+            // Log or ignore email errors so booking doesn't fail if SMTP is broken
+            \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
+        }
     }
 
     private function getOrCreateUser(Request $request)
     {
         $guestDetails = session('stylist_booking.guest', []);
         
+        if (!empty($guestDetails['is_guest'])) {
+            return null;
+        }
+
         if ($request->user()) {
             $update = [
                 'name'   => $guestDetails['name']   ?? $request->user()->name,
-                'email'  => $guestDetails['email']  ?? $request->user()->email,
-                'mobile' => $guestDetails['mobile'] ?? null,
+                'mobile' => $guestDetails['mobile'] ?? $request->user()->mobile,
             ];
             if (!empty($guestDetails['password'])) {
                 $update['password'] = Hash::make($guestDetails['password']);

@@ -161,6 +161,32 @@
         </div>
 
         <div class="row">
+            <!-- Peak Booking Hours Bar Chart -->
+            <div class="col-lg-6 col-md-12 mb-4">
+                <div class="card h-100" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div class="card-header border-bottom-0">
+                        <h3 class="card-title">Peak Booking Hours</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="peak-hours-chart" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common Durations Donut/Bar Chart -->
+            <div class="col-lg-6 col-md-12 mb-4">
+                <div class="card h-100" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div class="card-header border-bottom-0">
+                        <h3 class="card-title">Most Common Durations</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="common-durations-chart" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <!-- Booking Status Distribution Donut Chart -->
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card h-100" style="border-radius: 12px; border: 1px solid #eae2d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
@@ -183,7 +209,7 @@
 <script>
     $(document).ready(function() {
 
-        // Revenue Chart (Clear Bar Chart)
+        // Revenue Chart (Premium Smooth Area)
         var trendRevenues = {!! json_encode($trendRevenues) !!}.map(Number);
         var optionsRevenue = {
             series: [{
@@ -192,30 +218,33 @@
             }],
             chart: {
                 height: 350,
-                type: 'bar',
+                type: 'area',
                 toolbar: { show: false },
-                fontFamily: 'Montserrat, sans-serif'
+                fontFamily: 'Montserrat, sans-serif',
+                dropShadow: {
+                    enabled: true,
+                    top: 10,
+                    left: 0,
+                    blur: 8,
+                    color: '#2ecc71',
+                    opacity: 0.2
+                }
             },
             colors: ['#2ecc71'],
-            plotOptions: {
-                bar: {
-                    borderRadius: 4,
-                    columnWidth: '60%',
-                    dataLabels: {
-                        position: 'top',
-                    },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.5,
+                    opacityTo: 0.1,
+                    stops: [0, 90, 100]
                 }
             },
-            dataLabels: {
-                enabled: true,
-                formatter: function (val) { return val > 0 ? "£" + val : ""; },
-                offsetY: -25,
-                style: {
-                    fontSize: '16px',
-                    fontWeight: 700,
-                    colors: ["#121212"]
-                }
-            },
+            dataLabels: { enabled: false },
             xaxis: {
                 categories: {!! json_encode($trendDates) !!},
                 axisBorder: { show: true, color: '#f1ece1' },
@@ -347,6 +376,151 @@
             }
         };
         new ApexCharts(document.querySelector("#status-distribution-chart"), optionsStatus).render();
+
+        // Peak Hours Chart (Premium Glowing Line/Area)
+        var peakHourKeys = {!! json_encode(array_keys($peakHours)) !!};
+        var peakHourValues = {!! json_encode(array_values($peakHours)) !!}.map(Number);
+        var optionsPeakHours = {
+            series: [{
+                name: 'Total Bookings',
+                data: peakHourValues
+            }],
+            chart: {
+                height: 340,
+                type: 'area',
+                toolbar: { show: false },
+                fontFamily: 'Montserrat, sans-serif',
+                dropShadow: {
+                    enabled: true,
+                    top: 8,
+                    left: 0,
+                    blur: 6,
+                    color: '#e67e22',
+                    opacity: 0.3
+                }
+            },
+            colors: ['#e67e22'],
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            markers: {
+                size: 6,
+                colors: ['#fff'],
+                strokeColors: '#e67e22',
+                strokeWidth: 2,
+                hover: { size: 8 }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.6,
+                    opacityTo: 0.1,
+                    stops: [0, 90, 100]
+                }
+            },
+            dataLabels: { 
+                enabled: true,
+                formatter: function (val, opts) {
+                    if (val === 0) return ''; // Hide 0
+                    return val + " Bookings";
+                },
+                offsetY: -10,
+                style: {
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    colors: ['#e67e22']
+                },
+                background: {
+                    enabled: true,
+                    foreColor: '#fff',
+                    padding: 4,
+                    borderRadius: 4,
+                    borderWidth: 1,
+                    borderColor: '#f1ece1',
+                    dropShadow: { enabled: true, top: 1, left: 1, blur: 1, color: '#000', opacity: 0.1 }
+                }
+            },
+            legend: { show: false },
+            xaxis: {
+                categories: peakHourKeys,
+                labels: { style: { fontSize: '13px', colors: '#8c7e6c', fontWeight: 600 } },
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                title: { text: 'Time of Day', style: { color: '#8c7e6c', fontSize: '12px', fontWeight: 600 } }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (value) { return value.toFixed(0); },
+                    style: { colors: '#8c7e6c', fontWeight: 500 }
+                },
+                title: { text: 'Number of Bookings', style: { color: '#8c7e6c', fontSize: '12px', fontWeight: 600 } }
+            },
+            grid: {
+                borderColor: '#f1ece1',
+                strokeDashArray: 4
+            },
+            tooltip: {
+                theme: 'light',
+                y: {
+                    formatter: function(val) {
+                        return val + " Bookings at this hour";
+                    }
+                }
+            }
+        };
+        new ApexCharts(document.querySelector("#peak-hours-chart"), optionsPeakHours).render();
+
+        // Common Durations Chart (Premium Polar Area)
+        var durationKeysRaw = {!! json_encode(array_keys($commonDurations)) !!};
+        var durationKeys = durationKeysRaw.map(function(k) { return k + " Hours"; });
+        var durationValues = {!! json_encode(array_values($commonDurations)) !!}.map(Number);
+        var optionsDurations = {
+            series: durationValues,
+            labels: durationKeys,
+            chart: {
+                height: 330,
+                type: 'polarArea',
+                toolbar: { show: false },
+                fontFamily: 'Montserrat, sans-serif',
+                dropShadow: {
+                    enabled: true,
+                    top: 5,
+                    left: 0,
+                    blur: 5,
+                    color: '#000',
+                    opacity: 0.1
+                }
+            },
+            stroke: {
+                colors: ['#fff'],
+                width: 2
+            },
+            fill: {
+                opacity: 0.85
+            },
+            colors: ['#3498db', '#9b59b6', '#e74c3c', '#f1c40f', '#1abc9c'],
+            legend: { 
+                position: 'right',
+                offsetY: 20,
+                fontSize: '13px',
+                fontWeight: 600,
+                markers: { radius: 12 }
+            },
+            yaxis: {
+                show: false
+            },
+            tooltip: {
+                theme: 'light',
+                y: {
+                    formatter: function(val) {
+                        return val + " Bookings for this duration";
+                    }
+                }
+            }
+        };
+        new ApexCharts(document.querySelector("#common-durations-chart"), optionsDurations).render();
 
     });
 </script>
