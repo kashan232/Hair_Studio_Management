@@ -299,18 +299,11 @@
                 </div>
             </div>
 
-            <!-- Charts Section -->
             <div class="row g-4 mb-4">
-                <div class="col-xl-8">
+                <div class="col-xl-12">
                     <div class="panel-card">
-                        <h5>Weekly Revenue Analytics (PKR)</h5>
+                        <h5>Weekly Revenue Analytics</h5>
                         <div id="revenue-chart" class="chart-box"></div>
-                    </div>
-                </div>
-                <div class="col-xl-4">
-                    <div class="panel-card">
-                        <h5>Popular Services Breakdown</h5>
-                        <div id="services-chart" class="chart-box" style="min-height: 320px;"></div>
                     </div>
                 </div>
             </div>
@@ -452,44 +445,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var revenueChart = new ApexCharts(document.querySelector("#revenue-chart"), revenueOptions);
     revenueChart.render();
-
-    // Services Donut Chart
-    var servicesOptions = {
-        series: @json($stats['services_chart']['data']),
-        chart: {
-            type: 'donut',
-            height: 320,
-            fontFamily: 'inherit'
-        },
-        labels: @json($stats['services_chart']['labels']),
-        colors: [gold, '#3498db', '#2ecc71', '#e67e22', '#9b59b6'],
-        legend: { position: 'bottom', fontSize: '11px', labels: { colors: '#8c7e6c' } },
-        dataLabels: { enabled: true },
-        plotOptions: {
-            pie: {
-                donut: {
-                    size: '65%',
-                    labels: {
-                        show: true,
-                        total: {
-                            show: true,
-                            label: 'Services Done',
-                            color: '#8c7e6c',
-                            formatter: function (w) {
-                                return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + '%';
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        tooltip: {
-            y: { formatter: function (val) { return val + '% of all services'; } }
-        }
-    };
-
-    var servicesChart = new ApexCharts(document.querySelector("#services-chart"), servicesOptions);
-    servicesChart.render();
 });
 </script>
 @endsection

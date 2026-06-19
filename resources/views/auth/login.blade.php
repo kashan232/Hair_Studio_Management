@@ -1,426 +1,378 @@
 <!doctype html>
 <html lang="en" dir="ltr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Hair Studio Management - Premium Salon Portal">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
-    <title>Welcome | Eladé Studio</title>
+    <title>Log in or create account | Eladé Studio</title>
 
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --brand-primary: #461111;
-            --brand-primary-light: rgba(70, 17, 17, 0.85);
-            --brand-primary-faint: rgba(70, 17, 17, 0.1);
-            --text-dark: #1a1a1a;
-            --text-muted: #666666;
-            --border-light: rgba(255, 255, 255, 0.3);
-            --border-dark: rgba(0, 0, 0, 0.1);
-            --glass-bg: rgba(255, 255, 255, 0.85);
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            font-family: 'Montserrat', sans-serif;
-            background-color: #111;
-        }
-
-        /* Immersive Background */
-        .page-wrapper {
-            position: relative;
-            min-height: 100vh;
+        /* Top Navbar matching the screenshot */
+        .top-nav {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-            background: #461111;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .page-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, transparent 100%);
-            z-index: 1;
-        }
-
-        /* Glassmorphism Container */
-        .auth-container {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 500px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid var(--border-light);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-            overflow: hidden;
-            animation: floatIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        @keyframes floatIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Header Area */
-        .auth-header {
-            width: 100%;
-            text-align: center;
-            padding: 3rem 2rem 1.5rem;
-        }
-
-        .auth-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.8rem;
-            font-weight: 500;
-            letter-spacing: 2px;
-            color: var(--brand-primary);
-            margin: 0 0 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .auth-header p {
-            font-size: 0.85rem;
-            font-weight: 400;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        /* Tab Navigation */
-        .auth-tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-dark);
-            margin: 0 2rem;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 1rem 0;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-muted);
+        .top-nav .menu-icon, .top-nav .user-icon {
+            font-size: 1.8rem;
+            color: #333;
             cursor: pointer;
-            position: relative;
-            transition: color 0.3s ease;
         }
 
-        .tab-btn.active {
-            color: var(--brand-primary);
+        .top-nav .logo img {
+            height: 35px;
+            width: auto;
+            display: block;
+            transform: translateX(12px); /* Centering compensation */
         }
 
-        .tab-btn::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--brand-primary);
-            transform: scaleX(0);
-            transform-origin: center;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Main Container */
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
         }
 
-        .tab-btn.active::after {
-            transform: scaleX(1);
+        /* Header area */
+        .page-title {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #444;
+            margin-bottom: 3rem;
         }
 
         /* Forms */
-        .auth-body {
-            padding: 2rem;
+        .auth-form-wrap {
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .auth-form {
             display: none;
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeIn 0.4s ease forwards;
+            text-align: left;
         }
 
-        .auth-form.active {
-            display: block;
-        }
+        .auth-form.active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .input-group {
-            position: relative;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
 
         .input-group label {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
+            display: block;
             font-size: 0.9rem;
-            color: var(--text-muted);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            letter-spacing: 1px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0.5rem;
         }
 
         .input-group input {
             width: 100%;
-            padding: 0.8rem 0;
-            border: none;
-            border-bottom: 1px solid var(--border-dark);
-            background: transparent;
+            padding: 1rem;
+            background: #ffffff;
+            border: 1px solid #d1d1d1;
+            border-radius: 0; /* Square edges like the screenshot */
             font-size: 1rem;
-            font-family: 'Montserrat', sans-serif;
-            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            color: #000;
             outline: none;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.2s ease;
         }
 
-        .input-group input:focus,
-        .input-group input:not(:placeholder-shown) {
-            border-bottom-color: var(--brand-primary);
+        .input-group input:focus {
+            border-color: #000;
         }
 
-        .input-group input:focus + label,
-        .input-group input:not(:placeholder-shown) + label {
-            top: -10px;
-            font-size: 0.7rem;
-            color: var(--brand-primary);
-            font-weight: 600;
-        }
-
-        .input-group .toggle-password {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        /* Buttons */
-        .btn-primary {
+        .btn-submit {
             width: 100%;
-            background: var(--brand-primary);
-            color: #fff;
+            background: #e6b8ae; /* The soft peach from the screenshot */
+            color: #000;
             border: none;
-            padding: 1.2rem;
+            padding: 1.1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background: #d8a89e;
+        }
+
+        .btn-submit:disabled {
+            background: #f0d5ce;
+            cursor: not-allowed;
+        }
+
+        .switch-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #000;
+            text-decoration: underline;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            color: #666;
+            text-decoration: underline;
+            font-size: 0.85rem;
+        }
+
+        /* Progress Bar Styles */
+        .progress-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 3rem auto;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 15px;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: #f0ddd8;
+            z-index: 1;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step {
+            text-align: center;
+            background: #ffffff;
+            padding: 0 10px;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e6b8ae;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.85rem;
             font-weight: 600;
-            letter-spacing: 2px;
+            margin: 0 auto 8px auto;
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            font-weight: 500;
             text-transform: uppercase;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(70, 17, 17, 0.2);
-            margin-top: 1rem;
+            letter-spacing: 0.5px;
+            color: #000;
         }
 
-        .btn-primary:hover {
-            background: #2b0a0a;
-            box-shadow: 0 6px 20px rgba(70, 17, 17, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .btn-primary:disabled {
-            background: #8a6a6a;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-outline {
-            display: block;
-            width: 100%;
-            text-align: center;
-            text-decoration: none;
-            background: transparent;
-            color: var(--brand-primary);
-            border: 1px solid var(--brand-primary);
-            padding: 1rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-
-        .btn-outline:hover {
-            background: var(--brand-primary-faint);
-        }
-
+        /* Divider & Guest Button */
         .divider {
             display: flex;
             align-items: center;
             text-align: center;
-            margin: 2rem 0 1rem;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            letter-spacing: 1px;
+            margin: 2.5rem 0 1.5rem 0;
+            color: #666;
+            font-size: 0.8rem;
             text-transform: uppercase;
         }
 
         .divider::before, .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid var(--border-dark);
+            border-bottom: 1px solid #eee;
         }
 
-        .divider:not(:empty)::before { margin-right: .5em; }
-        .divider:not(:empty)::after { margin-left: .5em; }
+        .divider:not(:empty)::before { margin-right: 1em; }
+        .divider:not(:empty)::after { margin-left: 1em; }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .checkbox-group input {
-            accent-color: var(--brand-primary);
-            width: 16px;
-            height: 16px;
+        .btn-outline-guest {
+            display: block;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            background: #ffffff;
+            color: #000;
+            border: 1px solid #000;
+            padding: 1.1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .checkbox-group label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            user-select: none;
+        .btn-outline-guest:hover {
+            background: #000;
+            color: #fff;
         }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 480px) {
-            .auth-container {
-                border-radius: 0;
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-            .page-wrapper {
-                padding: 0;
-            }
-        }
     </style>
 </head>
 
 <body>
 
-    <div class="page-wrapper">
-        <div class="auth-container">
-            
-            <div class="auth-header" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 60px; width: auto; margin-bottom: 10px;">
-                <p style="text-align: center; width: 100%;">Premium Workspace</p>
-            </div>
+    <header class="top-nav">
+        <i class="zmdi zmdi-menu menu-icon"></i>
+        <div class="logo">
+            <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio">
+        </div>
+        <i class="zmdi zmdi-account-o user-icon"></i>
+    </header>
 
-            <div class="auth-tabs">
-                <button class="tab-btn active" data-target="login">Sign In</button>
-                <button class="tab-btn" data-target="register">Register</button>
-            </div>
-
-            <div class="auth-body">
-                
-                <!-- LOGIN FORM -->
-                <form id="login-form" class="auth-form active ajaxForm" method="POST" action="{{ route('login') }}">
-                    @csrf
-                    
-                    <div class="input-group">
-                        <input type="email" name="email" id="login-email" placeholder=" " required>
-                        <label for="login-email">Email Address</label>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="password" name="password" id="login-password" placeholder=" " required>
-                        <label for="login-password">Password</label>
-                        <i class="zmdi zmdi-eye-off toggle-password" data-input="#login-password"></i>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <div class="checkbox-group" style="margin-bottom: 0;">
-                            <input type="checkbox" id="remember-me" name="remember">
-                            <label for="remember-me">Remember me</label>
-                        </div>
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" style="font-size: 0.8rem; color: var(--brand-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
-                        @endif
-                    </div>
-
-                    <button type="submit" class="btn-primary">Secure Sign In</button>
-
-                    <div class="divider">or</div>
-
-                    <a href="{{ route('stylist.book') }}" class="btn-outline">
-                        Book Chair as Guest
-                    </a>
-                </form>
-
-                <!-- REGISTER FORM -->
-                <form id="register-form" class="auth-form ajaxForm" method="POST" action="{{ route('register.hairstylist') }}">
-                    @csrf
-
-                    <div class="input-group">
-                        <input type="text" name="name" id="reg-name" placeholder=" " required>
-                        <label for="reg-name">Full Name</label>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="email" name="email" id="reg-email" placeholder=" " required>
-                        <label for="reg-email">Email Address</label>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="text" name="mobile" id="reg-mobile" placeholder=" ">
-                        <label for="reg-mobile">Mobile Number</label>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="password" name="password" id="reg-password" placeholder=" " required>
-                        <label for="reg-password">Password</label>
-                        <i class="zmdi zmdi-eye-off toggle-password" data-input="#reg-password"></i>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="password" name="password_confirmation" id="reg-confirm" placeholder=" " required>
-                        <label for="reg-confirm">Confirm Password</label>
-                        <i class="zmdi zmdi-eye-off toggle-password" data-input="#reg-confirm"></i>
-                    </div>
-
-                    <button type="submit" class="btn-primary">Create Account</button>
-                </form>
-
+    <main class="main-container">
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-line"></div>
+            <div class="progress-steps">
+                <div class="step">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Location</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Guests</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Services</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Time</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Confirm</div>
+                </div>
             </div>
         </div>
-    </div>
+
+        <h1 class="page-title">Log in or create account</h1>
+        <p class="page-subtitle">Enter your details to sign in or to create an account.</p>
+
+        <div class="auth-form-wrap">
+            <!-- LOGIN FORM -->
+            <form id="login-form" class="auth-form active ajaxForm" method="POST" action="{{ route('login') }}">
+                @csrf
+                
+                <div class="input-group">
+                    <label for="login-email">Email *</label>
+                    <input type="email" name="email" id="login-email" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="login-password">Password *</label>
+                    <input type="password" name="password" id="login-password" required>
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
+                    @endif
+                </div>
+
+                <div class="input-group" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="remember-me" name="remember" style="width: auto;">
+                    <label for="remember-me" style="margin: 0; font-weight: 500; font-size: 0.9rem;">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn-submit">Continue</button>
+                
+                <a class="switch-link" data-target="register">Create a new account</a>
+
+                <div class="divider">or</div>
+
+                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">Book Chair as Guest</a>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="register-form" class="auth-form ajaxForm" method="POST" action="{{ route('register.hairstylist') }}">
+                @csrf
+
+                <div class="input-group">
+                    <label for="reg-name">Full Name *</label>
+                    <input type="text" name="name" id="reg-name" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-email">Email Address *</label>
+                    <input type="email" name="email" id="reg-email" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-mobile">Mobile Number</label>
+                    <input type="text" name="mobile" id="reg-mobile">
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-password">Password *</label>
+                    <input type="password" name="password" id="reg-password" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-confirm">Confirm Password *</label>
+                    <input type="password" name="password_confirmation" id="reg-confirm" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Create Account</button>
+                
+                <a class="switch-link" data-target="login">Already have an account? Sign in</a>
+
+                <div class="divider">or</div>
+
+                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">Book Chair as Guest</a>
+            </form>
+        </div>
+
+    </main>
 
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -428,36 +380,19 @@
     <script>
         $(document).ready(function() {
             
-            // Tab Switching
-            $('.tab-btn').on('click', function() {
-                $('.tab-btn').removeClass('active');
-                $(this).addClass('active');
-                
+            // Switch forms
+            $('.switch-link').on('click', function(e) {
+                e.preventDefault();
                 const target = $(this).data('target');
                 $('.auth-form').removeClass('active');
                 $('#' + target + '-form').addClass('active');
-            });
-
-            // Password Toggle
-            $('.toggle-password').on('click', function() {
-                const input = $($(this).data('input'));
-                const type = input.attr('type') === 'password' ? 'text' : 'password';
-                input.attr('type', type);
-                $(this).toggleClass('zmdi-eye-off zmdi-eye');
-            });
-
-            // Remember Me LocalStorage
-            const remembered = localStorage.getItem('elade_email');
-            if (remembered) {
-                $('#login-email').val(remembered);
-                $('#remember-me').prop('checked', true);
-            }
-            
-            $('#remember-me').on('change', function() {
-                if(this.checked) {
-                    localStorage.setItem('elade_email', $('#login-email').val());
+                
+                if(target === 'register') {
+                    $('.page-title').text('Create an account');
+                    $('.page-subtitle').text('Join Eladé Studio to book your workspace.');
                 } else {
-                    localStorage.removeItem('elade_email');
+                    $('.page-title').text('Log in or create account');
+                    $('.page-subtitle').text('Enter your details to sign in or to create an account.');
                 }
             });
 
@@ -478,21 +413,13 @@
                     processData: false,
                     success: function(response) {
                         if (response.redirect) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: response.success || 'Welcome to Eladé Studio',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirect;
-                            });
+                            window.location.href = response.redirect;
                         } else if (response.error) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
                                 text: response.error,
-                                confirmButtonColor: '#461111'
+                                confirmButtonColor: '#121212'
                             });
                             btn.prop('disabled', false).text(originalText);
                         }
@@ -503,16 +430,16 @@
                         
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
                             const errors = xhr.responseJSON.errors;
-                            errMsg = Object.values(errors)[0][0]; // Show first validation error
+                            errMsg = Object.values(errors)[0][0]; 
                         } else if (xhr.responseJSON && xhr.responseJSON.message) {
                             errMsg = xhr.responseJSON.message;
                         }
 
                         Swal.fire({
                             icon: 'error',
-                            title: 'Validation Error',
+                            title: 'Oops!',
                             text: errMsg,
-                            confirmButtonColor: '#461111'
+                            confirmButtonColor: '#121212'
                         });
                     }
                 });

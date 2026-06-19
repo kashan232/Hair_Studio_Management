@@ -40,20 +40,29 @@ class DashboardController extends Controller
             'total_customers' => $total_customers,
             'total_users' => User::count(),
             
-            // Stylists info
+            // Stylists info (Dynamic status based on active confirmed bookings today)
             'stylists' => User::where(function($q) {
                 $q->where('role', 'hairstylist')
                   ->orWhereHas('roleRelation', function($query) {
                       $query->where('slug', 'hairstylist');
                   });
-            })->take(4)->get()->map(function($user) {
+            })->with(['bookings' => function($q) use ($today) {
+                $q->whereDate('start_datetime', $today)->where('status', 'confirmed');
+            }])->get()->map(function($user) {
+                $now = now();
+                $isActive = $user->bookings->contains(function($booking) use ($now) {
+                    return $now->between(Carbon::parse($booking->start_datetime), Carbon::parse($booking->end_datetime));
+                });
+
                 return [
                     'name' => $user->name,
                     'role' => 'Stylist',
-                    'status' => 'Active',
+                    'status' => $isActive ? 'Active' : 'On Break',
                     'avatar' => 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=c6a34d&color=fff'
                 ];
-            })->toArray(),
+            })->sortByDesc(function($stylist) {
+                return $stylist['status'] === 'Active' ? 1 : 0;
+            })->take(4)->values()->toArray(),
 
             // Today's appointments schedule
             'appointments' => Booking::with(['user', 'chairs'])
