@@ -353,34 +353,38 @@
 
                 <!-- Right Sidebar Details -->
                 <div class="col-xl-4">
-                    <!-- Quick Actions -->
+                    <!-- Today's Bookings Sidebar -->
                     <div class="panel-card">
-                        <h5>Quick Actions</h5>
-                        <a href="{{ route('stylist.book') }}" class="quick-action-btn"><i class="fe fe-plus-circle"></i> Book New Appointment</a>
-                        <a href="{{ route('users.create') }}" class="quick-action-btn"><i class="fe fe-user-plus"></i> Add Salon Customer</a>
-                        <a href="{{ route('pricing.index') }}" class="quick-action-btn"><i class="fe fe-scissors"></i> Manage Salon Services</a>
-                        <a href="{{ route('dashboard') }}" class="quick-action-btn"><i class="fe fe-settings"></i> Edit Salon Settings</a>
-                    </div>
-
-                    <!-- Stylists Roster -->
-                    <div class="panel-card">
-                        <h5>Stylists on Duty</h5>
-                        @foreach($stats['stylists'] as $stylist)
-                            <div class="stylist-item">
-                                <img src="{{ $stylist['avatar'] }}" class="stylist-avatar" alt="{{ $stylist['name'] }}">
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">{{ $stylist['name'] }}</h6>
-                                    <small class="text-muted">{{ $stylist['role'] }}</small>
+                        <h5>Today's Bookings</h5>
+                        @if(count($stats['appointments']) > 0)
+                            @foreach($stats['appointments'] as $appt)
+                                <div class="stylist-item align-items-start">
+                                    <div class="kpi-icon" style="width: 40px; height: 40px; background: rgba(198,163,77,0.1); color: var(--salon-gold); flex-shrink: 0; display:flex; align-items:center; justify-content:center; border-radius: 8px;">
+                                        <i class="fe fe-calendar"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h6 class="fw-bold mb-0 text-dark">{{ $appt['customer'] }}</h6>
+                                        <small class="text-muted d-block">{{ $appt['service'] }}</small>
+                                        <small class="text-muted d-block"><i class="fe fe-clock"></i> {{ $appt['time'] }}</small>
+                                    </div>
+                                    <div class="ms-auto text-end">
+                                        <div class="fw-bold text-dark">£{{ number_format($appt['price']) }}</div>
+                                        @if($appt['status'] == 'Completed')
+                                            <span class="badge-status active mt-1 d-inline-block">{{ $appt['status'] }}</span>
+                                        @elseif($appt['status'] == 'In Progress')
+                                            <span class="badge-status mt-1 d-inline-block" style="background: rgba(52, 152, 219, 0.15); color: var(--accent-blue);">{{ $appt['status'] }}</span>
+                                        @else
+                                            <span class="badge-status break mt-1 d-inline-block">{{ $appt['status'] }}</span>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="ms-auto">
-                                    @if($stylist['status'] == 'Active')
-                                        <span class="badge-status active">Active</span>
-                                    @else
-                                        <span class="badge-status break">On Break</span>
-                                    @endif
-                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-4 text-muted">
+                                <i class="fe fe-calendar mb-2" style="font-size: 2rem; opacity: 0.5;"></i>
+                                <p class="mb-0">No bookings for today.</p>
                             </div>
-                        @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
