@@ -37,7 +37,7 @@
         }
 
         .top-nav .logo img {
-            height: 35px;
+            height: 65px;
             width: auto;
             display: block;
             transform: translateX(12px);
@@ -118,8 +118,8 @@
 
         .btn-submit {
             width: 100%;
-            background: #e6b8ae; 
-            color: #000;
+            background: #461111e6; 
+            color: #fff;
             border: none;
             padding: 1.1rem;
             font-size: 1rem;
@@ -132,7 +132,7 @@
         }
 
         .btn-submit:hover {
-            background: #d8a89e;
+            background: #461111;
         }
 
         .btn-submit:disabled {

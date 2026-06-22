@@ -934,8 +934,8 @@
                 <input type="checkbox" id="agree_terms" name="agree_terms" required style="margin-top: 0.25rem; width: 18px; height: 18px; accent-color: var(--app-accent-dark); cursor: pointer;">
                 <label for="agree_terms" style="font-size: 0.8rem; line-height: 1.5; color: var(--app-text); cursor: pointer;">
                     I have read, understood and agree to the Eladé UK 
-                    <a href="https://eladeuk.com/terms-and-conditions/" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Terms & Conditions</a> and 
-                    <a href="https://eladeuk.com/booking-cancellation-policy/" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Booking & Cancellation Policy</a>, 
+                    <a href="https://eladeuk.com/terms-and-conditions" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Terms & Conditions</a> and 
+                    <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Booking & Cancellation Policy</a>, 
                     including the 24-hour cancellation and rescheduling terms.
                 </label>
             </div>
@@ -949,8 +949,8 @@
             
             <div style="margin-top: 1rem; font-size: 0.8rem; line-height: 1.5; color: var(--app-muted);">
                 Your personal information will be handled in accordance with our 
-                <a href="https://eladeuk.com/privacy-policy/" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Privacy Policy</a>. You can also view our 
-                <a href="https://eladeuk.com/cookie-policy/" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Cookie Policy</a>.
+                <a href="https://eladeuk.com/privacy-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Privacy Policy</a>. You can also view our 
+                <a href="https://eladeuk.com/cookies-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Cookie Policy</a>.
             </div>
         </form>
     @endif

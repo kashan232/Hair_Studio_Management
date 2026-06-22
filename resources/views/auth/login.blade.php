@@ -37,7 +37,7 @@
         }
 
         .top-nav .logo img {
-            height: 35px;
+            height: 65px;
             width: auto;
             display: block;
             transform: translateX(12px); /* Centering compensation */
@@ -119,8 +119,8 @@
 
         .btn-submit {
             width: 100%;
-            background: #e6b8ae; /* The soft peach from the screenshot */
-            color: #000;
+            background: #461111e6;
+            color: #fff;
             border: none;
             padding: 1.1rem;
             font-size: 1rem;
@@ -133,7 +133,7 @@
         }
 
         .btn-submit:hover {
-            background: #d8a89e;
+            background: #461111;
         }
 
         .btn-submit:disabled {
@@ -175,7 +175,7 @@
             left: 5%;
             right: 5%;
             height: 2px;
-            background: #f0ddd8;
+            background: rgba(70, 17, 17, 0.2);
             z-index: 1;
         }
 
@@ -196,8 +196,8 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background: #e6b8ae;
-            color: #000;
+            background: #461111e6;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -256,10 +256,178 @@
             color: #fff;
         }
 
+        /* Premium Side Menu Styles */
+        .side-menu-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 18, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .side-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0; left: -400px; width: 400px; height: 100%;
+            background: #ffffff;
+            z-index: 999;
+            box-shadow: 5px 0 40px rgba(0,0,0,0.15);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .side-menu.active {
+            left: 0;
+        }
+
+        .side-menu-header {
+            padding: 1.8rem 2.5rem;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(70, 17, 17, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .close-menu { 
+            cursor: pointer; 
+            font-size: 1.6rem; 
+            color: #888; 
+            transition: all 0.3s ease;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            background: #f8f8f8;
+        }
+        .close-menu:hover { color: #fff; background: #461111; transform: rotate(90deg); }
+
+        .side-menu-content { padding: 2.5rem; }
+        
+        .side-welcome-box {
+            background: linear-gradient(145deg, #faf8f5 0%, #fffdf9 100%);
+            border-left: 4px solid #461111;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .side-welcome-box p {
+            font-size: 0.95rem; 
+            color: #555; 
+            line-height: 1.7; 
+            margin: 0;
+            font-style: italic;
+        }
+
+        .side-menu-content h4 { 
+            font-size: 0.85rem; 
+            color: #461111; 
+            margin-top: 0; 
+            margin-bottom: 1.5rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-weight: 800; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .side-menu-content h4::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(70, 17, 17, 0.1);
+        }
+        
+        .info-card {
+            display: flex; 
+            align-items: flex-start; 
+            margin-bottom: 1.2rem; 
+            gap: 1rem;
+            padding: 1.2rem;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(70, 17, 17, 0.08);
+            border-color: rgba(70, 17, 17, 0.1);
+        }
+
+        .info-icon-wrap { 
+            width: 42px; height: 42px; 
+            border-radius: 10px; 
+            background: rgba(70, 17, 17, 0.05); 
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon-wrap i { 
+            font-size: 1.3rem; 
+            color: #461111; 
+        }
+
+        .info-details { font-size: 0.9rem; color: #666; line-height: 1.5; }
+        .info-details strong { display: block; font-weight: 700; color: #111; margin-bottom: 4px; font-size: 0.95rem;}
+
     </style>
 </head>
 
 <body>
+
+    <!-- Side Menu -->
+    <div class="side-menu-overlay" id="side-menu-overlay"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="side-menu-header">
+            <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio" style="height: 40px; width: auto;">
+            <div class="close-menu" id="close-menu"><i class="zmdi zmdi-close"></i></div>
+        </div>
+        
+        <div class="side-menu-content">
+            <div class="side-welcome-box">
+                <p>"Eladé is a flexible workspace for beauty professionals, designed for stylists who want the freedom to book by the hour, day, week, or month. Located near Kings Cross, London, our studio provides a professional environment for appointments, content creation, education, consultations, and client experiences without the commitment of a traditional salon rental model."</p>
+            </div>
+            
+            <h4>Contact Details</h4>
+            
+            <div class="info-card">
+                <div class="info-icon-wrap"><i class="zmdi zmdi-pin"></i></div>
+                <div class="info-details">
+                    <strong>Location</strong>
+                    Eladé<br>G13 (Ground Floor)<br>4–10 North Road<br>London<br>N7 9EY<br>United Kingdom
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon-wrap"><i class="zmdi zmdi-time"></i></div>
+                <div class="info-details">
+                    <strong>Timings</strong>
+                    Monday - Sunday<br>Open 24 Hours
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon-wrap"><i class="zmdi zmdi-email"></i></div>
+                <div class="info-details">
+                    <strong>Email</strong>
+                    <a href="mailto:management@eladeuk.com" style="color: inherit; text-decoration: none;">management@eladeuk.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <header class="top-nav">
         <i class="zmdi zmdi-menu menu-icon"></i>
@@ -277,23 +445,23 @@
             <div class="progress-steps">
                 <div class="step">
                     <div class="step-circle">1</div>
-                    <div class="step-label">Location</div>
+                    <div class="step-label">Schedule</div>
                 </div>
                 <div class="step">
                     <div class="step-circle">2</div>
-                    <div class="step-label">Guests</div>
+                    <div class="step-label">Options</div>
                 </div>
                 <div class="step">
                     <div class="step-circle">3</div>
-                    <div class="step-label">Services</div>
+                    <div class="step-label">Details</div>
                 </div>
                 <div class="step">
                     <div class="step-circle">4</div>
-                    <div class="step-label">Time</div>
+                    <div class="step-label">Payment</div>
                 </div>
                 <div class="step">
                     <div class="step-circle">5</div>
-                    <div class="step-label">Confirm</div>
+                    <div class="step-label">Confirmation</div>
                 </div>
             </div>
         </div>
@@ -379,6 +547,17 @@
 
     <script>
         $(document).ready(function() {
+            
+            // Toggle side menu
+            $('.menu-icon').on('click', function() {
+                $('#side-menu').addClass('active');
+                $('#side-menu-overlay').addClass('active');
+            });
+
+            $('#close-menu, #side-menu-overlay').on('click', function() {
+                $('#side-menu').removeClass('active');
+                $('#side-menu-overlay').removeClass('active');
+            });
             
             // Switch forms
             $('.switch-link').on('click', function(e) {
