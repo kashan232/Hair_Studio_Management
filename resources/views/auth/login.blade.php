@@ -214,6 +214,30 @@
             color: #000;
         }
 
+        @media (max-width: 600px) {
+            .progress-container {
+                padding: 0 5px;
+            }
+            .step {
+                padding: 0;
+                flex: 1;
+            }
+            .step-circle {
+                width: 24px;
+                height: 24px;
+                font-size: 0.75rem;
+                margin-bottom: 5px;
+            }
+            .step-label {
+                font-size: 0.55rem;
+                letter-spacing: 0;
+                word-break: break-word;
+            }
+            .progress-line {
+                top: 12px;
+            }
+        }
+
         /* Divider & Guest Button */
         .divider {
             display: flex;
