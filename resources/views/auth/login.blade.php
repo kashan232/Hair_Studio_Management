@@ -160,82 +160,84 @@
             font-size: 0.85rem;
         }
 
-        /* Progress Bar Styles */
-        .progress-container {
+        /* ===== LOGIN STEPPER (Matches booking.blade.php) ===== */
+        .stepper-wrap {
+            padding: 1rem 1rem 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            overflow-x: auto;
+            margin-bottom: 3rem;
             width: 100%;
-            max-width: 900px;
-            margin: 0 auto 3rem auto;
-            position: relative;
-            padding: 0 2rem;
         }
-
-        .progress-line {
+        
+        .stepper {
+            display: flex;
+            align-items: flex-start;
+            min-width: 520px;
+            max-width: 720px;
+            margin: 0 auto;
+            position: relative;
+            padding: 0 0.25rem;
+        }
+        
+        .stepper::before {
+            content: '';
             position: absolute;
-            top: 15px;
-            left: 5%;
-            right: 5%;
+            top: 14px;
+            left: 30px;
+            right: 30px;
             height: 2px;
-            background: rgba(70, 17, 17, 0.2);
+            background: #f0f0f0;
             z-index: 1;
         }
 
-        .progress-steps {
+        .step-item {
+            flex: 1;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
             position: relative;
             z-index: 2;
-        }
-
-        .step {
             text-align: center;
-            background: #ffffff;
-            padding: 0 10px;
         }
-
+    
         .step-circle {
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background: #461111e6;
-            color: #fff;
+            background: #fff;
+            border: 2px solid #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin: 0 auto 8px auto;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #999;
+            margin-bottom: 0.4rem;
+            transition: all 0.3s;
         }
-
+    
         .step-label {
-            font-size: 0.7rem;
-            font-weight: 500;
+            font-size: 0.65rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            color: #999;
+            transition: color 0.3s;
+        }
+    
+        .step-item.active .step-circle {
+            border-color: #461111e6;
+            background: #461111e6;
+            color: #fff;
+        }
+    
+        .step-item.active .step-label {
             color: #000;
         }
-
-        @media (max-width: 600px) {
-            .progress-container {
-                padding: 0 5px;
-            }
-            .step {
-                padding: 0;
-                flex: 1;
-            }
-            .step-circle {
-                width: 24px;
-                height: 24px;
-                font-size: 0.75rem;
-                margin-bottom: 5px;
-            }
-            .step-label {
-                font-size: 0.55rem;
-                letter-spacing: 0;
-                word-break: break-word;
-            }
-            .progress-line {
-                top: 12px;
-            }
+        
+        .step-item.done .step-circle {
+            border-color: #461111e6;
+            color: #461111e6;
         }
 
         /* Divider & Guest Button */
@@ -463,27 +465,26 @@
 
     <main class="main-container">
         
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress-line"></div>
-            <div class="progress-steps">
-                <div class="step">
-                    <div class="step-circle">1</div>
+        <!-- Stepper -->
+        <div class="stepper-wrap">
+            <div class="stepper">
+                <div class="step-item done">
+                    <div class="step-circle">✓</div>
                     <div class="step-label">Schedule</div>
                 </div>
-                <div class="step">
-                    <div class="step-circle">2</div>
+                <div class="step-item done">
+                    <div class="step-circle">✓</div>
                     <div class="step-label">Options</div>
                 </div>
-                <div class="step">
+                <div class="step-item active">
                     <div class="step-circle">3</div>
                     <div class="step-label">Details</div>
                 </div>
-                <div class="step">
+                <div class="step-item">
                     <div class="step-circle">4</div>
                     <div class="step-label">Payment</div>
                 </div>
-                <div class="step">
+                <div class="step-item">
                     <div class="step-circle">5</div>
                     <div class="step-label">Confirmation</div>
                 </div>
