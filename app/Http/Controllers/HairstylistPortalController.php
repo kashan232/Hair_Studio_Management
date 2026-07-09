@@ -101,9 +101,9 @@ class HairstylistPortalController extends Controller
                 'start_date' => ['required', 'date', 'after_or_equal:today'],
             ]);
             
-            $start = Carbon::parse($request->input('start_date'))->startOfDay();
-            $durationHours = 24; // Daily booking represents 1 day
-            $end = $start->copy()->endOfDay();
+            $start = Carbon::parse($request->input('start_date'))->setTime(8, 0, 0);
+            $durationHours = 13; // Daily booking represents 8am to 9pm
+            $end = Carbon::parse($request->input('start_date'))->setTime(21, 0, 0);
         } else {
             $request->validate([
                 'start_date' => ['required', 'date', 'after_or_equal:today'],
@@ -643,23 +643,7 @@ class HairstylistPortalController extends Controller
 
     private function isOvernightBooking(): bool
     {
-        $startStr = session('stylist_booking.start_time');
-        $endStr = session('stylist_booking.end_time');
-        if (!$startStr || !$endStr) return false;
-
-        $start = Carbon::parse($startStr);
-        $end = Carbon::parse($endStr);
-        
-        // 9 PM is 21:00. 8 AM is 08:00
-        // Any time between 21:00 and 08:00
-        $ninePM = Carbon::createFromTime(21, 0, 0);
-        $eightAM = Carbon::createFromTime(8, 0, 0);
-
-        if ($start->gte($ninePM) || $start->lt($eightAM) || $end->gt($ninePM) || $end->lte($eightAM)) {
-            return true;
-        }
-
-        return false;
+        return false; // Night approval rule removed
     }
 
     public function calculateTotal(): float
