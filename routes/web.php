@@ -20,16 +20,17 @@ Route::prefix('stylist')->name('stylist.')->group(function () {
     Route::get('/book/payment/success', [HairstylistPortalController::class, 'paymentSuccess'])->name('book.payment.success');
     Route::post('/book/reset', [HairstylistPortalController::class, 'clearBooking'])->name('book.reset');
     
-    // Stylist My Bookings
-    Route::get('/my-bookings', [HairstylistPortalController::class, 'myBookings'])->name('my_bookings')->middleware('auth');
-    Route::post('/my-bookings/{id}/cancel', [HairstylistPortalController::class, 'cancelBooking'])->name('cancel_booking')->middleware('auth');
+    // Packages (Listing Available to Guests)
+    Route::get('/packages', [\App\Http\Controllers\UserPackageController::class, 'index'])->name('packages.index');
 
-    // Packages
+    // Auth Middleware for My Bookings and Package Purchasing
     Route::middleware('auth')->group(function () {
-        Route::get('/packages', [\App\Http\Controllers\UserPackageController::class, 'index'])->name('packages.index');
         Route::get('/packages/{package}/checkout', [\App\Http\Controllers\UserPackageController::class, 'checkout'])->name('packages.checkout');
         Route::post('/packages/{package}/intent', [\App\Http\Controllers\UserPackageController::class, 'intent'])->name('packages.intent');
         Route::get('/packages/{package}/success', [\App\Http\Controllers\UserPackageController::class, 'success'])->name('packages.success');
+
+        Route::get('/my-bookings', [HairstylistPortalController::class, 'myBookings'])->name('my_bookings');
+        Route::post('/my-bookings/{id}/cancel', [HairstylistPortalController::class, 'cancelBooking'])->name('cancel_booking');
     });
 });
 

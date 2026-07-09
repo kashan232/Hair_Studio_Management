@@ -768,7 +768,7 @@
                     <div class="cal-grid" id="s-cal-grid"></div>
                 </div>
 
-                <div class="schedule-panel">
+                <div class="schedule-panel" @if(session('stylist_booking.type') == 'daily') style="display: none;" @endif>
                     <div class="schedule-panel-title">2. Select Start Time</div>
                     <div class="slots-grid" id="s-slots-grid"></div>
 
@@ -1176,6 +1176,19 @@
     });
 
     document.getElementById('schedule-form').addEventListener('submit', function(ev) {
+        const type = "{{ session('stylist_booking.type') }}";
+        if (type === "daily") {
+            if (!sDate) {
+                ev.preventDefault(); 
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'warning', title: 'Missing Selection', text: 'Please select a date before continuing.', confirmButtonColor: '#461111' });
+                } else {
+                    alert('Please select a date.'); 
+                }
+            }
+            return;
+        }
+
         if (!sDate || !sTime) { 
             ev.preventDefault(); 
             if (typeof Swal !== 'undefined') {

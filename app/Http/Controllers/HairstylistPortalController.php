@@ -37,11 +37,26 @@ class HairstylistPortalController extends Controller
     public function booking(Request $request): View|RedirectResponse
     {
         $step = max(1, min(5, (int) $request->query('step', 1)));
+        $type = $request->query('type');
         $user = $request->user();
+
+        // If they navigate to the base route without a type, assume they want to start a new booking
+        if ($step == 1 && !$type) {
+            // clear any old stuck booking session
+            session()->forget('stylist_booking');
+            return view('stylist.booking_filter');
+        }
+
+        // Save type to session if provided, otherwise retrieve it
+        if ($type) {
+            session(['stylist_booking.type' => $type]);
+        } else {
+            $type = session('stylist_booking.type', 'hourly');
+        }
 
         // Ensure we don't skip required steps
         if ($step > 1 && !session('stylist_booking.start_date')) {
-            return redirect()->route('stylist.book', ['step' => 1]);
+            return redirect()->route('stylist.book', ['step' => 1, 'type' => $type]);
         }
 
         $steps = [
@@ -79,15 +94,27 @@ class HairstylistPortalController extends Controller
 
     public function selectTime(Request $request): RedirectResponse
     {
-        $request->validate([
-            'start_date' => ['required', 'date', 'after_or_equal:today'],
-            'start_time' => ['required'],
-            'duration'   => ['required', 'integer', 'min:2'], // Minimum 2 hours
-        ]);
+        $type = session('stylist_booking.type', 'hourly');
 
-        $start = Carbon::parse($request->input('start_date') . ' ' . $request->input('start_time'));
-        $durationHours = (int) $request->input('duration');
-        $end = $start->copy()->addHours($durationHours);
+        if ($type === 'daily') {
+            $request->validate([
+                'start_date' => ['required', 'date', 'after_or_equal:today'],
+            ]);
+            
+            $start = Carbon::parse($request->input('start_date'))->startOfDay();
+            $durationHours = 24; // Daily booking represents 1 day
+            $end = $start->copy()->endOfDay();
+        } else {
+            $request->validate([
+                'start_date' => ['required', 'date', 'after_or_equal:today'],
+                'start_time' => ['required'],
+                'duration'   => ['required', 'integer', 'min:2'], // Minimum 2 hours
+            ]);
+
+            $start = Carbon::parse($request->input('start_date') . ' ' . $request->input('start_time'));
+            $durationHours = (int) $request->input('duration');
+            $end = $start->copy()->addHours($durationHours);
+        }
 
         session([
             'stylist_booking.start_date' => $start->format('Y-m-d'),
@@ -637,12 +664,20 @@ class HairstylistPortalController extends Controller
 
     public function calculateTotal(): float
     {
+        $type = session('stylist_booking.type', 'hourly');
         $duration = session('stylist_booking.duration');
         if (!$duration) return 0.0;
 
-        // Base it on the first chair's hourly price or a default
         $chair = Chair::first();
-        $unitPrice = $chair ? (float) $chair->price_hourly : 25.00;
+        
+        if ($type === 'daily') {
+            $unitPrice = $chair && $chair->price_daily ? (float) $chair->price_daily : 150.00;
+            // For daily, duration is stored as 24 hours in the session, but we charge 1 daily unit
+            return round($unitPrice * 1, 2);
+        }
+
+        // Base it on the first chair's hourly price or a default
+        $unitPrice = $chair && $chair->price_hourly ? (float) $chair->price_hourly : 25.00;
 
         return round($unitPrice * $duration, 2);
     }

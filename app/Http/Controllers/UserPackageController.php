@@ -14,8 +14,14 @@ class UserPackageController extends Controller
     {
         $user = auth()->user();
         $packages = Package::where('is_active', true)->get();
-        $myPackages = UserPackage::with('package')->where('user_id', $user->id)->latest()->get();
-        $totalBalance = $user->package_balance;
+        
+        $myPackages = collect();
+        $totalBalance = 0;
+        
+        if ($user) {
+            $myPackages = UserPackage::with('package')->where('user_id', $user->id)->latest()->get();
+            $totalBalance = $user->package_balance;
+        }
 
         return view('user.packages.index', compact('packages', 'myPackages', 'totalBalance'));
     }
