@@ -274,10 +274,17 @@
     }
 
     @media (max-width: 900px) {
-        .cards-grid { max-width: 100%; margin-left: 1rem; margin-right: 1rem; }
+        .cards-grid { 
+            grid-template-columns: 1fr; 
+            max-width: 450px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            gap: 1.5rem; 
+        }
         .info-section { padding-top: 3rem; margin-top: 3rem; }
         .contact-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-        .header-title { font-size: 2.8rem; }
+        .header-title { font-size: 2.5rem; }
+        .header-logo { height: 45px; margin-bottom: 2rem; }
         .about-title { font-size: 2rem; }
         .about-text { font-size: 1rem; }
     }
