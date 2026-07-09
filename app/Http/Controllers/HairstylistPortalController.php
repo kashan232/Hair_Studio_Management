@@ -52,14 +52,28 @@ class HairstylistPortalController extends Controller
             5 => ['label' => 'Done',     'title' => 'Booking Confirmed!'],
         ];
 
-        // Fetch availability state
         $availabilityState = session('stylist_booking.availability_state');
         $guestDetails = session('stylist_booking.guest', []);
-        $computedTotal = $this->calculateTotal();
+        
+        $rawTotal = $this->calculateTotal();
+        $computedTotal = $rawTotal;
+        $packageHoursUsed = 0;
+        $duration = session('stylist_booking.duration', 0);
+
+        if ($user && $duration > 0) {
+            $packageBalance = $user->package_balance;
+            if ($packageBalance > 0) {
+                $packageHoursUsed = min($packageBalance, $duration);
+                $remainingDuration = $duration - $packageHoursUsed;
+                $unitPrice = $computedTotal / $duration;
+                $computedTotal = round($unitPrice * $remainingDuration, 2);
+            }
+        }
+
         $isOvernight = $this->isOvernightBooking();
 
         return view('stylist.booking', compact(
-            'step', 'user', 'steps', 'guestDetails', 'computedTotal', 'isOvernight', 'availabilityState'
+            'step', 'user', 'steps', 'guestDetails', 'computedTotal', 'isOvernight', 'availabilityState', 'packageHoursUsed', 'rawTotal'
         ));
     }
 
@@ -183,28 +197,38 @@ class HairstylistPortalController extends Controller
             return response()->json(['error' => 'Session expired. Please restart.'], 400);
         }
 
-        $total = $this->calculateTotal();
-        if (!$total || $total <= 0) {
-            return response()->json(['error' => 'Invalid amount.'], 400);
+        $rawTotal = $this->calculateTotal();
+        $total = $rawTotal;
+        $duration = session('stylist_booking.duration', 0);
+        $packageHoursUsed = 0;
+
+        $user = $request->user();
+        if (!$user) {
+            $guestEmail = session('stylist_booking.guest.email');
+            if ($guestEmail) {
+                $user = \App\Models\User::where('email', $guestEmail)->first();
+            }
         }
+
+        if ($user && $duration > 0) {
+            $packageBalance = $user->package_balance;
+            if ($packageBalance > 0) {
+                $packageHoursUsed = min($packageBalance, $duration);
+                $remainingDuration = $duration - $packageHoursUsed;
+                $unitPrice = $total / $duration;
+                $total = round($unitPrice * $remainingDuration, 2);
+            }
+        }
+
+        if ($total < 0) $total = 0;
 
         $discount = 0;
         $couponCode = null;
 
-        if ($request->has('coupon_code')) {
+        if ($request->has('coupon_code') && $total > 0) {
             $code = strtoupper(trim($request->coupon_code));
             $coupon = \App\Models\Coupon::where('code', $code)->first();
             if ($coupon && $coupon->is_active && $coupon->expires_at->gte(\Carbon\Carbon::today())) {
-                // If user is authenticated, check if used
-                $user = $request->user();
-                if (!$user) {
-                    // Try to find if guest email exists
-                    $guestEmail = session('stylist_booking.guest.email');
-                    if ($guestEmail) {
-                        $user = \App\Models\User::where('email', $guestEmail)->first();
-                    }
-                }
-                
                 $hasUsed = false;
                 if ($user) {
                     $hasUsed = $coupon->users()->where('user_id', $user->id)->exists();
@@ -225,8 +249,13 @@ class HairstylistPortalController extends Controller
         session([
             'stylist_booking.coupon_code' => $couponCode,
             'stylist_booking.discount' => $discount,
-            'stylist_booking.final_total' => $total
+            'stylist_booking.final_total' => $total,
+            'stylist_booking.package_hours_used' => $packageHoursUsed
         ]);
+
+        if ($total <= 0) {
+            return response()->json(['clientSecret' => null, 'finalTotal' => 0, 'is_free' => true]);
+        }
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
@@ -242,7 +271,7 @@ class HairstylistPortalController extends Controller
 
         session(['stylist_booking.payment_intent_id' => $intent->id]);
 
-        return response()->json(['clientSecret' => $intent->client_secret, 'finalTotal' => $total]);
+        return response()->json(['clientSecret' => $intent->client_secret, 'finalTotal' => $total, 'is_free' => false]);
     }
 
     private function verifyChairsAreFree(): bool
@@ -326,6 +355,7 @@ class HairstylistPortalController extends Controller
         $start = Carbon::parse(session('stylist_booking.start_date') . ' ' . session('stylist_booking.start_time'));
         $end = Carbon::parse(session('stylist_booking.end_date') . ' ' . session('stylist_booking.end_time'));
         $guestDetails = session('stylist_booking.guest', []);
+        $packageHoursUsed = session('stylist_booking.package_hours_used', 0);
 
         $booking = Booking::create([
             'user_id' => $user ? $user->id : null,
@@ -335,10 +365,33 @@ class HairstylistPortalController extends Controller
             'start_datetime' => $start,
             'end_datetime' => $end,
             'duration_hours' => session('stylist_booking.duration'),
+            'package_hours_used' => $packageHoursUsed,
             'total_amount' => session('stylist_booking.final_total', $this->calculateTotal()),
             'status' => $status,
             'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
+
+        if ($user && $packageHoursUsed > 0 && in_array($status, ['confirmed', 'pending_approval'])) {
+            $hoursToDeduct = $packageHoursUsed;
+            $activePackages = $user->userPackages()->where('status', 'active')->orderBy('created_at', 'asc')->get();
+            
+            foreach ($activePackages as $up) {
+                if ($hoursToDeduct <= 0) break;
+                
+                if ($up->hours_remaining >= $hoursToDeduct) {
+                    $up->hours_remaining -= $hoursToDeduct;
+                    $hoursToDeduct = 0;
+                } else {
+                    $hoursToDeduct -= $up->hours_remaining;
+                    $up->hours_remaining = 0;
+                }
+                
+                if ($up->hours_remaining == 0) {
+                    $up->status = 'exhausted';
+                }
+                $up->save();
+            }
+        }
 
         // Attach coupon if used
         $couponCode = session('stylist_booking.coupon_code');

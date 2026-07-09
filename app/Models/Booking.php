@@ -14,6 +14,7 @@ class Booking extends Model
         'start_datetime',
         'end_datetime',
         'duration_hours',
+        'package_hours_used',
         'total_amount',
         'status',
     ];

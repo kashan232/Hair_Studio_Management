@@ -40,7 +40,7 @@
         padding: 0.75rem 1.5rem;
     }
     .top-nav-inner {
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0 auto;
         display: flex;
         align-items: center;
@@ -51,6 +51,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex: 1;
     }
     .profile-avatar {
         width: 44px;
@@ -69,7 +70,7 @@
     .profile-details p {
         margin: 0;
         font-size: 0.7rem;
-        color: var(--app-text-muted);
+        color: var(--app-muted);
         text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 500;
@@ -78,36 +79,41 @@
         display: flex;
         gap: 0.75rem;
         align-items: center;
+        flex: 1;
+        justify-content: flex-end;
     }
     .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 38px;
-        padding: 0 1.25rem;
+        border: 1px solid var(--app-line);
+        background: transparent;
+        padding: 0.4rem 1rem;
         border-radius: 8px;
         font-size: 0.75rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        background: transparent;
+        color: var(--app-text);
         cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+    .btn-outline:hover {
+        background: #fdf5f1;
+        color: var(--app-accent-dark);
+        border-color: #d4a088;
     }
     .btn-new-booking {
-        border: 1.5px solid var(--app-accent);
-        color: var(--app-accent-dark);
+        background: var(--app-surface);
+        border-color: var(--salon-theme-solid, #461111);
+        color: var(--salon-theme-solid, #461111);
     }
     .btn-new-booking:hover {
-        background: var(--app-accent);
+        background: var(--salon-theme-solid, #461111);
         color: #fff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(212, 160, 136, 0.2);
     }
     .btn-logout {
-        border: 1.5px solid #ffcdd2;
         color: #d32f2f;
+        border-color: #ffcdd2;
     }
     .btn-logout:hover {
         background: #ffebee;
@@ -118,14 +124,15 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
+        flex: 0;
+        display: flex;
+        justify-content: center;
+        z-index: -1;
     }
 
-    @media (max-width: 850px) {
+    @media (max-width: 950px) {
         .top-nav-inner {
-            flex-direction: column;
-            gap: 1.2rem;
-            position: relative;
-            padding-top: 0.5rem;
+            flex-wrap: wrap;
         }
         .header-logo-center {
             position: static;
@@ -133,21 +140,25 @@
             order: -1;
             width: 100%;
             text-align: center;
+            margin-bottom: 1rem;
+            z-index: 1;
         }
         .profile-wrap {
-            width: 100%;
-            justify-content: center;
+            flex: 1 1 auto;
             margin-bottom: 0.5rem;
         }
         .nav-actions {
-            width: 100%;
-            justify-content: center;
-            flex-direction: row;
+            flex: 1 1 100%;
+            justify-content: flex-start;
+            flex-wrap: wrap;
             gap: 0.5rem;
         }
         .nav-actions .btn-outline {
             flex: 1;
             text-align: center;
+        }
+        .nav-actions form {
+            flex: 1;
         }
     }
 
@@ -390,10 +401,20 @@
         </div>
 
         <div class="nav-actions">
+            @php
+                $activePackage = App\Models\UserPackage::where('user_id', auth()->id())->where('status', 'active')->where('hours_remaining', '>', 0)->first();
+            @endphp
+            @if($activePackage)
+                <div style="background: var(--app-accent-dark); color: var(--app-surface); display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.75rem; letter-spacing: 0.5px;">
+                    <span style="width: 8px; height: 8px; background: #4caf50; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #4caf50;"></span>
+                    {{ intval($activePackage->hours_remaining) == $activePackage->hours_remaining ? intval($activePackage->hours_remaining) : $activePackage->hours_remaining }} HRS
+                </div>
+            @endif
+            <a href="{{ route('stylist.packages.index') }}" class="btn-outline" style="border-color: #d4a088; color: var(--app-accent-dark);">My Packages</a>
             <a href="{{ route('stylist.book') }}" class="btn-outline btn-new-booking">New Booking</a>
-            <form method="POST" action="{{ route('logout') }}" style="margin:0; flex:1; display:flex;">
+            <form method="POST" action="{{ route('logout') }}" style="margin:0; display:flex;">
                 @csrf
-                <button type="submit" class="btn-outline btn-logout" style="width:100%;">Logout</button>
+                <button type="submit" class="btn-outline btn-logout">Logout</button>
             </form>
         </div>
     </div>

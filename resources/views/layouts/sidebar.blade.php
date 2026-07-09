@@ -60,6 +60,13 @@
                 </li>
 
                 <li class="slide">
+                    <a class="sidenav-menu-item {{ Route::is('admin.packages*') ? 'active' : '' }}" href="{{ route('admin.packages.index') }}">
+                        <i class="side-menu__icon fe fe-box"></i>
+                        <span class="side-menu__label">Packages</span>
+                    </a>
+                </li>
+
+                <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('chairs*') ? 'active' : '' }}" href="{{ route('chairs.index') }}">
                         <i class="side-menu__icon fe fe-grid"></i>
                         <span class="side-menu__label">Chairs</span>

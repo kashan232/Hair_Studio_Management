@@ -689,6 +689,9 @@
                                 ->count();
             @endphp
             <div style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="{{ route('stylist.packages.index') }}" class="btn-logout" style="text-decoration:none; border-color: var(--salon-gold); color: var(--app-accent-dark);">
+                    My Packages
+                </a>
                 <a href="{{ route('stylist.my_bookings') }}" class="btn-logout" style="text-decoration:none; position: relative;">
                     My Bookings
                     @if($pendingCount > 0)
@@ -789,10 +792,6 @@
         @if($avail['status'] === 'single_chair' || $avail['status'] === 'multi_chair')
             <div class="av-card" style="max-width:800px; margin:0 auto; position: relative;">
 
-                <p style="text-align:center; font-size:0.95rem; font-weight:600; color:var(--app-text); margin-bottom:1.5rem;">
-                    Your {{ session('stylist_booking.duration') }}-Hour Booking Details ({{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('g A') }} - {{ \Carbon\Carbon::parse(session('stylist_booking.end_time'))->format('g A') }}):
-                </p>
-                
                 <div style="background:#f4f6f8; border-radius:12px; border:1px solid var(--app-line); padding: 0; position: relative; overflow: hidden;">
                     @php
                         $assignedChair = $avail['status'] === 'single_chair' ? $avail['chair_id'] : null;
@@ -956,6 +955,20 @@
     @endif
 
     @if($step === 4)
+        @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
+            <div class="alert alert-success" style="border-radius: 8px; margin-bottom: 1.5rem; background-color: #f1f8e9; border: 1px solid #c5e1a5; color: #33691e;">
+                <h5 class="mb-1" style="font-weight: 600;">Package Applied!</h5>
+                <p class="mb-0">You are using <strong>{{ $packageHoursUsed }}</strong> of your prepaid package hours for this booking.
+                @if($computedTotal > 0)
+                    You only need to pay for the remaining time.
+                @else
+                    This booking is fully covered by your package!
+                @endif
+                </p>
+            </div>
+        @endif
+
+        @if($computedTotal > 0)
         <div class="coupon-wrap" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
             <input type="text" id="coupon_code" class="coupon-input" placeholder="enter promo code" style="flex: 1 1 200px; padding: 0.7rem 0.85rem; border: 1.5px solid var(--app-line); border-radius: 8px; font-size: 0.9rem;">
             <button type="button" id="apply-coupon-btn" class="btn-apply-coupon" style="flex: 1 1 auto; background: var(--app-muted); color: #fff; border: none; border-radius: 8px; padding: 0.7rem 1.5rem; font-weight: 600; cursor: pointer;">Apply</button>
@@ -963,12 +976,14 @@
         <div id="discount-line" style="display: none; justify-content: space-between; margin-bottom: 1rem; color: #2e7d32; font-weight: 600;">
             <span>Discount</span><span id="discount-amount-text">-£0.00</span>
         </div>
+        @endif
 
         <div class="total-highlight">
             <span class="total-highlight-label">Amount due</span>
             <span class="total-highlight-amount" id="final-amount-display">£{{ number_format($computedTotal, 2) }}</span>
         </div>
 
+        @if($computedTotal > 0)
         <div class="stripe-card-wrap">
             <div class="stripe-field">
                 <span class="stripe-card-label">Card Number</span>
@@ -990,10 +1005,11 @@
                 Secured by Stripe &mdash; we never store your card details
             </div>
         </div>
+        @endif
 
         <button id="pay-btn" class="btn-pay" type="button">
             <span class="pay-spinner" id="pay-spinner"></span>
-            <span id="pay-btn-text">Pay £{{ number_format($computedTotal, 2) }}</span>
+            <span id="pay-btn-text">{{ $computedTotal > 0 ? 'Pay £'.number_format($computedTotal, 2) : 'Confirm Booking' }}</span>
         </button>
     @endif
 
@@ -1268,6 +1284,12 @@
             });
             const intentData = await intentRes.json();
             if (intentData.error) throw new Error(intentData.error);
+
+            if (intentData.is_free) {
+                // Bypass Stripe completely
+                window.location.href = '{{ route("stylist.book.payment.success") }}';
+                return;
+            }
 
             const { error, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
                 payment_method: { card: cardNumber },

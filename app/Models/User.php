@@ -86,4 +86,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function userPackages()
+    {
+        return $this->hasMany(UserPackage::class);
+    }
+
+    public function getPackageBalanceAttribute()
+    {
+        return $this->userPackages()->where('status', 'active')->sum('hours_remaining');
+    }
 }

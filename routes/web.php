@@ -23,6 +23,14 @@ Route::prefix('stylist')->name('stylist.')->group(function () {
     // Stylist My Bookings
     Route::get('/my-bookings', [HairstylistPortalController::class, 'myBookings'])->name('my_bookings')->middleware('auth');
     Route::post('/my-bookings/{id}/cancel', [HairstylistPortalController::class, 'cancelBooking'])->name('cancel_booking')->middleware('auth');
+
+    // Packages
+    Route::middleware('auth')->group(function () {
+        Route::get('/packages', [\App\Http\Controllers\UserPackageController::class, 'index'])->name('packages.index');
+        Route::get('/packages/{package}/checkout', [\App\Http\Controllers\UserPackageController::class, 'checkout'])->name('packages.checkout');
+        Route::post('/packages/{package}/intent', [\App\Http\Controllers\UserPackageController::class, 'intent'])->name('packages.intent');
+        Route::get('/packages/{package}/success', [\App\Http\Controllers\UserPackageController::class, 'success'])->name('packages.success');
+    });
 });
 
 Route::middleware(['auth', 'staff'])->group(function () {
@@ -41,6 +49,9 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/chairs/store', [ChairController::class, 'store'])->name('chairs.store');
     Route::post('/chairs/update/{id}', [ChairController::class, 'update'])->name('chairs.update');
     Route::post('/chairs/delete/{id}', [ChairController::class, 'destroy'])->name('chairs.destroy');
+
+    // Packages Management Routes
+    Route::resource('/packages', \App\Http\Controllers\PackageController::class)->names('admin.packages');
 
     // Advanced Reporting Route
     Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
