@@ -596,7 +596,6 @@
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
     }
-    @media (max-width: 650px) { .schedule-layout { grid-template-columns: 1fr; } }
     .schedule-panel {
         background: #fff;
         border-radius: 12px;
@@ -638,7 +637,7 @@
     .cal-day-selected { background: var(--app-accent) !important; color: #fff !important; border-color: var(--app-accent) !important; box-shadow: 0 4px 10px rgba(212,160,136,0.3); }
 
     .slots-heading { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--app-muted); margin-bottom: 0.75rem; }
-    .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+    .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-height: 250px; overflow-y: auto; padding-right: 12px; padding-left: 2px; padding-bottom: 2px; }
     .slot-btn {
         padding: 0.6rem 0; border: 1px solid var(--app-line); background: #fff;
         border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: var(--app-text);
@@ -671,6 +670,26 @@
     .av-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.5rem; color: var(--app-text); }
     .av-desc { font-size: 0.9rem; color: var(--app-muted); line-height: 1.5; margin-bottom: 1.5rem; }
 
+    /* Mobile specific layout for booking steps to prevent scrolling */
+    @media (max-width: 650px) {
+        .schedule-layout { grid-template-columns: 1fr; gap: 0.75rem; }
+        .schedule-panel { padding: 0.75rem; }
+        .schedule-panel-title { margin-bottom: 0.5rem; padding-bottom: 0.25rem; font-size: 0.75rem; margin-top: 0.5rem; }
+        .slots-grid { max-height: 120px; gap: 0.35rem; padding-right: 12px; padding-left: 2px; padding-bottom: 2px; }
+        .slot-btn { padding: 0.35rem 0.25rem; font-size: 0.68rem; white-space: nowrap; }
+        .duration-control { padding: 0.5rem; margin-top: 0.25rem; }
+        .dur-btn { width: 32px; height: 32px; font-size: 1rem; }
+        .dur-val { font-size: 1.2rem; }
+        .app-main { padding: 0.5rem 0.25rem; }
+        .step-title { margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .stepper-wrap { padding: 0.5rem 0.25rem 0.25rem; margin-bottom: 0; }
+        .stepper { min-width: unset; width: 100%; }
+        .stepper::before { top: 12px; left: 15px; right: 15px; }
+        .step-circle { width: 26px; height: 26px; font-size: 0.65rem; margin-bottom: 0.2rem; }
+        .step-label { font-size: 0.55rem; }
+        .top-profile-bar { padding: 0.5rem; }
+        .profile-avatar-sm { width: 36px; height: 36px; }
+    }
 </style>
 @endsection
 
@@ -796,6 +815,7 @@
                     @php
                         $assignedChair = $avail['status'] === 'single_chair' ? $avail['chair_id'] : null;
                     @endphp
+
                     @include('stylist.designer-svg')
 
                 </div>
@@ -877,8 +897,11 @@
                     value="{{ old('email', $user?->email ?? ($guestDetails['email'] ?? '')) }}">
             </div>
             <div class="form-field">
-                <label for="mobile">Mobile</label>
-                <input type="text" name="mobile" id="mobile"
+                <label for="mobile">Mobile *</label>
+                <input type="text" name="mobile" id="mobile" required
+                    pattern="\d{11,12}" maxlength="12"
+                    oninvalid="this.setCustomValidity('invalid number, please re enter')"
+                    oninput="this.setCustomValidity(''); this.value = this.value.replace(/[^0-9]/g, '');"
                     value="{{ old('mobile', $user?->mobile ?? ($guestDetails['mobile'] ?? '')) }}">
             </div>
             @if(!$user)
@@ -1150,6 +1173,10 @@
             return;
         }
         
+        const currentLondonDate = "{{ \Carbon\Carbon::now('Europe/London')->format('Y-m-d') }}";
+        const currentLondonHour = {{ \Carbon\Carbon::now('Europe/London')->format('G') }};
+        const currentLondonMinute = {{ \Carbon\Carbon::now('Europe/London')->format('i') }};
+
         let slotsFound = false;
         ALL_SLOTS.forEach(slot => {
             // Filter past hours if the selected date is today (in London time)

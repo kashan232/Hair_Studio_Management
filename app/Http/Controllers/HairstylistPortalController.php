@@ -188,7 +188,12 @@ class HairstylistPortalController extends Controller
         $rules = [
             'name'   => ['required', 'string', 'max:255'],
             'email'  => ['required', 'string', 'lowercase', 'email', 'max:255'],
-            'mobile' => ['nullable', 'string', 'max:20'],
+            'mobile' => ['required', 'digits_between:11,12'],
+        ];
+
+        $messages = [
+            'mobile.required' => 'invalid number, please re enter',
+            'mobile.digits_between' => 'invalid number, please re enter',
         ];
 
         if (!$isGuest) {
@@ -201,7 +206,7 @@ class HairstylistPortalController extends Controller
             }
         }
 
-        $validated = $request->validate($rules);
+        $validated = $request->validate($rules, $messages);
 
         session([
             'stylist_booking.guest' => [

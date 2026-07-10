@@ -409,6 +409,38 @@
         .info-details { font-size: 0.9rem; color: #666; line-height: 1.5; }
         .info-details strong { display: block; font-weight: 700; color: #111; margin-bottom: 4px; font-size: 0.95rem;}
 
+        /* Mobile specific adjustments to avoid scrolling */
+        @media (max-width: 600px) {
+            .main-container {
+                padding: 1rem;
+            }
+            .stepper-wrap {
+                margin-bottom: 1.5rem;
+            }
+            .page-title {
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .page-subtitle {
+                margin-bottom: 1rem;
+            }
+            .input-group {
+                margin-bottom: 1rem;
+            }
+            .input-group input {
+                padding: 0.75rem;
+            }
+            .divider {
+                margin: 1rem 0;
+            }
+            .btn-submit {
+                padding: 0.85rem;
+            }
+            .btn-outline-guest {
+                padding: 0.85rem;
+            }
+        }
+
     </style>
 </head>
 

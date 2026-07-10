@@ -151,6 +151,9 @@
         });
     </script>
     @yield('JScript')
+    
+    <!-- Global Cookie Consent -->
+    @include('partials.cookie-consent')
 </body>
 
 </html>

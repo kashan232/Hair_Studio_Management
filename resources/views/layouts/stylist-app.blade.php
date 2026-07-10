@@ -11,6 +11,10 @@
 </head>
 <body>
     @yield('content')
+    
+    <!-- Global Cookie Consent -->
+    @include('partials.cookie-consent')
+
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('scripts')
