@@ -1080,19 +1080,13 @@
     let duration = parseInt(document.getElementById('hidden-duration').value || 2);
     
     let sYear, sMonth;
-    if (sDate) { const d=new Date(sDate); sYear=d.getFullYear(); sMonth=d.getMonth(); }
-    else { sYear=today.getFullYear(); sMonth=today.getMonth(); }
-
-    const ALL_SLOTS = [];
-    for (let h = 0; h < 24; h++) {
-        for (const m of ['00','30']) {
-            const suffix   = h < 12 ? 'AM' : 'PM';
-            const hDisplay = h === 0 ? 12 : (h > 12 ? h - 12 : h);
-            ALL_SLOTS.push({
-                label: `${String(hDisplay).padStart(2,'0')}:${m} ${suffix}`,
-                value: `${String(h).padStart(2,'0')}:${m}`
-            });
-        }
+    if (sDate) { 
+        const d = new Date(sDate); 
+        sYear = d.getFullYear(); 
+        sMonth = d.getMonth(); 
+    } else { 
+        sYear = today.getFullYear(); 
+        sMonth = today.getMonth(); 
     }
 
     const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1132,15 +1126,40 @@
         }
     }
 
+    const ALL_SLOTS = [];
+    for (let h = 0; h < 24; h++) {
+        for (const m of ['00','30']) {
+            const suffix   = h < 12 ? 'AM' : 'PM';
+            const hDisplay = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+            ALL_SLOTS.push({
+                label: `${String(hDisplay).padStart(2,'0')}:${m} ${suffix}`,
+                value: `${String(h).padStart(2,'0')}:${m}`,
+                hour: h,
+                minute: parseInt(m)
+            });
+        }
+    }
+
     function renderSlots() {
         const gridEl = document.getElementById('s-slots-grid');
+        if (!gridEl) return;
         gridEl.innerHTML = '';
         if (!sDate) {
             const p = document.createElement('p'); p.style.cssText = 'color:var(--app-muted);font-size:0.75rem;grid-column:1/-1;text-align:center;margin:1rem 0;';
             p.textContent = 'Pick a date first'; gridEl.appendChild(p);
             return;
         }
+        
+        let slotsFound = false;
         ALL_SLOTS.forEach(slot => {
+            // Filter past hours if the selected date is today (in London time)
+            if (sDate === currentLondonDate) {
+                if (slot.hour < currentLondonHour || (slot.hour === currentLondonHour && slot.minute < currentLondonMinute)) {
+                    return; // Skip rendering this past slot
+                }
+            }
+            
+            slotsFound = true;
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'slot-btn' + (sTime === slot.value ? ' slot-selected' : '');
@@ -1148,6 +1167,11 @@
             btn.addEventListener('click', () => { sTime = slot.value; document.getElementById('hidden-start-time').value = slot.value; renderSlots(); });
             gridEl.appendChild(btn);
         });
+        
+        if (!slotsFound) {
+            const p = document.createElement('p'); p.style.cssText = 'color:var(--app-muted);font-size:0.75rem;grid-column:1/-1;text-align:center;margin:1rem 0;';
+            p.textContent = 'No remaining slots for today'; gridEl.appendChild(p);
+        }
     }
 
     document.getElementById('s-cal-prev').addEventListener('click', () => {

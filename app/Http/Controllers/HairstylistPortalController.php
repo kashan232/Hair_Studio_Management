@@ -101,9 +101,9 @@ class HairstylistPortalController extends Controller
                 'start_date' => ['required', 'date', 'after_or_equal:today'],
             ]);
             
-            $start = Carbon::parse($request->input('start_date'))->setTime(8, 0, 0);
+            $start = Carbon::parse($request->input('start_date'), 'Europe/London')->setTime(8, 0, 0);
             $durationHours = 13; // Daily booking represents 8am to 9pm
-            $end = Carbon::parse($request->input('start_date'))->setTime(21, 0, 0);
+            $end = Carbon::parse($request->input('start_date'), 'Europe/London')->setTime(21, 0, 0);
         } else {
             $request->validate([
                 'start_date' => ['required', 'date', 'after_or_equal:today'],
@@ -111,9 +111,13 @@ class HairstylistPortalController extends Controller
                 'duration'   => ['required', 'integer', 'min:2'], // Minimum 2 hours
             ]);
 
-            $start = Carbon::parse($request->input('start_date') . ' ' . $request->input('start_time'));
+            $start = Carbon::parse($request->input('start_date') . ' ' . $request->input('start_time'), 'Europe/London');
             $durationHours = (int) $request->input('duration');
             $end = $start->copy()->addHours($durationHours);
+        }
+
+        if ($start->lt(Carbon::now('Europe/London'))) {
+            return back()->withErrors(['start_time' => 'You cannot book a time in the past.']);
         }
 
         session([

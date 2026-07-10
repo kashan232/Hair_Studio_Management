@@ -279,12 +279,43 @@
             max-width: 450px; 
             margin-left: auto; 
             margin-right: auto; 
-            gap: 1.5rem; 
+            gap: 1rem; 
         }
+        .booking-card {
+            padding: 1.5rem 1.25rem;
+            border-radius: 16px;
+        }
+        .card-icon {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 1rem;
+            border-radius: 14px;
+        }
+        .card-icon svg { width: 26px; height: 26px; }
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.4rem;
+        }
+        .card-desc {
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+        .card-btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.75rem;
+        }
+        .save-tag {
+            top: 1rem;
+            right: -2rem;
+            padding: 0.35rem 2.5rem;
+            font-size: 0.6rem;
+        }
+        
         .info-section { padding-top: 3rem; margin-top: 3rem; }
         .contact-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-        .header-title { font-size: 2.5rem; }
-        .header-logo { height: 45px; margin-bottom: 2rem; }
+        .header-title { font-size: 2.2rem; }
+        .header-logo { height: 40px; margin-bottom: 1.5rem; }
+        .header-section { margin-bottom: 2rem; }
         .about-title { font-size: 2rem; }
         .about-text { font-size: 1rem; }
     }

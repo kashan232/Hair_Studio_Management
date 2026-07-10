@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         yaxis: {
             labels: {
-                formatter: function (value) { return 'Rs. ' + value.toLocaleString(); },
+                formatter: function (value) { return '£' + value.toLocaleString(); },
                 style: { colors: '#8c7e6c', fontWeight: 600 }
             }
         },
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         grid: { borderColor: '#f9f6f0' },
         tooltip: {
-            y: { formatter: function (val) { return 'Rs. ' + val.toLocaleString(); } }
+            y: { formatter: function (val) { return '£' + val.toLocaleString(); } }
         }
     };
 
