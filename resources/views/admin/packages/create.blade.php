@@ -42,6 +42,11 @@
                     <input type="number" step="0.01" name="price" class="form-control" required>
                 </div>
 
+                <div class="form-group">
+                    <label>Validity in Days (Leave blank for no expiry)</label>
+                    <input type="number" step="1" name="expiry_days" class="form-control" placeholder="e.g. 30">
+                </div>
+
                 <div class="form-group form-check">
                     <input type="checkbox" name="is_active" value="1" class="form-check-input" id="isActive" checked>
                     <label class="form-check-label" for="isActive">Active (visible to users)</label>

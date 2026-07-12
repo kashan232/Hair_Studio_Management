@@ -27,6 +27,7 @@ class PackageController extends Controller
             'hours' => 'required|numeric|min:1',
             'price' => 'required|numeric|min:0',
             'is_active' => 'boolean',
+            'expiry_days' => 'nullable|integer|min:1',
         ]);
 
         Package::create($validated + ['is_active' => $request->has('is_active')]);
@@ -44,6 +45,7 @@ class PackageController extends Controller
             'name' => 'required|string|max:255',
             'hours' => 'required|numeric|min:1',
             'price' => 'required|numeric|min:0',
+            'expiry_days' => 'nullable|integer|min:1',
         ]);
 
         $package->update($validated + ['is_active' => $request->has('is_active')]);

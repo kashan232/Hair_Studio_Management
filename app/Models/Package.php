@@ -14,5 +14,6 @@ class Package extends Model
         'hours',
         'price',
         'is_active',
+        'expiry_days',
     ];
 }

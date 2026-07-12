@@ -112,7 +112,7 @@
 @section('content')
 <div class="container my-5" style="max-width: 1000px;">
     <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 class="page-title mb-0">My Packages</h2>
+        <h2 class="page-title mb-0">My Bundles</h2>
         <a href="{{ route('stylist.my_bookings') }}" class="btn btn-outline-secondary rounded-pill px-4">Back to Bookings</a>
     </div>
 
@@ -131,7 +131,7 @@
         </div>
     </div>
 
-    <h4 class="mb-4 page-title" style="font-size: 1.5rem;">Purchase a Package</h4>
+    <h4 class="mb-4 page-title" style="font-size: 1.5rem;">Purchase a Bundle</h4>
     <div class="row mb-5 g-4">
         @foreach($packages as $package)
         <div class="col-md-4">
@@ -145,13 +145,18 @@
                     <p class="small mb-4" style="color: #28a745; font-weight: 600; background: rgba(40,167,69,0.1); padding: 5px 15px; border-radius: 20px; display: inline-block; margin: 0 auto;">
                         £{{ number_format($package->price / $package->hours, 2) }} / hr
                     </p>
+                    @if($package->expiry_days)
+                        <p class="text-muted small mb-4"><i class="fa fa-calendar-alt me-1"></i> Valid for {{ $package->expiry_days }} days</p>
+                    @else
+                        <p class="text-muted small mb-4"><i class="fa fa-infinity me-1"></i> No Expiry</p>
+                    @endif
                     <a href="{{ route('stylist.packages.checkout', $package) }}" class="btn btn-theme mt-auto">Buy Now</a>
                 </div>
             </div>
         </div>
         @endforeach
         @if($packages->isEmpty())
-            <div class="col-12"><p class="text-muted text-center p-5 bg-white rounded-4 shadow-sm">No packages are currently available for purchase.</p></div>
+            <div class="col-12"><p class="text-muted text-center p-5 bg-white rounded-4 shadow-sm">No bundles are currently available for purchase.</p></div>
         @endif
     </div>
 
@@ -165,7 +170,8 @@
                         <th>Hours Purchased</th>
                         <th>Hours Remaining</th>
                         <th>Status</th>
-                        <th class="pe-4">Date</th>
+                        <th>Expires On</th>
+                        <th class="pe-4">Date Purchased</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -176,16 +182,27 @@
                         <td><strong style="color: var(--salon-theme-solid);">{{ $up->hours_remaining }} hrs</strong></td>
                         <td>
                             @if($up->status == 'active')
-                                <span class="badge rounded-pill bg-success px-3 py-2">Active</span>
+                                @if($up->expires_at && $up->expires_at->isPast())
+                                    <span class="badge rounded-pill bg-danger px-3 py-2">Expired</span>
+                                @else
+                                    <span class="badge rounded-pill bg-success px-3 py-2">Active</span>
+                                @endif
                             @else
                                 <span class="badge rounded-pill bg-secondary px-3 py-2">Exhausted</span>
+                            @endif
+                        </td>
+                        <td class="text-muted">
+                            @if($up->expires_at)
+                                {{ $up->expires_at->format('M d, Y') }}
+                            @else
+                                <span class="opacity-50">Never</span>
                             @endif
                         </td>
                         <td class="pe-4 text-muted">{{ $up->created_at->format('M d, Y') }}</td>
                     </tr>
                     @endforeach
                     @if($myPackages->isEmpty())
-                        <tr><td colspan="5" class="text-center text-muted p-5">You haven't purchased any packages yet.</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted p-5">You haven't purchased any bundles yet.</td></tr>
                     @endif
                 </tbody>
             </table>

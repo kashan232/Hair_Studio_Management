@@ -17,6 +17,11 @@ class UserPackage extends Model
         'price_paid',
         'stripe_payment_intent',
         'status',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
     ];
 
     public function user()

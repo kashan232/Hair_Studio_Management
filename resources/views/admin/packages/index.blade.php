@@ -38,6 +38,7 @@
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Package Name</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Hours</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Price (£)</th>
+                                        <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Validity</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Status</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Actions</th>
                                     </tr>
@@ -50,6 +51,13 @@
                                             <span class="badge bg-primary rounded-pill px-3">{{ $package->hours }} Hrs</span>
                                         </td>
                                         <td class="px-4 fw-semibold text-success">£{{ number_format($package->price, 2) }}</td>
+                                        <td class="px-4 text-muted small">
+                                            @if($package->expiry_days)
+                                                {{ $package->expiry_days }} Days
+                                            @else
+                                                <span class="fst-italic opacity-50">No Expiry</span>
+                                            @endif
+                                        </td>
                                         <td class="px-4">
                                             @if($package->is_active)
                                                 <span class="badge bg-success rounded-pill px-3 py-1" style="font-size: 0.75rem;"><i class="fa fa-check me-1"></i> Active</span>
@@ -94,6 +102,7 @@
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Package</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Hours Purchased</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Hours Remaining</th>
+                                        <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Expires On</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Status</th>
                                         <th class="py-3 px-4 text-uppercase text-muted" style="font-size: 0.8rem; font-weight: 700;">Purchased On</th>
                                     </tr>
@@ -112,9 +121,20 @@
                                                 {{ $up->hours_remaining }} Hrs
                                             </span>
                                         </td>
+                                        <td class="px-4 text-muted small">
+                                            @if($up->expires_at)
+                                                {{ $up->expires_at->format('M d, Y') }}
+                                            @else
+                                                <span class="fst-italic opacity-50">No Expiry</span>
+                                            @endif
+                                        </td>
                                         <td class="px-4">
                                             @if($up->status == 'active')
-                                                <span class="badge bg-success-transparent text-success rounded-pill px-3 py-1" style="font-size: 0.75rem;"><i class="fa fa-check-circle me-1"></i> Active</span>
+                                                @if($up->expires_at && $up->expires_at->isPast())
+                                                    <span class="badge bg-danger-transparent text-danger rounded-pill px-3 py-1" style="font-size: 0.75rem;"><i class="fa fa-clock me-1"></i> Expired</span>
+                                                @else
+                                                    <span class="badge bg-success-transparent text-success rounded-pill px-3 py-1" style="font-size: 0.75rem;"><i class="fa fa-check-circle me-1"></i> Active</span>
+                                                @endif
                                             @else
                                                 <span class="badge bg-danger-transparent text-danger rounded-pill px-3 py-1" style="font-size: 0.75rem;"><i class="fa fa-times-circle me-1"></i> Exhausted</span>
                                             @endif

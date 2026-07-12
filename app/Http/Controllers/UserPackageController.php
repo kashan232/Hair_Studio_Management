@@ -72,6 +72,7 @@ class UserPackageController extends Controller
                 'price_paid' => $package->price,
                 'stripe_payment_intent' => $paymentIntentId,
                 'status' => 'active',
+                'expires_at' => $package->expiry_days ? now()->addDays($package->expiry_days) : null,
             ]);
         }
 

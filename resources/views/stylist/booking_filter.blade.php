@@ -159,15 +159,17 @@
 
     .save-tag {
         position: absolute;
-        top: 1.5rem;
-        right: -2rem;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
         background: var(--app-accent); /* Restored to brand color */
         color: #fff;
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         font-weight: 800;
-        padding: 0.5rem 2.5rem;
+        padding: 0.4rem 1.5rem;
         letter-spacing: 1.5px;
-        transform: rotate(45deg);
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
         box-shadow: 0 4px 15px rgba(70, 17, 17, 0.2);
         z-index: 1;
     }
@@ -305,9 +307,10 @@
             font-size: 0.75rem;
         }
         .save-tag {
-            top: 1rem;
-            right: -2rem;
-            padding: 0.35rem 2.5rem;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.35rem 1.5rem;
             font-size: 0.6rem;
         }
         
@@ -361,17 +364,21 @@
         </a>
 
         <!-- Monthly Packages -->
-        <a href="{{ route('stylist.packages.index') }}" class="booking-card">
+        <a href="{{ route('stylist.packages.index') }}" class="booking-card"
+           @guest
+           onclick="event.preventDefault(); Swal.fire({title: 'Account Required', text: 'You must create an account before accessing studio bundles.', icon: 'info', confirmButtonText: 'Log In', confirmButtonColor: '#461111'}).then(() => window.location.href = '{{ route('login') }}');"
+           @endguest
+        >
             <span class="save-tag">SAVE MORE</span>
             <div class="card-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                 </svg>
             </div>
-            <h3 class="card-title">Class Packages</h3>
+            <h3 class="card-title">Studio Bundles</h3>
             <p class="card-desc">Pre-purchase hours in bulk and save significantly on studio hire.</p>
             <div class="card-btn">
-                View Packages &rarr;
+                View Bundles &rarr;
             </div>
         </a>
     </div>

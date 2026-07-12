@@ -409,8 +409,15 @@ class HairstylistPortalController extends Controller
 
         if ($user && $packageHoursUsed > 0 && in_array($status, ['confirmed', 'pending_approval'])) {
             $hoursToDeduct = $packageHoursUsed;
-            $activePackages = $user->userPackages()->where('status', 'active')->orderBy('created_at', 'asc')->get();
-            
+            $activePackages = $user->userPackages()
+                ->where('status', 'active')
+                ->where('hours_remaining', '>', 0)
+                ->where(function ($query) {
+                    $query->whereNull('expires_at')
+                          ->orWhere('expires_at', '>', now());
+                })
+                ->orderBy('created_at', 'asc')
+                ->get();
             foreach ($activePackages as $up) {
                 if ($hoursToDeduct <= 0) break;
                 
@@ -468,7 +475,9 @@ class HairstylistPortalController extends Controller
         try {
             $emailToSend = $user ? $user->email : $booking->guest_email;
             if ($emailToSend) {
-                Mail::to($emailToSend)->send(new BookingConfirmed($booking));
+                Mail::to($emailToSend)
+                    ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                    ->send(new BookingConfirmed($booking));
             }
         } catch (\Exception $e) {
             // Log or ignore email errors so booking doesn't fail if SMTP is broken

@@ -94,6 +94,12 @@ class User extends Authenticatable
 
     public function getPackageBalanceAttribute()
     {
-        return $this->userPackages()->where('status', 'active')->sum('hours_remaining');
+        return $this->userPackages()
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+            })
+            ->sum('hours_remaining');
     }
 }
