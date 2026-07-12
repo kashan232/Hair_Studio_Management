@@ -384,7 +384,7 @@
     </div>
 
     <div style="text-align: center; font-size: 0.9rem; color: var(--app-muted); margin-bottom: 4rem; font-weight: 300;">
-        Hourly from £15 &nbsp;&bull;&nbsp; Daily from £100 &nbsp;&bull;&nbsp; Packages from £250
+        Hourly from £15 &nbsp;&bull;&nbsp; Daily from £99 &nbsp;&bull;&nbsp; Studio Bundles from £298
     </div>
 
     <div class="info-section">
