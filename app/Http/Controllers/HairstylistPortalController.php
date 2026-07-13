@@ -444,7 +444,7 @@ class HairstylistPortalController extends Controller
                 // Ensure no duplicate entry
                 if (!$coupon->users()->where('user_id', $user->id)->exists()) {
                     $coupon->users()->attach($user->id, [
-                        'booking_id' => $booking->id,
+                        'used_at' => now(),
                         'created_at' => now(),
                         'updated_at' => now()
                     ]);
