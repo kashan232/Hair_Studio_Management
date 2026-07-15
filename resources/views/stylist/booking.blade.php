@@ -800,6 +800,16 @@
                     <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Minimum 2 hours</p>
                 </div>
             </div>
+            
+            <div style="margin-top: 1.5rem; text-align: center; color: var(--app-accent-dark); background: var(--app-accent-soft); padding: 1rem; border-radius: 8px;">
+                @if(session('stylist_booking.type') == 'daily')
+                    <div style="font-size: 1rem; font-weight: 600;">Rate: £99 / day</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; margin-top: 0.25rem;">Total: £99</div>
+                @else
+                    <div style="font-size: 1rem; font-weight: 600;">Rate: £15 / hour</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; margin-top: 0.25rem;">Total: £<span id="step1-total-price">{{ 15 * session('stylist_booking.duration', 2) }}</span></div>
+                @endif
+            </div>
         </form>
     @endif
 
@@ -1213,10 +1223,20 @@
     });
 
     document.getElementById('dur-minus').addEventListener('click', () => {
-        if (duration > 2) { duration--; document.getElementById('dur-display').value = duration; document.getElementById('hidden-duration').value = duration; }
+        if (duration > 2) { 
+            duration--; 
+            document.getElementById('dur-display').value = duration; 
+            document.getElementById('hidden-duration').value = duration; 
+            const tp = document.getElementById('step1-total-price');
+            if(tp) tp.textContent = duration * 15;
+        }
     });
     document.getElementById('dur-plus').addEventListener('click', () => {
-        duration++; document.getElementById('dur-display').value = duration; document.getElementById('hidden-duration').value = duration;
+        duration++; 
+        document.getElementById('dur-display').value = duration; 
+        document.getElementById('hidden-duration').value = duration;
+        const tp = document.getElementById('step1-total-price');
+        if(tp) tp.textContent = duration * 15;
     });
     document.getElementById('dur-display').addEventListener('change', (e) => {
         let val = parseInt(e.target.value);
@@ -1224,6 +1244,8 @@
         duration = val;
         e.target.value = duration;
         document.getElementById('hidden-duration').value = duration;
+        const tp = document.getElementById('step1-total-price');
+        if(tp) tp.textContent = duration * 15;
     });
 
     document.getElementById('schedule-form').addEventListener('submit', function(ev) {

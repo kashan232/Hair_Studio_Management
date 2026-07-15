@@ -158,10 +158,6 @@
     }
 
     .save-tag {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
         background: var(--app-accent); /* Restored to brand color */
         color: #fff;
         font-size: 0.7rem;
@@ -172,6 +168,8 @@
         border-bottom-right-radius: 8px;
         box-shadow: 0 4px 15px rgba(70, 17, 17, 0.2);
         z-index: 1;
+        margin-top: -3.5rem;
+        margin-bottom: 1.5rem;
     }
 
     /* PREMIUM INFO SECTION */
@@ -307,11 +305,10 @@
             font-size: 0.75rem;
         }
         .save-tag {
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
             padding: 0.35rem 1.5rem;
             font-size: 0.6rem;
+            margin-top: -1.5rem;
+            margin-bottom: 1rem;
         }
         
         .info-section { padding-top: 3rem; margin-top: 3rem; }
@@ -342,8 +339,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h3 class="card-title">Book by the Hour</h3>
-            <p class="card-desc">Flexible hourly studio reservations tailored to your schedule.</p>
+            <h3 class="card-title">Book By The Hour</h3>
+            <p class="card-desc">Flexible Hourly Chair Rental Designed To Fit Seamlessly Around Your Schedule.</p>
             <div class="card-btn">
                 Select Time &rarr;
             </div>
@@ -357,7 +354,7 @@
                 </svg>
             </div>
             <h3 class="card-title">Daily Booking</h3>
-            <p class="card-desc">Reserve a chair for the entire day and focus solely on your clients.</p>
+            <p class="card-desc">Secure A Chair For The Full Day And Dedicate Your Complete Attention To Your Clients.</p>
             <div class="card-btn">
                 Select Date &rarr;
             </div>
@@ -376,7 +373,7 @@
                 </svg>
             </div>
             <h3 class="card-title">Studio Bundles</h3>
-            <p class="card-desc">Pre-purchase hours in bulk and save significantly on studio hire.</p>
+            <p class="card-desc">Purchase Hours In Bulk And Save Significantly On Your Booking.</p>
             <div class="card-btn">
                 View Bundles &rarr;
             </div>
