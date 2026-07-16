@@ -125,20 +125,30 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $user = User::findOrFail($id);
 
-        // Prevent Super Admin self-deletion
-        if ($user->id === auth()->id()) {
+            // Prevent Super Admin self-deletion
+            if ($user->id === auth()->id()) {
+                return response()->json([
+                    'error' => 'You cannot delete your own logged-in account.'
+                ]);
+            }
+
+            $user->delete();
+
             return response()->json([
-                'error' => 'You cannot delete your own logged-in account.'
+                'success' => 'User account deleted successfully.',
+                'redirect' => route('users.index')
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'error' => 'Cannot delete user because they have associated records (e.g. bookings). Please delete those first or deactivate the user.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while deleting the user.'
             ]);
         }
-
-        $user->delete();
-
-        return response()->json([
-            'success' => 'User account deleted successfully.',
-            'redirect' => route('users.index')
-        ]);
     }
 }

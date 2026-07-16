@@ -707,7 +707,7 @@
                                 ->where('status', 'pending_approval')
                                 ->count();
             @endphp
-            <div style="display:flex; gap:0.5rem; align-items:center;">
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap: wrap; justify-content: center;">
                 <a href="{{ route('stylist.packages.index') }}" class="btn-logout" style="text-decoration:none; border-color: var(--salon-gold); color: var(--app-accent-dark);">
                     My Packages
                 </a>
@@ -912,7 +912,7 @@
                     pattern="\d{11,12}" maxlength="12"
                     oninvalid="this.setCustomValidity('invalid number, please re enter')"
                     oninput="this.setCustomValidity(''); this.value = this.value.replace(/[^0-9]/g, '');"
-                    value="{{ old('mobile', $user?->mobile ?? ($guestDetails['mobile'] ?? '')) }}">
+                    value="{{ old('mobile', preg_replace('/[^0-9]/', '', $user?->mobile ?? ($guestDetails['mobile'] ?? ''))) }}">
             </div>
             @if(!$user)
                 <div class="form-field" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; background: var(--app-accent-soft); padding: 1rem; border-radius: 8px;">
@@ -957,9 +957,6 @@
                     Want to use another account? 
                     <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-quick').submit();" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Log out and create a new one</a>.
                 </div>
-                <form id="logout-form-quick" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
             @endif
             
             <div style="margin-top: 1.5rem; display: flex; align-items: flex-start; gap: 0.6rem;">
@@ -985,6 +982,12 @@
                 <a href="https://eladeuk.com/cookies-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Cookie Policy</a>.
             </div>
         </form>
+        
+        @if($user)
+            <form id="logout-form-quick" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        @endif
     @endif
 
     @if($step === 4)
@@ -1082,7 +1085,7 @@
 
 <nav class="app-footer-nav">
     @if($step > 1 && $step < 4)
-        <a href="{{ route('stylist.book', ['step' => $step - 1]) }}" class="btn-app btn-app-back">Back</a>
+        <a href="{{ route('stylist.book', ['step' => $step - 1, 'type' => session('stylist_booking.type')]) }}" class="btn-app btn-app-back">Back</a>
     @endif
 
     @if($step === 1)
@@ -1183,9 +1186,16 @@
             return;
         }
         
-        const currentLondonDate = "{{ \Carbon\Carbon::now('Europe/London')->format('Y-m-d') }}";
-        const currentLondonHour = {{ \Carbon\Carbon::now('Europe/London')->format('G') }};
-        const currentLondonMinute = {{ \Carbon\Carbon::now('Europe/London')->format('i') }};
+        const d = new Date();
+        const options = { timeZone: 'Europe/London', hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+        const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(d);
+        const dict = {};
+        parts.forEach(p => dict[p.type] = p.value);
+        
+        const currentLondonDate = `${dict.year}-${dict.month}-${dict.day}`;
+        let currentLondonHour = parseInt(dict.hour);
+        if (currentLondonHour === 24) currentLondonHour = 0;
+        const currentLondonMinute = parseInt(dict.minute);
 
         let slotsFound = false;
         ALL_SLOTS.forEach(slot => {

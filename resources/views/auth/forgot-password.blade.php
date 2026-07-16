@@ -24,23 +24,25 @@
         /* Top Navbar */
         .top-nav {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             padding: 1.5rem 2rem;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
         }
 
         .top-nav .menu-icon, .top-nav .user-icon {
             font-size: 1.8rem;
             color: #333;
             cursor: pointer;
+            position: absolute;
+            left: 2rem;
         }
 
         .top-nav .logo img {
             height: 65px;
             width: auto;
             display: block;
-            transform: translateX(12px);
         }
 
         /* Main Container */
@@ -183,7 +185,6 @@
         <div class="logo">
             <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio">
         </div>
-        <i class="zmdi zmdi-account-o user-icon"></i>
     </header>
 
     <main class="main-container">

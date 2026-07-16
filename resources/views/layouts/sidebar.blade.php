@@ -2,9 +2,9 @@
 <div class="sticky">
     <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
     <div class="app-sidebar">
-        <div class="side-header">
+        <div class="side-header" style="overflow: hidden;">
             <a class="header-brand1" href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 40px; width: auto; object-fit: contain;">
+                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="max-height: 40px; max-width: 100%; object-fit: contain;">
             </a>
         </div>
         <div class="main-sidemenu">

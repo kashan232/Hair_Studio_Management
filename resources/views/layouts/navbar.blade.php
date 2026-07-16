@@ -38,7 +38,7 @@
                         <div class="d-flex order-lg-2">
                          
                             <!-- Theme-Layout -->
-                            <div class="d-flex">
+                            <div class="d-none">
                                 <a class="nav-link icon theme-layout nav-link-bg layout-setting">
                                     <span class="dark-layout"><i class="ti ti-moon-stars"></i></span>
                                     <span class="light-layout"><i class="fe fe-sun"></i></span>
@@ -47,7 +47,7 @@
                             <!-- Theme-Layout -->
 
                             <!-- SIDE-MENU -->
-                            <div class="dropdown d-flex">
+                            <div class="dropdown d-none">
                                 <a class="nav-link icon full-screen-link nav-link-bg">
                                     <i class="fe fe-minimize fullscreen-button"></i>
                                 </a>

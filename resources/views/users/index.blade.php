@@ -275,7 +275,9 @@
                                 <tr>
                                     <td>
                                         <div class="user-meta">
-                                            <img src="{{ filter_var($u->avatar, FILTER_VALIDATE_URL) ? $u->avatar : asset($u->avatar) }}" alt="{{ $u->name }}" class="user-avatar">
+                                            <div style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--salon-gold); background: #faf8f5; display: flex; align-items: center; justify-content: center; color: var(--salon-gold); flex-shrink: 0;">
+                                                <i class="fe fe-user" style="font-size: 1.2rem;"></i>
+                                            </div>
                                             <div>
                                                 <h4 class="user-name">{{ $u->name }}</h4>
                                                 <span class="small text-muted">{{ $u->email }}</span>
@@ -380,14 +382,14 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: `You are about to delete user ${name}. This action is irreversible.`,
-                icon: 'warning',
+                type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#121212',
                 cancelButtonColor: '#eae2d5',
                 confirmButtonText: 'Yes, Delete User',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.value || result.isConfirmed) {
                     $.ajax({
                         url: `{{ url('/users/delete') }}/${id}`,
                         method: 'POST',
@@ -396,22 +398,30 @@
                         },
                         dataType: 'json',
                         success: function(response) {
+                            console.log('Delete response:', response);
                             if (response.success) {
                                 Swal.fire({
                                     title: 'Deleted!',
                                     text: response.success,
-                                    icon: 'success',
+                                    type: 'success',
                                     confirmButtonColor: '#121212'
                                 });
                                 row.fadeOut(500, function() {
                                     $(this).remove();
                                 });
                             } else if (response.error) {
-                                Swal.fire('Forbidden!', response.error, 'error');
+                                Swal.fire('Action Denied', response.error, 'error');
+                            } else {
+                                Swal.fire('Warning', 'Unexpected response format.', 'warning');
                             }
                         },
-                        error: function() {
-                            Swal.fire('Error!', 'An error occurred while deleting user.', 'error');
+                        error: function(xhr, status, error) {
+                            console.error('Delete error:', xhr.responseText);
+                            let errorMsg = 'An error occurred while deleting user.';
+                            if (xhr.status === 419) errorMsg = 'Session expired. Please refresh the page.';
+                            else if (xhr.responseJSON && xhr.responseJSON.message) errorMsg = xhr.responseJSON.message;
+                            
+                            Swal.fire('Error!', errorMsg, 'error');
                         }
                     });
                 }
