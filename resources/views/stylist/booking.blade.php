@@ -1030,9 +1030,25 @@
         </div>
         @endif
 
-        <div class="total-highlight">
-            <span class="total-highlight-label">Amount due</span>
-            <span class="total-highlight-amount" id="final-amount-display">£{{ number_format($computedTotal, 2) }}</span>
+        <div class="total-highlight" style="display: flex; flex-direction: column; align-items: stretch; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Booking Value</span>
+                <span style="font-size: 1.1rem; font-weight: 700; color: #fff;">£{{ number_format($rawTotal, 2) }}</span>
+            </div>
+
+            @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: #a5d6a7; text-transform: uppercase; letter-spacing: 1px;">Package ({{ $packageHoursUsed }} hrs)</span>
+                <span style="font-size: 1.1rem; font-weight: 700; color: #a5d6a7;">-£{{ number_format($rawTotal - $computedTotal, 2) }}</span>
+            </div>
+            @endif
+
+            <hr style="border-color: rgba(255,255,255,0.2); margin: 0.75rem 0;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="total-highlight-label" style="margin-bottom: 0;">Amount due</span>
+                <span class="total-highlight-amount" id="final-amount-display" style="margin-bottom: 0; font-size: 2rem;">£{{ number_format($computedTotal, 2) }}</span>
+            </div>
         </div>
 
         @if($computedTotal > 0)
@@ -1083,8 +1099,19 @@
             
             <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>
             <div class="summary-line"><span>Duration</span><span>{{ session('stylist_booking.duration') }} hours</span></div>
+            
+            <div class="summary-line"><span>Booking value</span><span>£{{ number_format($rawTotal ?? 0, 2) }}</span></div>
+            
+            @if(session('stylist_booking.package_hours_used') > 0)
+                <div class="summary-line"><span>Package hours used</span><span>{{ session('stylist_booking.package_hours_used') }} hrs</span></div>
+            @endif
+            
+            @if(session('stylist_booking.discount') > 0)
+                <div class="summary-line"><span>Discount applied</span><span>-£{{ number_format(session('stylist_booking.discount'), 2) }}</span></div>
+            @endif
+            
             @if(!$isOvernight)
-                <div class="summary-line"><span>Amount paid</span><span><strong>£{{ number_format($computedTotal, 2) }}</strong></span></div>
+                <div class="summary-line"><span>Amount paid</span><span><strong>£{{ number_format(session('stylist_booking.final_total', $computedTotal), 2) }}</strong></span></div>
             @endif
         </div>
         <div class="step-5-actions" style="display: flex; gap: 1rem; width: 100%;">
@@ -1203,21 +1230,19 @@
         }
         
         const d = new Date();
-        const options = { timeZone: 'Europe/London', hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
-        const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(d);
-        const dict = {};
-        parts.forEach(p => dict[p.type] = p.value);
+        const currentYear = d.getFullYear();
+        const currentMonth = String(d.getMonth() + 1).padStart(2, '0');
+        const currentDay = String(d.getDate()).padStart(2, '0');
         
-        const currentLondonDate = `${dict.year}-${dict.month}-${dict.day}`;
-        let currentLondonHour = parseInt(dict.hour);
-        if (currentLondonHour === 24) currentLondonHour = 0;
-        const currentLondonMinute = parseInt(dict.minute);
+        const currentDateStr = `${currentYear}-${currentMonth}-${currentDay}`;
+        const currentHour = d.getHours();
+        const currentMinute = d.getMinutes();
 
         let slotsFound = false;
         ALL_SLOTS.forEach(slot => {
-            // Filter past hours if the selected date is today (in London time)
-            if (sDate === currentLondonDate) {
-                if (slot.hour < currentLondonHour || (slot.hour === currentLondonHour && slot.minute < currentLondonMinute)) {
+            // Filter past hours if the selected date is today (in local time)
+            if (sDate === currentDateStr) {
+                if (slot.hour < currentHour || (slot.hour === currentHour && slot.minute < currentMinute)) {
                     return; // Skip rendering this past slot
                 }
             }
@@ -1315,16 +1340,25 @@
         invalid: { color: '#c62828' },
     };
 
-    const cardNumber = elements.create('cardNumber', { style: cardStyle }); cardNumber.mount('#stripe-card-number');
-    const cardExpiry = elements.create('cardExpiry', { style: cardStyle }); cardExpiry.mount('#stripe-card-expiry');
-    const cardCvc = elements.create('cardCvc', { style: cardStyle }); cardCvc.mount('#stripe-card-cvc');
+    let cardNumber = null;
+    let cardExpiry = null;
+    let cardCvc = null;
 
-    const displayError = document.getElementById('stripe-error-msg');
-    const handleChange = (e) => { displayError.textContent = e.error ? e.error.message : ''; };
+    const displayError = document.getElementById('stripe-error-msg') || { textContent: '' };
+    const handleChange = (e) => { if (displayError.nodeType) displayError.textContent = e.error ? e.error.message : ''; };
 
-    cardNumber.on('change', handleChange);
-    cardExpiry.on('change', handleChange);
-    cardCvc.on('change', handleChange);
+    if (document.getElementById('stripe-card-number')) {
+        cardNumber = elements.create('cardNumber', { style: cardStyle }); 
+        cardNumber.mount('#stripe-card-number');
+        cardExpiry = elements.create('cardExpiry', { style: cardStyle }); 
+        cardExpiry.mount('#stripe-card-expiry');
+        cardCvc = elements.create('cardCvc', { style: cardStyle }); 
+        cardCvc.mount('#stripe-card-cvc');
+
+        cardNumber.on('change', handleChange);
+        cardExpiry.on('change', handleChange);
+        cardCvc.on('change', handleChange);
+    }
 
     const payBtn = document.getElementById('pay-btn');
     const paySpinner = document.getElementById('pay-spinner');

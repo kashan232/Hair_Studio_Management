@@ -431,6 +431,8 @@ class HairstylistPortalController extends Controller
             'duration_hours' => session('stylist_booking.duration'),
             'package_hours_used' => $packageHoursUsed,
             'total_amount' => session('stylist_booking.final_total', $this->calculateTotal()),
+            'coupon_code' => session('stylist_booking.coupon_code'),
+            'discount_amount' => session('stylist_booking.discount', 0),
             'status' => $status,
             'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
