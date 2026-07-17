@@ -800,23 +800,39 @@
                     <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Minimum 2 hours</p>
                 </div>
             </div>
-            
-            <div style="margin-top: 1.5rem; text-align: center; color: var(--app-accent-dark); background: var(--app-accent-soft); padding: 1rem; border-radius: 8px;">
-                @if(session('stylist_booking.type') == 'daily')
-                    <div style="font-size: 1rem; font-weight: 600;">Rate: £99 / day</div>
-                    <div style="font-size: 1.4rem; font-weight: 800; margin-top: 0.25rem;">Total: £99</div>
-                @else
-                    <div style="font-size: 1rem; font-weight: 600;">Rate: £15 / hour</div>
-                    <div style="font-size: 1.4rem; font-weight: 800; margin-top: 0.25rem;">Total: £<span id="step1-total-price">{{ 15 * session('stylist_booking.duration', 2) }}</span></div>
-                @endif
-            </div>
         </form>
     @endif
 
     @if($step === 2)
         @php
             $avail = $availabilityState ?? ['status' => 'unavailable'];
+            $durationHours = (int) session('stylist_booking.duration', 0);
+            $bookingType = session('stylist_booking.type', 'hourly');
+            $step2Total = $rawTotal ?? 0;
         @endphp
+
+        @if($pricingRate !== null)
+            <div style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:var(--app-accent-dark); background:var(--app-accent-soft); padding:1rem 1.25rem; border-radius:8px;">
+                @if($pricingChair)
+                    <div style="font-size:0.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.35rem; opacity:0.85;">
+                        {{ $pricingChair->name }}{{ $pricingChair->type ? ' · '.$pricingChair->type : '' }}
+                    </div>
+                @endif
+                <div style="font-size:1rem; font-weight:600;">
+                    Rate: £{{ number_format($pricingRate, 2) }} / {{ $pricingRateLabel }}
+                </div>
+                <div style="font-size:1.4rem; font-weight:800; margin-top:0.25rem;">
+                    Total: £{{ number_format($step2Total, 2) }}
+                    @if($bookingType === 'hourly' && $durationHours > 0)
+                        <span style="font-size:0.75rem; font-weight:600; opacity:0.8;">({{ $durationHours }} hr{{ $durationHours > 1 ? 's' : '' }})</span>
+                    @endif
+                </div>
+            </div>
+        @elseif(($avail['status'] ?? '') === 'single_chair' || ($avail['status'] ?? '') === 'multi_chair')
+            <div style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:#8a7d72; background:#fff; border:1px dashed #efe4dc; padding:1rem; border-radius:8px; font-size:0.85rem;">
+                No pricing set for this chair in admin. Please configure rates on the Pricing page.
+            </div>
+        @endif
 
         @if($avail['status'] === 'single_chair' || $avail['status'] === 'multi_chair')
             <div class="av-card" style="max-width:800px; margin:0 auto; position: relative;">
@@ -1237,16 +1253,12 @@
             duration--; 
             document.getElementById('dur-display').value = duration; 
             document.getElementById('hidden-duration').value = duration; 
-            const tp = document.getElementById('step1-total-price');
-            if(tp) tp.textContent = duration * 15;
         }
     });
     document.getElementById('dur-plus').addEventListener('click', () => {
         duration++; 
         document.getElementById('dur-display').value = duration; 
         document.getElementById('hidden-duration').value = duration;
-        const tp = document.getElementById('step1-total-price');
-        if(tp) tp.textContent = duration * 15;
     });
     document.getElementById('dur-display').addEventListener('change', (e) => {
         let val = parseInt(e.target.value);
@@ -1254,8 +1266,6 @@
         duration = val;
         e.target.value = duration;
         document.getElementById('hidden-duration').value = duration;
-        const tp = document.getElementById('step1-total-price');
-        if(tp) tp.textContent = duration * 15;
     });
 
     document.getElementById('schedule-form').addEventListener('submit', function(ev) {

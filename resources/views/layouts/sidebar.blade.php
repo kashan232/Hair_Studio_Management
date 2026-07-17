@@ -25,13 +25,16 @@
                     </a>
                 </li>
 
+                @if(Auth::user()->hasPermission('manage-users'))
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('users*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                         <i class="side-menu__icon fe fe-users"></i>
                         <span class="side-menu__label">Users</span>
                     </a>
                 </li>
+                @endif
 
+                @if(Auth::user()->hasPermission('manage-bookings'))
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('bookings*') ? 'active' : '' }}" href="{{ route('bookings.index') }}">
                         <i class="side-menu__icon fe fe-calendar"></i>
@@ -44,14 +47,18 @@
                         @endif
                     </a>
                 </li>
+                @endif
 
+                @if(Auth::user()->hasPermission('view-reports'))
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('reports*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
                         <i class="side-menu__icon fe fe-pie-chart"></i>
                         <span class="side-menu__label">Advanced Reports</span>
                     </a>
                 </li>
+                @endif
 
+                @if(Auth::user()->roleRelation?->slug === 'super-admin' || Auth::user()->roleRelation?->slug === 'admin')
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('coupons*') ? 'active' : '' }}" href="{{ route('coupons.index') }}">
                         <i class="side-menu__icon fe fe-tag"></i>
@@ -65,21 +72,27 @@
                         <span class="side-menu__label">Packages</span>
                     </a>
                 </li>
+                @endif
 
+                @if(Auth::user()->hasPermission('manage-chairs'))
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('chairs*') ? 'active' : '' }}" href="{{ route('chairs.index') }}">
                         <i class="side-menu__icon fe fe-grid"></i>
                         <span class="side-menu__label">Chairs</span>
                     </a>
                 </li>
+                @endif
 
+                @if(Auth::user()->roleRelation?->slug === 'super-admin' || Auth::user()->roleRelation?->slug === 'admin')
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('pricing*') ? 'active' : '' }}" href="{{ route('pricing.index') }}">
                         <i class="side-menu__icon fe fe-credit-card"></i>
                         <span class="side-menu__label">Pricing and slots setup</span>
                     </a>
                 </li>
+                @endif
 
+                @if(Auth::user()->hasPermission('manage-roles'))
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('roles*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
                         <i class="side-menu__icon fe fe-shield"></i>
@@ -93,6 +106,7 @@
                         <span class="side-menu__label">Permissions</span>
                     </a>
                 </li>
+                @endif
 
                 <li class="slide">
                     <a class="sidenav-menu-item" href="javascript:void(0)" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

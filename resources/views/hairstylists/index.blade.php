@@ -48,8 +48,8 @@
         background: #fff;
         border: 1px solid #eae2d5;
         border-radius: 0px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .form-control-luxury {
@@ -242,7 +242,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn-luxury-dark w-100 h-100 justify-content-center">
+                        <button type="submit" class="btn-luxury-dark w-100 justify-content-center" style="height: 44px;">
                             <i class="fe fe-search"></i> Apply Filters
                         </button>
                     </div>

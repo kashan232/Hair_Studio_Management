@@ -381,7 +381,18 @@
     </div>
 
     <div style="text-align: center; font-size: 0.9rem; color: var(--app-muted); margin-bottom: 4rem; font-weight: 300;">
-        Hourly from £15 &nbsp;&bull;&nbsp; Daily from £99 &nbsp;&bull;&nbsp; Studio Bundles from £298
+        @if($minHourly)
+            Hourly from £{{ number_format($minHourly, 2) }}
+        @else
+            Hourly rates set per chair
+        @endif
+        &nbsp;&bull;&nbsp;
+        @if($minDaily)
+            Daily from £{{ number_format($minDaily, 2) }}
+        @else
+            Daily rates set per chair
+        @endif
+        &nbsp;&bull;&nbsp; Studio Bundles available
     </div>
 
     <div class="info-section">

@@ -48,8 +48,8 @@
         background: #fff;
         border: 1px solid #eae2d5;
         border-radius: 0px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .form-control-luxury {
@@ -248,7 +248,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn-luxury-dark w-100 h-100 justify-content-center">
+                        <button type="submit" class="btn-luxury-dark w-100 justify-content-center" style="height: 44px;">
                             <i class="fe fe-search"></i> Apply
                         </button>
                     </div>
@@ -271,7 +271,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($users as $u)
+                            @foreach ($users as $u)
                                 <tr>
                                     <td>
                                         <div class="user-meta">
@@ -324,14 +324,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center py-5 text-muted">
-                                        <i class="fe fe-user-minus display-6 d-block mb-3" style="color: #dcd3be;"></i>
-                                        No registered accounts found matching the criteria.
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

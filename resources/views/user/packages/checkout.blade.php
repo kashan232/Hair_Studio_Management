@@ -78,20 +78,32 @@
         <p>Complete your package purchase below</p>
     </div>
 
+    <div class="stripe-card-wrap" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <span class="stripe-card-label">Have a Coupon?</span>
+        <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="coupon_code" class="stripe-input" style="flex: 1; text-transform: uppercase;" placeholder="Enter code">
+            <button type="button" id="apply-coupon-btn" class="btn-pay" style="width: auto; padding: 0 1.5rem;">Apply</button>
+        </div>
+        <div id="coupon-msg" style="font-size: 0.85rem; margin-top: 0.5rem; min-height: 1.5rem; font-weight: 600;"></div>
+    </div>
+
     <div class="summary-card">
         <div class="summary-details">
             <h5>Prepaid Package</h5>
             <h3>{{ $package->name }}</h3>
             <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.3rem;">Includes {{ $package->hours }} booking hours</div>
         </div>
-        <div class="summary-price">
-            £{{ number_format($package->price, 2) }}
+        <div class="summary-price" style="display: flex; flex-direction: column; align-items: flex-end;">
+            <div id="summary-price-display">£{{ number_format($package->price, 2) }}</div>
+            <div id="discount-row" style="display: none; font-size: 1.2rem; color: #ffeb3b; font-weight: 700;">
+                <span id="discount-display"></span>
+            </div>
         </div>
     </div>
 
     <div class="stripe-card-wrap">
         <h4>Payment Method</h4>
-        
+
         <div class="stripe-field" style="margin-bottom: 0;">
             <span class="stripe-card-label">Card Number</span>
             <div id="stripe-card-number" class="stripe-input"></div>
@@ -123,6 +135,7 @@
 
 <form id="payment-form" action="{{ route('stylist.packages.success', $package) }}" method="GET" style="display: none;">
     <input type="hidden" name="payment_intent" id="payment_intent_input">
+    <input type="hidden" name="is_free" id="is_free_input" value="0">
 </form>
 @endsection
 
@@ -158,6 +171,70 @@
     const payBtnText = document.getElementById('pay-btn-text');
     const paySpinner = document.getElementById('pay-spinner');
     
+    // Coupon Logic
+    const applyCouponBtn = document.getElementById('apply-coupon-btn');
+    const couponInput = document.getElementById('coupon_code');
+    const couponMsg = document.getElementById('coupon-msg');
+    const summaryPrice = document.getElementById('summary-price-display');
+    const discountRow = document.getElementById('discount-row');
+    const discountDisplay = document.getElementById('discount-display');
+    
+    let currentTotal = {{ $package->price }};
+    let appliedCoupon = null;
+
+    if (applyCouponBtn) {
+        applyCouponBtn.addEventListener('click', async () => {
+            const code = couponInput.value.trim();
+            if (!code) return;
+            
+            applyCouponBtn.disabled = true;
+            couponMsg.textContent = 'Applying...';
+            couponMsg.style.color = '#8a7d72';
+            
+            try {
+                const res = await fetch('{{ route("stylist.coupon.apply") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ code: code, total_amount: {{ $package->price }} })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    couponMsg.textContent = data.error;
+                    couponMsg.style.color = '#c62828';
+                    appliedCoupon = null;
+                    currentTotal = {{ $package->price }};
+                    summaryPrice.innerHTML = '£' + currentTotal.toFixed(2);
+                    discountRow.style.display = 'none';
+                    payBtnText.textContent = 'Pay £' + currentTotal.toFixed(2);
+                } else if (data.success) {
+                    couponMsg.textContent = 'Coupon applied successfully!';
+                    couponMsg.style.color = '#2e7d32';
+                    appliedCoupon = data.coupon_code;
+                    currentTotal = data.new_total;
+                    
+                    summaryPrice.innerHTML = '£' + currentTotal.toFixed(2);
+                    discountDisplay.textContent = '-£' + data.discount_amount.toFixed(2);
+                    discountRow.style.display = 'flex';
+                    
+                    if (currentTotal <= 0) {
+                        payBtnText.textContent = 'Complete Free Purchase';
+                    } else {
+                        payBtnText.textContent = 'Pay £' + currentTotal.toFixed(2);
+                    }
+                }
+            } catch (err) {
+                couponMsg.textContent = 'Error applying coupon.';
+                couponMsg.style.color = '#c62828';
+            }
+            applyCouponBtn.disabled = false;
+        });
+    }
+
     payBtn.addEventListener('click', async () => {
         payBtn.disabled = true;
         payBtnText.style.display = 'none';
@@ -171,12 +248,19 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
+                },
+                body: JSON.stringify({ coupon_code: appliedCoupon })
             });
             const data = await response.json();
             
             if (data.error) {
                 throw new Error(data.error);
+            }
+
+            if (data.is_free) {
+                document.getElementById('is_free_input').value = '1';
+                document.getElementById('payment-form').submit();
+                return;
             }
 
             // Confirm payment

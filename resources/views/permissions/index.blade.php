@@ -131,9 +131,6 @@
                     <a href="{{ route('roles.index') }}" class="btn-luxury-dark" style="background: transparent !important; color: var(--salon-dark) !important; border-color: #dcd3be !important;">
                         <i class="fe fe-users"></i> Return to Roles
                     </a>
-                    <a href="{{ route('permissions.create') }}" class="btn-luxury-dark">
-                        <i class="fe fe-plus"></i> Create Permission
-                    </a>
                 </div>
             </div>
 
@@ -146,7 +143,6 @@
                                 <th>Permission Label</th>
                                 <th>Slug Identifier</th>
                                 <th>Description / Purpose</th>
-                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -162,16 +158,6 @@
                                     </td>
                                     <td class="text-muted" style="max-width: 400px;">
                                         {{ $p->description ?? 'No explanation note provided.' }}
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="action-btn-group justify-content-end">
-                                            <a href="{{ route('permissions.edit', $p->id) }}" class="action-btn" title="Edit Permission Details">
-                                                <i class="fe fe-edit-3"></i>
-                                            </a>
-                                            <a href="javascript:void(0)" class="action-btn delete-btn delete-permission" data-id="{{ $p->id }}" data-name="{{ $p->name }}" title="Delete Permission">
-                                                <i class="fe fe-trash-2"></i>
-                                            </a>
-                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -221,53 +207,6 @@
                 });
                 $('.paginate_button').addClass('btn btn-sm btn-luxury-light mx-1').css('border-radius', '0');
             }
-        });
-
-        $(document).on('click', '.delete-permission', function(e) {
-            e.preventDefault();
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            const row = $(this).closest('tr');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `You are about to delete system permission "${name}". This may break code gates that rely on this slug.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#121212',
-                cancelButtonColor: '#eae2d5',
-                confirmButtonText: 'Yes, Delete Permission',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `{{ url('/permissions/delete') }}/${id}`,
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: response.success,
-                                    icon: 'success',
-                                    confirmButtonColor: '#121212'
-                                });
-                                row.fadeOut(500, function() {
-                                    $(this).remove();
-                                });
-                            } else if (response.error) {
-                                Swal.fire('Forbidden!', response.error, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error!', 'An error occurred while deleting permission.', 'error');
-                        }
-                    });
-                }
-            });
         });
     });
 </script>

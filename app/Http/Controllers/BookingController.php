@@ -131,7 +131,13 @@ class BookingController extends Controller
             if ($coupon) {
                 $booking->coupon_code = $couponCode;
                 $booking->discount_amount = session('pay_balance_discount');
-                $coupon->users()->attach($booking->user_id);
+                if ($booking->user_id) {
+                    $coupon->users()->attach($booking->user_id, [
+                        'used_at' => now(),
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
                 $coupon->is_active = false;
                 $coupon->save();
             }

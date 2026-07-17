@@ -44,7 +44,11 @@ class HairstylistPortalController extends Controller
         if ($step == 1 && !$type) {
             // clear any old stuck booking session
             session()->forget('stylist_booking');
-            return view('stylist.booking_filter');
+
+            $minHourly = Chair::whereNotNull('price_hourly')->min('price_hourly');
+            $minDaily = Chair::whereNotNull('price_daily')->min('price_daily');
+
+            return view('stylist.booking_filter', compact('minHourly', 'minDaily'));
         }
 
         // Save type to session if provided, otherwise retrieve it
@@ -87,8 +91,32 @@ class HairstylistPortalController extends Controller
 
         $isOvernight = $this->isOvernightBooking();
 
+        $pricingChair = null;
+        $pricingRate = null;
+        $pricingRateLabel = null;
+        $assignedIds = session('stylist_booking.assigned_chair_ids', []);
+        if (!empty($assignedIds)) {
+            $pricingChair = Chair::find($assignedIds[0]);
+            if ($pricingChair) {
+                [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
+            }
+        } elseif (!empty($availabilityState['available_chair_ids'] ?? [])) {
+            // Preview pricing from first free chair until user confirms selection
+            $pricingChair = Chair::find($availabilityState['available_chair_ids'][0]);
+            if ($pricingChair) {
+                [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
+            }
+        } elseif (($availabilityState['status'] ?? null) === 'single_chair' && !empty($availabilityState['chair_id'])) {
+            $pricingChair = Chair::find($availabilityState['chair_id']);
+            if ($pricingChair) {
+                [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
+            }
+        }
+
         return view('stylist.booking', compact(
-            'step', 'user', 'steps', 'guestDetails', 'computedTotal', 'isOvernight', 'availabilityState', 'packageHoursUsed', 'rawTotal'
+            'step', 'user', 'steps', 'guestDetails', 'computedTotal', 'isOvernight',
+            'availabilityState', 'packageHoursUsed', 'rawTotal', 'type',
+            'pricingChair', 'pricingRate', 'pricingRateLabel'
         ));
     }
 
@@ -441,14 +469,20 @@ class HairstylistPortalController extends Controller
         if ($couponCode) {
             $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
             if ($coupon) {
-                // Ensure no duplicate entry
-                if (!$coupon->users()->where('user_id', $user->id)->exists()) {
-                    $coupon->users()->attach($user->id, [
-                        'used_at' => now(),
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
+                if ($user) {
+                    // Ensure no duplicate entry
+                    if (!$coupon->users()->where('user_id', $user->id)->exists()) {
+                        $coupon->users()->attach($user->id, [
+                            'used_at' => now(),
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
                 }
+                
+                // Make the coupon expire globally after one use
+                $coupon->is_active = false;
+                $coupon->save();
             }
         }
 
@@ -667,20 +701,76 @@ class HairstylistPortalController extends Controller
     public function calculateTotal(): float
     {
         $type = session('stylist_booking.type', 'hourly');
-        $duration = session('stylist_booking.duration');
-        if (!$duration) return 0.0;
-
-        $chair = Chair::first();
-        
-        if ($type === 'daily') {
-            $unitPrice = $chair && $chair->price_daily ? (float) $chair->price_daily : 150.00;
-            // For daily, duration is stored as 24 hours in the session, but we charge 1 daily unit
-            return round($unitPrice * 1, 2);
+        $duration = (float) session('stylist_booking.duration', 0);
+        if ($duration <= 0 && $type !== 'daily') {
+            return 0.0;
         }
 
-        // Base it on the first chair's hourly price or a default
-        $unitPrice = $chair && $chair->price_hourly ? (float) $chair->price_hourly : 25.00;
+        $chair = $this->resolveBookingChair();
+        [$unitPrice] = $this->rateForChair($chair, $type);
+
+        if ($unitPrice === null) {
+            return 0.0;
+        }
+
+        if ($type === 'daily') {
+            return round($unitPrice, 2);
+        }
 
         return round($unitPrice * $duration, 2);
+    }
+
+    /**
+     * Resolve which chair pricing should be used for the current booking.
+     */
+    private function resolveBookingChair(): ?Chair
+    {
+        $assignedIds = session('stylist_booking.assigned_chair_ids', []);
+        if (!empty($assignedIds)) {
+            return Chair::find($assignedIds[0]);
+        }
+
+        $availability = session('stylist_booking.availability_state');
+        if (!empty($availability['chair_id'])) {
+            return Chair::find($availability['chair_id']);
+        }
+        if (!empty($availability['available_chair_ids'][0])) {
+            return Chair::find($availability['available_chair_ids'][0]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Unit rate + label from admin /pricing fields on the chair.
+     *
+     * @return array{0: ?float, 1: ?string}
+     */
+    private function rateForChair(?Chair $chair, string $type): array
+    {
+        if (!$chair) {
+            return [null, null];
+        }
+
+        if ($type === 'daily') {
+            if ($chair->price_daily) {
+                return [(float) $chair->price_daily, 'day'];
+            }
+            return [null, 'day'];
+        }
+
+        if ($type === 'monthly' && $chair->price_monthly) {
+            return [(float) $chair->price_monthly, 'month'];
+        }
+
+        if ($type === 'yearly' && $chair->price_yearly) {
+            return [(float) $chair->price_yearly, 'year'];
+        }
+
+        if ($chair->price_hourly) {
+            return [(float) $chair->price_hourly, 'hour'];
+        }
+
+        return [null, 'hour'];
     }
 }
