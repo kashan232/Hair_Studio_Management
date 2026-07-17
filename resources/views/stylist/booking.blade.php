@@ -1095,6 +1095,16 @@
                 <p style="text-align:center;font-size:0.9rem;margin-bottom:1.5rem;">Your requested overnight booking has been submitted for admin approval. You will receive an email once approved.</p>
             @else
                 <h4 style="text-align:center;">Booking confirmed!</h4>
+                @if(session('stylist_booking.final_booking_id'))
+                    <div style="text-align:center; font-size:1.15rem; margin-bottom: 1rem; color: var(--app-accent-dark);">
+                        <strong>Booking Ref: #{{ session('stylist_booking.final_booking_id') }}</strong>
+                    </div>
+                @endif
+                @guest
+                    <div style="background: #fff3cd; color: #856404; padding: 0.85rem; border-radius: 8px; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid #ffeeba;">
+                        <strong>Guest Booking:</strong> Please take a screenshot of this confirmation page and reference number to show to studio staff upon arrival.
+                    </div>
+                @endguest
             @endif
             
             <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>
