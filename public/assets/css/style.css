@@ -89,7 +89,7 @@ License        :   Licensed under ThemeForest License
 @import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 /* ######## BOOTSTRAP ######## */
 :root {
-  --primary-rgb:117, 186, 85;
+  --primary-rgb:70, 17, 17;
   --primary-bg-color: rgb(var(--primary-rgb));
   --primary-bg-hover: rgb(var(--primary-rgb),0.9);
   --primary-bg-border: rgb(var(--primary-rgb));

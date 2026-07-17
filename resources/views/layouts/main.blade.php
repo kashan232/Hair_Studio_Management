@@ -40,9 +40,29 @@
 <body class="app sidebar-mini ltr light-mode">
 
     <!--{ Pre-loder start }-->
-    <div id="global-loader">
-        <img src="{{ asset('assets/images/loader.svg') }}" class="loader-img" alt="Loader">
+    <div id="global-loader" style="display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #fffcf2;">
+        <img src="{{ asset('images/brand_logo.svg') }}" class="loader-img" alt="Eladé Studio" style="animation: loader-pulse 1.5s infinite ease-in-out; width: 120px; height: auto; margin-bottom: 20px;">
+        <div class="premium-spinner"></div>
     </div>
+    <style>
+        @keyframes loader-pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .premium-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(70, 17, 17, 0.1);
+            border-top: 3px solid #461111;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
     <!--{ Pre-loder end }-->
  
     <!-- PAGE -->

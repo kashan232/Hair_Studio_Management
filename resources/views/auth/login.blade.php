@@ -637,6 +637,12 @@
                 }
             });
 
+            // Check URL for tab parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('tab') === 'register') {
+                $('[data-target="register"]').trigger('click');
+            }
+
             // Form Submit handling
             $('.ajaxForm').on('submit', function(e) {
                 e.preventDefault();
