@@ -154,7 +154,7 @@ class HairstylistPortalController extends Controller
             'stylist_booking.end_date'   => $end->format('Y-m-d'),
             'stylist_booking.end_time'   => $end->format('H:i'),
             'stylist_booking.duration'   => $durationHours,
-            'stylist_booking.setup_type' => $request->input('setup_type', 'any'),
+            'stylist_booking.setup_type' => $request->input('setup_type', 'hair'),
         ]);
 
         // RUN AVAILABILITY ENGINE
@@ -435,7 +435,7 @@ class HairstylistPortalController extends Controller
             'coupon_code' => session('stylist_booking.coupon_code'),
             'discount_amount' => session('stylist_booking.discount', 0),
             'status' => $status,
-            'setup_type' => session('stylist_booking.setup_type', 'any'),
+            'setup_type' => session('stylist_booking.setup_type', 'hair'),
             'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
 
@@ -609,10 +609,12 @@ class HairstylistPortalController extends Controller
 
     private function checkAvailability(Carbon $start, Carbon $end, int $durationHours): array
     {
-        $setupType = session('stylist_booking.setup_type', 'any');
+        $setupType = session('stylist_booking.setup_type', 'hair');
         $query = Chair::where('status', '!=', 'maintenance');
         if ($setupType === 'makeup') {
             $query->whereNotIn('id', [4, 5]);
+        } elseif ($setupType === 'hair') {
+            $query->whereIn('id', [4, 5]);
         }
         $allChairs = $query->get();
         if ($allChairs->isEmpty()) return ['status' => 'unavailable'];

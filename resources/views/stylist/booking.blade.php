@@ -780,11 +780,10 @@
                 <div class="schedule-panel-title">1. Required Setup Type (Optional)</div>
                 <div style="text-align:center; margin-top:1rem; margin-bottom: 0.5rem;">
                     <select name="setup_type" style="width: 100%; max-width: 300px; padding: 0.6rem; border: 1px solid var(--app-line); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;">
-                        <option value="any" {{ session('stylist_booking.setup_type') == 'any' ? 'selected' : '' }}>Any Setup (Hair or Makeup)</option>
-                        <option value="hair" {{ session('stylist_booking.setup_type') == 'hair' ? 'selected' : '' }}>Hair Stylist Chair</option>
-                        <option value="makeup" {{ session('stylist_booking.setup_type') == 'makeup' ? 'selected' : '' }}>Make-up Chair</option>
+                        <option value="hair" {{ session('stylist_booking.setup_type', 'hair') == 'hair' ? 'selected' : '' }}>Hair Stylist Chair (Only Chairs 4 & 5)</option>
+                        <option value="makeup" {{ session('stylist_booking.setup_type') == 'makeup' ? 'selected' : '' }}>Make-up Chair (Chairs 1,2,3,6,7)</option>
                     </select>
-                    <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Note: Chairs 4 & 5 cannot be used for make-up setups.</p>
+                    <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Note: Chairs 4 & 5 are exclusively for Hair Stylist setups.</p>
                 </div>
             </div>
 
