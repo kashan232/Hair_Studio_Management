@@ -472,6 +472,12 @@
                                     @endif
                                 </span>
                             </div>
+                            @if($b->setup_type && $b->setup_type !== 'any')
+                            <div class="b-detail-item">
+                                <span class="b-detail-label">Setup</span>
+                                <span class="b-detail-val">{{ $b->setup_type === 'makeup' ? 'Make-up Chair' : 'Hair Stylist Chair' }}</span>
+                            </div>
+                            @endif
                             @if($b->coupon_code)
                             <div class="b-detail-item" style="grid-column: span 2;">
                                 <span class="b-detail-label">Discount Applied</span>

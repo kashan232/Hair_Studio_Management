@@ -69,6 +69,9 @@
                                                 @foreach($b->chairs as $c)
                                                     <span class="badge bg-light text-dark border">{{ $c->name }}</span>
                                                 @endforeach
+                                                @if($b->setup_type && $b->setup_type !== 'any')
+                                                    <br><small class="text-muted"><strong>Setup:</strong> {{ $b->setup_type === 'makeup' ? 'Make-up Chair' : 'Hair Stylist Chair' }}</small>
+                                                @endif
                                             </td>
                                             <td>
                                                 @if($b->status === 'pending_approval')

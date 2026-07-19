@@ -17,6 +17,7 @@ class Booking extends Model
         'package_hours_used',
         'total_amount',
         'status',
+        'setup_type',
     ];
 
     protected $casts = [

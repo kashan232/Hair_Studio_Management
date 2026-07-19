@@ -776,9 +776,21 @@
             <input type="hidden" name="start_time" id="hidden-start-time" value="{{ session('stylist_booking.start_time') }}">
             <input type="hidden" name="duration"   id="hidden-duration"   value="{{ session('stylist_booking.duration', 2) }}">
 
+            <div class="schedule-panel" style="margin-bottom: 1.5rem;">
+                <div class="schedule-panel-title">1. Required Setup Type (Optional)</div>
+                <div style="text-align:center; margin-top:1rem; margin-bottom: 0.5rem;">
+                    <select name="setup_type" style="width: 100%; max-width: 300px; padding: 0.6rem; border: 1px solid var(--app-line); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;">
+                        <option value="any" {{ session('stylist_booking.setup_type') == 'any' ? 'selected' : '' }}>Any Setup (Hair or Makeup)</option>
+                        <option value="hair" {{ session('stylist_booking.setup_type') == 'hair' ? 'selected' : '' }}>Hair Stylist Chair</option>
+                        <option value="makeup" {{ session('stylist_booking.setup_type') == 'makeup' ? 'selected' : '' }}>Make-up Chair</option>
+                    </select>
+                    <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Note: Chairs 4 & 5 cannot be used for make-up setups.</p>
+                </div>
+            </div>
+
             <div class="schedule-layout">
                 <div class="schedule-panel">
-                    <div class="schedule-panel-title">1. Select Date</div>
+                    <div class="schedule-panel-title">2. Select Date</div>
                     <div class="cal-header">
                         <button type="button" class="cal-nav-btn" id="s-cal-prev">&#8249;</button>
                         <span class="cal-month-label" id="s-cal-label">...</span>
@@ -788,16 +800,17 @@
                 </div>
 
                 <div class="schedule-panel" @if(session('stylist_booking.type') == 'daily') style="display: none;" @endif>
-                    <div class="schedule-panel-title">2. Select Start Time</div>
+                    <div class="schedule-panel-title">3. Select Start Time</div>
                     <div class="slots-grid" id="s-slots-grid"></div>
 
-                    <div class="schedule-panel-title" style="margin-top:2rem;">3. Duration (Hours)</div>
+                    <div class="schedule-panel-title" style="margin-top:2rem;">4. Duration (Hours)</div>
                     <div class="duration-control">
                         <button type="button" class="dur-btn" id="dur-minus">&minus;</button>
                         <input type="number" class="dur-val" id="dur-display" value="{{ session('stylist_booking.duration', 2) }}" min="2">
                         <button type="button" class="dur-btn" id="dur-plus">&plus;</button>
                     </div>
                     <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Minimum 2 hours</p>
+
                 </div>
             </div>
         </form>
