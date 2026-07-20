@@ -418,8 +418,13 @@
                 padding: 1rem;
             }
             .stepper-wrap {
+                padding: 0.5rem 0.25rem 0.25rem;
                 margin-bottom: 1.5rem;
             }
+            .stepper { min-width: unset; width: 100%; }
+            .stepper::before { top: 12px; left: 15px; right: 15px; }
+            .step-circle { width: 26px; height: 26px; font-size: 0.65rem; margin-bottom: 0.2rem; }
+            .step-label { font-size: 0.55rem; }
             .page-title {
                 margin-top: 0.5rem;
                 margin-bottom: 0.5rem;

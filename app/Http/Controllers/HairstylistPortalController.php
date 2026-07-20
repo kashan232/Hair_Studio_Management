@@ -613,8 +613,6 @@ class HairstylistPortalController extends Controller
         $query = Chair::where('status', '!=', 'maintenance');
         if ($setupType === 'makeup') {
             $query->whereNotIn('id', [4, 5]);
-        } elseif ($setupType === 'hair') {
-            $query->whereIn('id', [4, 5]);
         }
         $allChairs = $query->get();
         if ($allChairs->isEmpty()) return ['status' => 'unavailable'];

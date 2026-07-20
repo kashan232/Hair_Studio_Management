@@ -777,13 +777,12 @@
             <input type="hidden" name="duration"   id="hidden-duration"   value="{{ session('stylist_booking.duration', 2) }}">
 
             <div class="schedule-panel" style="margin-bottom: 1.5rem;">
-                <div class="schedule-panel-title">1. Required Setup Type (Optional)</div>
+                <div class="schedule-panel-title">1. Chair Type</div>
                 <div style="text-align:center; margin-top:1rem; margin-bottom: 0.5rem;">
                     <select name="setup_type" style="width: 100%; max-width: 300px; padding: 0.6rem; border: 1px solid var(--app-line); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;">
-                        <option value="hair" {{ session('stylist_booking.setup_type', 'hair') == 'hair' ? 'selected' : '' }}>Hair Stylist Chair (Only Chairs 4 & 5)</option>
-                        <option value="makeup" {{ session('stylist_booking.setup_type') == 'makeup' ? 'selected' : '' }}>Make-up Chair (Chairs 1,2,3,6,7)</option>
+                        <option value="hair" {{ session('stylist_booking.setup_type', 'hair') == 'hair' ? 'selected' : '' }}>Hair Stylist Chair</option>
+                        <option value="makeup" {{ session('stylist_booking.setup_type') == 'makeup' ? 'selected' : '' }}>Makeup Chair</option>
                     </select>
-                    <p style="text-align:center;font-size:0.75rem;color:var(--app-muted);margin-top:0.5rem;">Note: Chairs 4 & 5 are exclusively for Hair Stylist setups.</p>
                 </div>
             </div>
 
