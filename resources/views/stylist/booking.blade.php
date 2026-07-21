@@ -1004,7 +1004,7 @@
                     });
                 </script>
             @else
-                @if($user && in_array($user->role, ['admin', 'staff']))
+                @if($user && $user->canManageChairBookings())
                     <div class="form-field" style="margin-top: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; background: #e3f2fd; padding: 1rem; border-radius: 8px; border: 1px solid #bbdefb;">
                         <input type="checkbox" name="admin_booking_for_customer" id="admin_booking_for_customer" value="1" style="width: 20px; height: 20px; accent-color: #1976d2;" {{ old('admin_booking_for_customer', !empty($guestDetails['is_admin_booking'])) ? 'checked' : '' }}>
                         <label for="admin_booking_for_customer" style="margin: 0; text-transform: none; font-size: 0.85rem; font-weight: 600; color: #0d47a1; cursor: pointer;">

@@ -34,7 +34,7 @@
                 </li>
                 @endif
 
-                @if(Auth::user()->hasPermission('manage-bookings'))
+                @if(Auth::user()->canManageChairBookings())
                 <li class="slide">
                     <a class="sidenav-menu-item {{ Route::is('bookings*') ? 'active' : '' }}" href="{{ route('bookings.index') }}">
                         <i class="side-menu__icon fe fe-calendar"></i>

@@ -18,6 +18,7 @@ use Stripe\PaymentIntent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingConfirmed;
+use App\Services\BookingCancellationService;
 
 class HairstylistPortalController extends Controller
 {
@@ -460,7 +461,7 @@ class HairstylistPortalController extends Controller
         if ($amendId && $user) {
             $oldBooking = Booking::where('id', $amendId)->where('user_id', $user->id)->first();
             if ($oldBooking && !in_array($oldBooking->status, ['cancelled', 'cancelled_late_response'], true)) {
-                $this->markBookingCancelled($oldBooking);
+                app(BookingCancellationService::class)->cancel($oldBooking, true);
             }
             session()->forget('stylist_booking.amend_booking_id');
         }
@@ -577,7 +578,7 @@ class HairstylistPortalController extends Controller
         }
 
         if ($request->user()) {
-            if (in_array($request->user()->role, ['admin', 'staff']) && !empty($guestDetails['is_admin_booking'])) {
+            if ($request->user()->canManageChairBookings() && !empty($guestDetails['is_admin_booking'])) {
                 $existing = User::where('email', $guestDetails['email'])->first();
                 if ($existing) {
                     return $existing;
@@ -669,7 +670,7 @@ class HairstylistPortalController extends Controller
             && $paidAmount > 0
             && Carbon::parse($booking->start_datetime)->gt(now()->addHours(24));
 
-        $refund = $this->markBookingCancelled($booking, $eligibleForRefund);
+        $refund = app(BookingCancellationService::class)->cancel($booking, $eligibleForRefund);
 
         if ($eligibleForRefund && ($refund['refunded'] ?? false)) {
             return back()->with(
@@ -761,109 +762,6 @@ class HairstylistPortalController extends Controller
         }
 
         return 'This booking cannot be cancelled.';
-    }
-
-    private function markBookingCancelled(Booking $booking, bool $attemptRefund = true): array
-    {
-        $refundResult = ['refunded' => false, 'amount' => 0.0, 'message' => null];
-
-        if ($attemptRefund && $booking->status === 'confirmed' && (float) $booking->total_amount > 0) {
-            $refundResult = $this->refundBookingPayment($booking);
-        }
-
-        // Restore package hours if any were used
-        if ($booking->user_id && (float) $booking->package_hours_used > 0) {
-            $hoursToRestore = (float) $booking->package_hours_used;
-            $user = User::find($booking->user_id);
-            if ($user) {
-                $pkg = $user->userPackages()
-                    ->whereIn('status', ['active', 'exhausted'])
-                    ->orderByDesc('updated_at')
-                    ->first();
-
-                if ($pkg) {
-                    $pkg->hours_remaining = (float) $pkg->hours_remaining + $hoursToRestore;
-                    if ($pkg->hours_remaining > 0 && $pkg->status === 'exhausted') {
-                        $pkg->status = 'active';
-                    }
-                    $pkg->save();
-                }
-            }
-        }
-
-        $booking->status = 'cancelled';
-        $booking->expires_at = null;
-        $booking->save();
-
-        return $refundResult;
-    }
-
-    /**
-     * Full Stripe refund for paid bookings cancelled with 24h+ notice.
-     * Policy: https://eladeuk.com/bookings-and-cancellation-policy
-     *
-     * @return array{refunded: bool, amount: float, message: ?string}
-     */
-    private function refundBookingPayment(Booking $booking): array
-    {
-        if ($booking->refunded_at || $booking->refund_status === 'succeeded') {
-            return [
-                'refunded' => true,
-                'amount' => (float) ($booking->refunded_amount ?? $booking->total_amount),
-                'message' => 'already_refunded',
-            ];
-        }
-
-        $paymentIntentId = $booking->stripe_payment_intent;
-        if (!$paymentIntentId) {
-            $booking->refund_status = 'missing_payment';
-            $booking->save();
-            return [
-                'refunded' => false,
-                'amount' => 0.0,
-                'message' => 'No Stripe payment was found on this booking. Contact the studio with your booking reference.',
-            ];
-        }
-
-        try {
-            Stripe::setApiKey(config('services.stripe.secret'));
-
-            $refund = \Stripe\Refund::create([
-                'payment_intent' => $paymentIntentId,
-                'reason' => 'requested_by_customer',
-                'metadata' => [
-                    'booking_id' => (string) $booking->id,
-                    'policy' => '24h_cancellation_full_refund',
-                ],
-            ]);
-
-            $amount = isset($refund->amount) ? round(((int) $refund->amount) / 100, 2) : (float) $booking->total_amount;
-
-            $booking->refund_status = $refund->status ?? 'succeeded';
-            $booking->refunded_amount = $amount;
-            $booking->refunded_at = now();
-            $booking->save();
-
-            return [
-                'refunded' => in_array($refund->status, ['succeeded', 'pending'], true),
-                'amount' => $amount,
-                'message' => null,
-            ];
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Booking refund failed: ' . $e->getMessage(), [
-                'booking_id' => $booking->id,
-                'payment_intent' => $paymentIntentId,
-            ]);
-
-            $booking->refund_status = 'failed';
-            $booking->save();
-
-            return [
-                'refunded' => false,
-                'amount' => 0.0,
-                'message' => 'Stripe refund failed. The studio has been notified via logs — please contact support with Booking #' . $booking->id . '.',
-            ];
-        }
     }
 
     /* ─────────────────────────────────────────────

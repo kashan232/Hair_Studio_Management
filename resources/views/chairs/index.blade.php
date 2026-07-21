@@ -193,9 +193,19 @@
                     <p class="mb-1 text-muted text-uppercase fw-semibold" style="letter-spacing: 1.5px; font-size: 0.7rem;">Workspace Inventory</p>
                     <h1 class="page-title">Studio Chairs Rental</h1>
                 </div>
-                <button type="button" class="btn-luxury-dark" data-bs-toggle="modal" data-bs-target="#createChairModal">
-                    <i class="fe fe-plus"></i> Create New Chair
-                </button>
+                <div class="d-flex flex-wrap gap-2">
+                    @if(auth()->user()?->canManageChairBookings())
+                        <a href="{{ route('bookings.index') }}" class="btn-luxury-light">
+                            <i class="fe fe-calendar"></i> Manage Bookings
+                        </a>
+                        <a href="{{ route('stylist.book') }}" class="btn-luxury-light">
+                            <i class="fe fe-edit-2"></i> Add Booking
+                        </a>
+                    @endif
+                    <button type="button" class="btn-luxury-dark" data-bs-toggle="modal" data-bs-target="#createChairModal">
+                        <i class="fe fe-plus"></i> Create New Chair
+                    </button>
+                </div>
             </div>
 
             <!-- Chairs Table -->

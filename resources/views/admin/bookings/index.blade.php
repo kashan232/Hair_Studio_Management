@@ -42,7 +42,14 @@
                     <div class="card-header border-bottom-0">
                         <div class="bookings-toolbar w-100">
                             <h3 class="card-title">All Bookings</h3>
-                            <span class="text-muted small">{{ $bookings->count() }} record(s)</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="text-muted small">{{ $bookings->count() }} record(s)</span>
+                                @if(auth()->user()?->canManageChairBookings())
+                                    <a href="{{ route('stylist.book') }}" class="btn btn-dark btn-sm">
+                                        <i class="fe fe-plus"></i> Add Booking Manually
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -63,7 +70,13 @@
                                 <tbody>
                                     @foreach($bookings as $b)
                                         <tr>
-                                            <td data-order="{{ $b->id }}">#{{ $b->id }}</td>
+                                            <td data-order="{{ $b->id }}">
+                                                @if(auth()->user()?->canManageChairBookings())
+                                                    <a href="{{ route('bookings.show', $b->id) }}">#{{ $b->id }}</a>
+                                                @else
+                                                    #{{ $b->id }}
+                                                @endif
+                                            </td>
                                             <td>
                                                 @if($b->user)
                                                     {{ $b->user->name }}
@@ -124,8 +137,20 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if($b->status === 'pending_approval')
-                                                    <div class="d-flex flex-column gap-2">
+                                                @php
+                                                    $canStaffCancel = auth()->user()?->canManageChairBookings()
+                                                        && !in_array($b->status, ['cancelled', 'cancelled_late_response'], true);
+                                                    $canOpenRefund = auth()->user()?->canManageChairBookings()
+                                                        && (float) $b->total_amount > 0;
+                                                @endphp
+                                                <div class="d-flex flex-column gap-2">
+                                                    @if(auth()->user()?->canManageChairBookings())
+                                                        <a href="{{ route('bookings.show', $b->id) }}" class="btn btn-sm btn-dark w-100">
+                                                            <i class="fe fe-eye"></i> View / Refund
+                                                        </a>
+                                                    @endif
+
+                                                    @if($b->status === 'pending_approval')
                                                         <form method="POST" action="{{ route('bookings.update_status', $b->id) }}">
                                                             @csrf
                                                             <input type="hidden" name="status" value="pending_payment">
@@ -140,10 +165,23 @@
                                                                 <i class="fe fe-x"></i> Reject
                                                             </button>
                                                         </form>
-                                                    </div>
-                                                @else
-                                                    <span class="text-muted">No actions</span>
-                                                @endif
+                                                    @elseif($canStaffCancel)
+                                                        <form method="POST" action="{{ route('bookings.cancel', $b->id) }}" class="admin-cancel-booking-form" data-booking-id="{{ $b->id }}">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                                                <i class="fe fe-slash"></i> Cancel Booking
+                                                            </button>
+                                                        </form>
+                                                    @elseif(!$canOpenRefund)
+                                                        <span class="text-muted">No actions</span>
+                                                    @endif
+
+                                                    @if($b->refunded_at)
+                                                        <small class="text-success d-block" style="font-size:0.7rem;">
+                                                            Refunded £{{ number_format((float) $b->refunded_amount, 2) }}
+                                                        </small>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -185,6 +223,28 @@
         } catch (e) {
             console.error('Bookings DataTable init failed:', e);
         }
+
+        $(document).on('submit', '.admin-cancel-booking-form', function(e) {
+            e.preventDefault();
+            var form = this;
+            var id = $(form).data('booking-id');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Cancel booking #' + id + '?',
+                    text: 'This frees the chair. Paid bookings 24h+ before start will be refunded automatically.',
+                    type: 'warning',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#461111',
+                    confirmButtonText: 'Yes, cancel',
+                    cancelButtonText: 'Keep'
+                }).then(function(result) {
+                    if (result.value || result.isConfirmed) form.submit();
+                });
+            } else if (confirm('Cancel booking #' + id + '?')) {
+                form.submit();
+            }
+        });
     });
 
     document.addEventListener('DOMContentLoaded', function() {

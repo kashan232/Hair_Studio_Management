@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
         $permissions = [
             ['name' => 'Manage Users', 'slug' => 'manage-users', 'description' => 'Can create, edit, and delete system users.'],
             ['name' => 'Manage Roles & Permissions', 'slug' => 'manage-roles', 'description' => 'Can configure permissions assigned to roles.'],
-            ['name' => 'Manage Chairs', 'slug' => 'manage-chairs', 'description' => 'Can manage physical chair availability.'],
-            ['name' => 'Manage Bookings', 'slug' => 'manage-bookings', 'description' => 'Can manage chair reservations.'],
+            ['name' => 'Manage Chairs', 'slug' => 'manage-chairs', 'description' => 'Manage chair inventory, cancel chair bookings, and add bookings manually.'],
+            ['name' => 'Manage Bookings', 'slug' => 'manage-bookings', 'description' => 'Approve, manage and cancel bookings; book on behalf of customers.'],
             ['name' => 'View Revenue & Analytics', 'slug' => 'view-revenue', 'description' => 'Can access financial reports and earnings.'],
             ['name' => 'View Reports', 'slug' => 'view-reports', 'description' => 'Can view stylist utilization and checkins.'],
         ];

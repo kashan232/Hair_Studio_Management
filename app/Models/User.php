@@ -70,6 +70,14 @@ class User extends Authenticatable
         return $this->roleRelation->permissions()->where('slug', $permissionSlug)->exists();
     }
 
+    /**
+     * Staff who can manage chair inventory and chair bookings (cancel / manual add).
+     */
+    public function canManageChairBookings(): bool
+    {
+        return $this->hasPermission('manage-chairs') || $this->hasPermission('manage-bookings');
+    }
+
     public function isHairstylist(): bool
     {
         if ($this->role === 'hairstylist') {

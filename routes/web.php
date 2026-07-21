@@ -85,7 +85,10 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/permissions/delete/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
     // Bookings Management CRUD Routes
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/update-status/{id}', [BookingController::class, 'updateStatus'])->name('bookings.update_status');
+    Route::post('/bookings/{id}/cancel', [BookingController::class, 'adminCancel'])->name('bookings.cancel');
+    Route::post('/bookings/{id}/refund', [BookingController::class, 'adminRefund'])->name('bookings.refund');
 
     // Coupons Management CRUD Routes
     Route::get('/coupons', [\App\Http\Controllers\CouponController::class, 'index'])->name('coupons.index');
