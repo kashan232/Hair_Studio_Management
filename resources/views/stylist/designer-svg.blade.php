@@ -22,7 +22,7 @@
     </filter>
     @php
         $multiChairSplit = $avail['status'] === 'multi_chair' ? $avail['schedule'] : [];
-        $assignedChair = $avail['status'] === 'single_chair' ? $avail['chair_id'] : null;
+        $assignedChair = $assignedChair ?? ($avail['status'] === 'single_chair' ? $avail['chair_id'] : null);
 
         $allChairs = \App\Models\Chair::pluck('name', 'id')->toArray();
         $chairData = [

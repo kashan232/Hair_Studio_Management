@@ -330,6 +330,61 @@
         box-shadow: none;
         border: 1px solid var(--app-line);
     }
+    .btn-cancel-booking {
+        width: 100%;
+        border-color: #ffcdd2 !important;
+        color: #d32f2f !important;
+        font-size: 0.7rem !important;
+        background: #fff;
+    }
+    .btn-cancel-booking:hover {
+        background: #ffebee !important;
+        border-color: #ef5350 !important;
+    }
+    .btn-amend-booking {
+        width: 100%;
+        border-color: #d4a088 !important;
+        color: var(--app-accent-dark) !important;
+        font-size: 0.7rem !important;
+        background: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .btn-amend-booking:hover {
+        background: #fdf5f1 !important;
+    }
+    .flash-banner {
+        max-width: 1200px;
+        margin: 0 auto 1.25rem;
+        padding: 0.9rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .flash-success {
+        background: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        color: #2e7d32;
+    }
+    .flash-error {
+        background: #ffebee;
+        border: 1px solid #ffcdd2;
+        color: #c62828;
+    }
+    .policy-note {
+        font-size: 0.65rem;
+        color: var(--app-muted);
+        text-align: center;
+        line-height: 1.4;
+        margin-top: 0.25rem;
+    }
 
     /* -------------------------------------
        EMPTY STATE
@@ -426,6 +481,13 @@
         <p class="page-subtitle">Manage your studio workspace reservations and upcoming appointments.</p>
     </div>
 
+    @if(session('success'))
+        <div class="flash-banner flash-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="flash-banner flash-error">{{ session('error') }}</div>
+    @endif
+
     @if($bookings->isEmpty())
         <div class="empty-state">
             <div class="empty-icon">
@@ -440,6 +502,13 @@
     @else
         <div class="bookings-grid">
             @foreach($bookings as $b)
+                @php
+                    $startAt = \Carbon\Carbon::parse($b->start_datetime);
+                    $hoursUntilStart = ($startAt->getTimestamp() - now()->getTimestamp()) / 3600;
+                    $canManage = in_array($b->status, ['pending_payment', 'pending_approval'], true)
+                        || ($b->status === 'confirmed' && $startAt->gt(now()->addHours(24)));
+                    $canAmend = $canManage && $startAt->isFuture();
+                @endphp
                 <div class="b-card status-{{ $b->status }}">
                     <div class="b-info">
                         <div class="b-header">
@@ -452,16 +521,30 @@
                         <div class="b-details-grid">
                             <div class="b-detail-item">
                                 <span class="b-detail-label">Date</span>
-                                <span class="b-detail-val">{{ \Carbon\Carbon::parse($b->start_datetime)->format('d M Y') }}</span>
+                                <span class="b-detail-val">{{ $startAt->format('d M Y') }}</span>
                             </div>
                             <div class="b-detail-item">
-                                <span class="b-detail-label">Time</span>
-                                <span class="b-detail-val">{{ \Carbon\Carbon::parse($b->start_datetime)->format('h:i A') }}</span>
+                                <span class="b-detail-label">Time (UK)</span>
+                                <span class="b-detail-val">{{ $startAt->format('h:i A') }}</span>
                             </div>
                             <div class="b-detail-item">
                                 <span class="b-detail-label">Duration</span>
                                 <span class="b-detail-val">{{ $b->duration_hours }} Hours</span>
                             </div>
+                            @if($b->status === 'confirmed' && $startAt->isFuture())
+                            <div class="b-detail-item">
+                                <span class="b-detail-label">Starts in (UK)</span>
+                                <span class="b-detail-val">
+                                    @if($hoursUntilStart >= 24)
+                                        {{ floor($hoursUntilStart) }} hrs
+                                    @elseif($hoursUntilStart > 0)
+                                        {{ max(1, (int) round($hoursUntilStart)) }} hrs
+                                    @else
+                                        Soon
+                                    @endif
+                                </span>
+                            </div>
+                            @endif
                             <div class="b-detail-item">
                                 <span class="b-detail-label">Chairs</span>
                                 <span class="b-detail-val">
@@ -500,21 +583,54 @@
                                 Pay £{{ number_format($b->total_amount, 2) }}
                             </a>
                         @endif
-                        @if($b->status === 'confirmed')
+                        @if($b->status === 'confirmed' && !$canManage)
+                            <button class="btn-outline btn-disabled" disabled>Paid & Confirmed</button>
+                            <p class="policy-note">
+                                @if($startAt->isFuture())
+                                    Starts in ~{{ max(1, (int) round($hoursUntilStart)) }} hrs — cancel/refund only when more than 24 hrs before start.
+                                @else
+                                    This booking has already started — cancellation is not available.
+                                @endif
+                                <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Policy</a>
+                            </p>
+                        @elseif($b->status === 'confirmed')
                             <button class="btn-outline btn-disabled" disabled>Paid & Confirmed</button>
                         @endif
-                        @if($b->status === 'pending_approval')
+                        @if($b->status === 'pending_approval' && !$canManage)
                             <button class="btn-outline btn-disabled" disabled>Awaiting Admin</button>
                         @endif
                         @if($b->status === 'cancelled' || $b->status === 'cancelled_late_response')
                             <button class="btn-outline btn-disabled" disabled>Cancelled</button>
+                            @if($b->refunded_at && (float) $b->refunded_amount > 0)
+                                <p class="policy-note" style="color:#2e7d32;">
+                                    Refund £{{ number_format((float) $b->refunded_amount, 2) }} issued
+                                    @if($b->refund_status)
+                                        ({{ $b->refund_status }})
+                                    @endif
+                                </p>
+                            @elseif($b->refund_status === 'failed' || $b->refund_status === 'missing_payment')
+                                <p class="policy-note" style="color:#c62828;">Refund pending — contact studio with #{{ $b->id }}</p>
+                            @endif
                         @endif
-                        
-                        @if($b->status === 'pending_approval')
-                            <form action="{{ route('stylist.cancel_booking', $b->id) }}" method="POST" style="margin:0; text-align:center;">
+
+                        @if($canAmend)
+                            <a href="{{ route('stylist.amend_booking', $b->id) }}" class="btn-amend-booking">Amend Booking</a>
+                        @endif
+
+                        @if($canManage)
+                            <form action="{{ route('stylist.cancel_booking', $b->id) }}" method="POST" style="margin:0;"
+                                  class="cancel-booking-form"
+                                  data-refund-eligible="{{ ($b->status === 'confirmed' && (float) $b->total_amount > 0) ? '1' : '0' }}"
+                                  data-refund-amount="{{ number_format((float) $b->total_amount, 2, '.', '') }}">
                                 @csrf
-                                <button type="submit" class="btn-outline" style="width:100%; border-color:#ffcdd2; color:#d32f2f; font-size:0.7rem;" onclick="return confirm('Are you sure you want to cancel this booking?');">Cancel Booking</button>
+                                <button type="submit" class="btn-outline btn-cancel-booking">Cancel Booking</button>
                             </form>
+                            @if($b->status === 'confirmed')
+                                <p class="policy-note">
+                                    Cancel 24h+ before start for a full refund.
+                                    <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Booking &amp; Cancellation Policy</a>
+                                </p>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -525,6 +641,35 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.cancel-booking-form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const refundEligible = form.getAttribute('data-refund-eligible') === '1';
+                const refundAmount = form.getAttribute('data-refund-amount') || '0.00';
+                const text = refundEligible
+                    ? 'Cancel with 24h+ notice: a full refund of £' + refundAmount + ' will be returned to your original payment method (bank timing may vary). Package hours will also be restored if used.'
+                    : 'This cannot be undone. Package hours (if used) will be restored.';
+                const doSubmit = function() { form.submit(); };
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Cancel this booking?',
+                        text: text,
+                        type: 'warning',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#461111',
+                        cancelButtonColor: '#eae2d5',
+                        confirmButtonText: refundEligible ? 'Cancel & refund' : 'Yes, cancel it',
+                        cancelButtonText: 'Keep booking'
+                    }).then(function(result) {
+                        if (result.value || result.isConfirmed) doSubmit();
+                    });
+                } else if (confirm(text)) {
+                    doSubmit();
+                }
+            });
+        });
+
         const timers = document.querySelectorAll('.stylist-timer');
         if (timers.length > 0) {
             setInterval(() => {

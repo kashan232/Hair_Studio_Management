@@ -79,7 +79,8 @@ class HairstylistPortalController extends Controller
         $packageHoursUsed = 0;
         $duration = session('stylist_booking.duration', 0);
 
-        if ($user && $duration > 0) {
+        // Package hours apply to hourly bookings only (daily uses flat chair daily rate)
+        if ($user && $duration > 0 && $type !== 'daily') {
             $packageBalance = $user->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -91,32 +92,57 @@ class HairstylistPortalController extends Controller
 
         $isOvernight = $this->isOvernightBooking();
 
-        $pricingChair = null;
-        $pricingRate = null;
-        $pricingRateLabel = null;
-        $assignedIds = session('stylist_booking.assigned_chair_ids', []);
-        if (!empty($assignedIds)) {
-            $pricingChair = Chair::find($assignedIds[0]);
-            if ($pricingChair) {
-                [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
+        $pricingChair = $this->resolveBookingChair();
+        [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
+
+        // If assigned/preview chair has no rate, prefer first free chair that does
+        if ($pricingRate === null && !empty($availabilityState['available_chair_ids'] ?? [])) {
+            foreach ($availabilityState['available_chair_ids'] as $candidateId) {
+                $candidate = Chair::find($candidateId);
+                [$candidateRate, $candidateLabel] = $this->rateForChair($candidate, $type);
+                if ($candidateRate !== null) {
+                    $pricingChair = $candidate;
+                    $pricingRate = $candidateRate;
+                    $pricingRateLabel = $candidateLabel;
+                    if ($step === 2 && empty(session('stylist_booking.assigned_chair_ids'))) {
+                        session(['stylist_booking.assigned_chair_ids' => [$candidate->id]]);
+                        if (is_array($availabilityState)) {
+                            $availabilityState['chair_id'] = $candidate->id;
+                            session(['stylist_booking.availability_state' => $availabilityState]);
+                        }
+                    }
+                    break;
+                }
             }
-        } elseif (!empty($availabilityState['available_chair_ids'] ?? [])) {
-            // Preview pricing from first free chair until user confirms selection
-            $pricingChair = Chair::find($availabilityState['available_chair_ids'][0]);
-            if ($pricingChair) {
-                [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
-            }
-        } elseif (($availabilityState['status'] ?? null) === 'single_chair' && !empty($availabilityState['chair_id'])) {
-            $pricingChair = Chair::find($availabilityState['chair_id']);
-            if ($pricingChair) {
-                [$pricingRate, $pricingRateLabel] = $this->rateForChair($pricingChair, $type);
+            // Recompute totals after switching to a priced chair
+            $rawTotal = $this->calculateTotal();
+            $computedTotal = $rawTotal;
+            $packageHoursUsed = 0;
+            if ($user && $duration > 0 && $type !== 'daily') {
+                $packageBalance = $user->package_balance;
+                if ($packageBalance > 0) {
+                    $packageHoursUsed = min($packageBalance, $duration);
+                    $remainingDuration = $duration - $packageHoursUsed;
+                    $unitPrice = $duration > 0 ? ($rawTotal / $duration) : 0;
+                    $computedTotal = round($unitPrice * $remainingDuration, 2);
+                }
             }
         }
+
+        $chairPricingMap = $this->buildChairPricingMap(
+            $availabilityState['available_chair_ids']
+                ?? session('stylist_booking.assigned_chair_ids', [])
+                ?? [],
+            $type,
+            (float) session('stylist_booking.duration', 0)
+        );
+
+        $availableIds = $availabilityState['available_chair_ids'] ?? [];
 
         return view('stylist.booking', compact(
             'step', 'user', 'steps', 'guestDetails', 'computedTotal', 'isOvernight',
             'availabilityState', 'packageHoursUsed', 'rawTotal', 'type',
-            'pricingChair', 'pricingRate', 'pricingRateLabel'
+            'pricingChair', 'pricingRate', 'pricingRateLabel', 'chairPricingMap', 'availableIds'
         ));
     }
 
@@ -268,6 +294,7 @@ class HairstylistPortalController extends Controller
         $rawTotal = $this->calculateTotal();
         $total = $rawTotal;
         $duration = session('stylist_booking.duration', 0);
+        $bookingType = session('stylist_booking.type', 'hourly');
         $packageHoursUsed = 0;
 
         $user = $request->user();
@@ -278,7 +305,7 @@ class HairstylistPortalController extends Controller
             }
         }
 
-        if ($user && $duration > 0) {
+        if ($user && $duration > 0 && $bookingType !== 'daily') {
             $packageBalance = $user->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -360,7 +387,10 @@ class HairstylistPortalController extends Controller
             $conflict = \Illuminate\Support\Facades\DB::table('booking_chairs')
                 ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
                 ->where('booking_chairs.chair_id', $chairId)
-                ->where('bookings.status', 'confirmed')
+                ->whereIn('bookings.status', ['confirmed', 'pending_approval'])
+                ->when(session('stylist_booking.amend_booking_id'), function ($q) {
+                    $q->where('bookings.id', '!=', session('stylist_booking.amend_booking_id'));
+                })
                 ->where(function ($query) use ($currentStart, $currentEnd) {
                     $query->where('booking_chairs.start_time', '<', $currentEnd)
                           ->where('booking_chairs.end_time', '>', $currentStart);
@@ -425,6 +455,16 @@ class HairstylistPortalController extends Controller
         $guestDetails = session('stylist_booking.guest', []);
         $packageHoursUsed = session('stylist_booking.package_hours_used', 0);
 
+        // Amendment: cancel previous booking first so package hours are restored before new deduction
+        $amendId = session('stylist_booking.amend_booking_id');
+        if ($amendId && $user) {
+            $oldBooking = Booking::where('id', $amendId)->where('user_id', $user->id)->first();
+            if ($oldBooking && !in_array($oldBooking->status, ['cancelled', 'cancelled_late_response'], true)) {
+                $this->markBookingCancelled($oldBooking);
+            }
+            session()->forget('stylist_booking.amend_booking_id');
+        }
+
         $booking = Booking::create([
             'user_id' => $user ? $user->id : null,
             'guest_name' => $user ? null : ($guestDetails['name'] ?? null),
@@ -435,6 +475,7 @@ class HairstylistPortalController extends Controller
             'duration_hours' => session('stylist_booking.duration'),
             'package_hours_used' => $packageHoursUsed,
             'total_amount' => session('stylist_booking.final_total', $this->calculateTotal()),
+            'stripe_payment_intent' => session('stylist_booking.payment_intent_id'),
             'coupon_code' => session('stylist_booking.coupon_code'),
             'discount_amount' => session('stylist_booking.discount', 0),
             'status' => $status,
@@ -618,14 +659,211 @@ class HairstylistPortalController extends Controller
         $user = $request->user();
         $booking = Booking::where('id', $id)->where('user_id', $user->id)->firstOrFail();
 
-        // Allow cancellation if pending approval
-        if ($booking->status === 'pending_approval') {
-            $booking->status = 'cancelled';
-            $booking->save();
-            return back()->with('success', 'Booking cancelled successfully.');
+        if (!$this->bookingCanBeCancelled($booking)) {
+            return back()->with('error', $this->bookingCancelBlockReason($booking));
         }
 
-        return back()->with('error', 'Booking cannot be cancelled.');
+        $wasConfirmed = $booking->status === 'confirmed';
+        $paidAmount = (float) $booking->total_amount;
+        $eligibleForRefund = $wasConfirmed
+            && $paidAmount > 0
+            && Carbon::parse($booking->start_datetime)->gt(now()->addHours(24));
+
+        $refund = $this->markBookingCancelled($booking, $eligibleForRefund);
+
+        if ($eligibleForRefund && ($refund['refunded'] ?? false)) {
+            return back()->with(
+                'success',
+                'Booking #' . $booking->id . ' cancelled. A full refund of £' . number_format((float) $refund['amount'], 2)
+                . ' has been started to your original payment method (per our Booking & Cancellation Policy).'
+            );
+        }
+
+        if ($eligibleForRefund && !($refund['refunded'] ?? false)) {
+            $detail = $refund['message'] ?? 'Please contact the studio if you need help with your refund.';
+            return back()->with(
+                'error',
+                'Booking #' . $booking->id . ' was cancelled, but the automatic refund could not be completed. ' . $detail
+            );
+        }
+
+        return back()->with('success', 'Booking #' . $booking->id . ' cancelled successfully.');
+    }
+
+    public function amendBooking(Request $request, $id): RedirectResponse
+    {
+        $user = $request->user();
+        $booking = Booking::where('id', $id)->where('user_id', $user->id)->with('chairs')->firstOrFail();
+
+        if (!$this->bookingCanBeAmended($booking)) {
+            return redirect()
+                ->route('stylist.my_bookings')
+                ->with('error', $this->bookingCancelBlockReason($booking) ?: 'This booking cannot be amended.');
+        }
+
+        session()->forget('stylist_booking');
+
+        $duration = (int) $booking->duration_hours;
+        $type = ($duration >= 12) ? 'daily' : 'hourly';
+
+        session([
+            'stylist_booking.amend_booking_id' => $booking->id,
+            'stylist_booking.type' => $type,
+            'stylist_booking.setup_type' => $booking->setup_type ?: 'hair',
+            'stylist_booking.guest' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+            ],
+        ]);
+
+        return redirect()
+            ->route('stylist.book', ['step' => 1, 'type' => $type])
+            ->with('booking_success', 'Amending Booking #' . $booking->id . '. Choose a new date & time — your old booking will be replaced when you confirm.');
+    }
+
+    /**
+     * Pending payment / approval: always cancellable.
+     * Confirmed: only if start is more than 24 hours away (studio policy).
+     */
+    private function bookingCanBeCancelled(Booking $booking): bool
+    {
+        if (in_array($booking->status, ['pending_payment', 'pending_approval'], true)) {
+            return true;
+        }
+
+        if ($booking->status === 'confirmed') {
+            return Carbon::parse($booking->start_datetime)->gt(now()->addHours(24));
+        }
+
+        return false;
+    }
+
+    private function bookingCanBeAmended(Booking $booking): bool
+    {
+        // Same window as cancel for upcoming bookings
+        return $this->bookingCanBeCancelled($booking)
+            && Carbon::parse($booking->start_datetime)->isFuture();
+    }
+
+    private function bookingCancelBlockReason(Booking $booking): string
+    {
+        if (in_array($booking->status, ['cancelled', 'cancelled_late_response'], true)) {
+            return 'This booking is already cancelled.';
+        }
+
+        if ($booking->status === 'confirmed' && Carbon::parse($booking->start_datetime)->lte(now()->addHours(24))) {
+            return 'Confirmed bookings can only be cancelled or amended more than 24 hours before start time.';
+        }
+
+        if (Carbon::parse($booking->start_datetime)->isPast()) {
+            return 'Past bookings cannot be cancelled or amended.';
+        }
+
+        return 'This booking cannot be cancelled.';
+    }
+
+    private function markBookingCancelled(Booking $booking, bool $attemptRefund = true): array
+    {
+        $refundResult = ['refunded' => false, 'amount' => 0.0, 'message' => null];
+
+        if ($attemptRefund && $booking->status === 'confirmed' && (float) $booking->total_amount > 0) {
+            $refundResult = $this->refundBookingPayment($booking);
+        }
+
+        // Restore package hours if any were used
+        if ($booking->user_id && (float) $booking->package_hours_used > 0) {
+            $hoursToRestore = (float) $booking->package_hours_used;
+            $user = User::find($booking->user_id);
+            if ($user) {
+                $pkg = $user->userPackages()
+                    ->whereIn('status', ['active', 'exhausted'])
+                    ->orderByDesc('updated_at')
+                    ->first();
+
+                if ($pkg) {
+                    $pkg->hours_remaining = (float) $pkg->hours_remaining + $hoursToRestore;
+                    if ($pkg->hours_remaining > 0 && $pkg->status === 'exhausted') {
+                        $pkg->status = 'active';
+                    }
+                    $pkg->save();
+                }
+            }
+        }
+
+        $booking->status = 'cancelled';
+        $booking->expires_at = null;
+        $booking->save();
+
+        return $refundResult;
+    }
+
+    /**
+     * Full Stripe refund for paid bookings cancelled with 24h+ notice.
+     * Policy: https://eladeuk.com/bookings-and-cancellation-policy
+     *
+     * @return array{refunded: bool, amount: float, message: ?string}
+     */
+    private function refundBookingPayment(Booking $booking): array
+    {
+        if ($booking->refunded_at || $booking->refund_status === 'succeeded') {
+            return [
+                'refunded' => true,
+                'amount' => (float) ($booking->refunded_amount ?? $booking->total_amount),
+                'message' => 'already_refunded',
+            ];
+        }
+
+        $paymentIntentId = $booking->stripe_payment_intent;
+        if (!$paymentIntentId) {
+            $booking->refund_status = 'missing_payment';
+            $booking->save();
+            return [
+                'refunded' => false,
+                'amount' => 0.0,
+                'message' => 'No Stripe payment was found on this booking. Contact the studio with your booking reference.',
+            ];
+        }
+
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            $refund = \Stripe\Refund::create([
+                'payment_intent' => $paymentIntentId,
+                'reason' => 'requested_by_customer',
+                'metadata' => [
+                    'booking_id' => (string) $booking->id,
+                    'policy' => '24h_cancellation_full_refund',
+                ],
+            ]);
+
+            $amount = isset($refund->amount) ? round(((int) $refund->amount) / 100, 2) : (float) $booking->total_amount;
+
+            $booking->refund_status = $refund->status ?? 'succeeded';
+            $booking->refunded_amount = $amount;
+            $booking->refunded_at = now();
+            $booking->save();
+
+            return [
+                'refunded' => in_array($refund->status, ['succeeded', 'pending'], true),
+                'amount' => $amount,
+                'message' => null,
+            ];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Booking refund failed: ' . $e->getMessage(), [
+                'booking_id' => $booking->id,
+                'payment_intent' => $paymentIntentId,
+            ]);
+
+            $booking->refund_status = 'failed';
+            $booking->save();
+
+            return [
+                'refunded' => false,
+                'amount' => 0.0,
+                'message' => 'Stripe refund failed. The studio has been notified via logs — please contact support with Booking #' . $booking->id . '.',
+            ];
+        }
     }
 
     /* ─────────────────────────────────────────────
@@ -643,6 +881,8 @@ class HairstylistPortalController extends Controller
         if ($allChairs->isEmpty()) return ['status' => 'unavailable'];
 
         $now = now();
+        $amendBookingId = session('stylist_booking.amend_booking_id');
+
         $overlappingBookings = DB::table('booking_chairs')
             ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
             ->where(function($query) use ($now) {
@@ -653,20 +893,31 @@ class HairstylistPortalController extends Controller
                             ->where('bookings.expires_at', '>', $now);
                       });
             })
+            ->when($amendBookingId, function ($q) use ($amendBookingId) {
+                $q->where('bookings.id', '!=', $amendBookingId);
+            })
             ->where('booking_chairs.start_time', '<', $end)
             ->where('booking_chairs.end_time', '>', $start)
             ->get(['booking_chairs.*']);
 
         $busyChairIds = $overlappingBookings->pluck('chair_id')->unique()->toArray();
 
-        $freeChairs = $allChairs->whereNotIn('id', $busyChairIds);
+        $freeChairs = $allChairs->whereNotIn('id', $busyChairIds)->values();
 
-        // 1. Single Chair Available
+        // 1. Single Chair Available — prefer a chair that has pricing for this booking type
         if ($freeChairs->isNotEmpty()) {
+            $bookingType = session('stylist_booking.type', 'hourly');
+            $pricedFree = $freeChairs->filter(function (Chair $chair) use ($bookingType) {
+                [$rate] = $this->rateForChair($chair, $bookingType);
+                return $rate !== null;
+            })->values();
+
+            $preferred = $pricedFree->isNotEmpty() ? $pricedFree : $freeChairs;
+
             return [
                 'status' => 'single_chair',
-                'chair_id' => $freeChairs->first()->id,
-                'available_chair_ids' => $freeChairs->pluck('id')->toArray()
+                'chair_id' => $preferred->first()->id,
+                'available_chair_ids' => $freeChairs->pluck('id')->values()->all(),
             ];
         }
 
@@ -706,7 +957,10 @@ class HairstylistPortalController extends Controller
 
             $futureOverlaps = DB::table('booking_chairs')
                 ->join('bookings', 'booking_chairs.booking_id', '=', 'bookings.id')
-                ->where('bookings.status', 'confirmed')
+                ->whereIn('bookings.status', ['confirmed', 'pending_approval'])
+                ->when($amendBookingId, function ($q) use ($amendBookingId) {
+                    $q->where('bookings.id', '!=', $amendBookingId);
+                })
                 ->where('booking_chairs.start_time', '<', $nextEnd)
                 ->where('booking_chairs.end_time', '>', $nextSlot)
                 ->pluck('booking_chairs.chair_id')->toArray();
@@ -744,6 +998,19 @@ class HairstylistPortalController extends Controller
         [$unitPrice] = $this->rateForChair($chair, $type);
 
         if ($unitPrice === null) {
+            // Fallback: first available chair with pricing
+            $availability = session('stylist_booking.availability_state', []);
+            foreach ($availability['available_chair_ids'] ?? [] as $candidateId) {
+                $candidate = Chair::find($candidateId);
+                [$candidateRate] = $this->rateForChair($candidate, $type);
+                if ($candidateRate !== null) {
+                    $unitPrice = $candidateRate;
+                    break;
+                }
+            }
+        }
+
+        if ($unitPrice === null) {
             return 0.0;
         }
 
@@ -751,7 +1018,7 @@ class HairstylistPortalController extends Controller
             return round($unitPrice, 2);
         }
 
-        return round($unitPrice * $duration, 2);
+        return round($unitPrice * max($duration, 1), 2);
     }
 
     /**
@@ -771,6 +1038,9 @@ class HairstylistPortalController extends Controller
         if (!empty($availability['available_chair_ids'][0])) {
             return Chair::find($availability['available_chair_ids'][0]);
         }
+        if (!empty($availability['chair_ids'][0])) {
+            return Chair::find($availability['chair_ids'][0]);
+        }
 
         return null;
     }
@@ -786,25 +1056,58 @@ class HairstylistPortalController extends Controller
             return [null, null];
         }
 
+        $rate = null;
+        $label = 'hour';
+
         if ($type === 'daily') {
-            if ($chair->price_daily) {
-                return [(float) $chair->price_daily, 'day'];
+            $rate = $chair->price_daily;
+            $label = 'day';
+        } elseif ($type === 'monthly') {
+            $rate = $chair->price_monthly;
+            $label = 'month';
+        } elseif ($type === 'yearly') {
+            $rate = $chair->price_yearly;
+            $label = 'year';
+        } else {
+            $rate = $chair->price_hourly;
+            $label = 'hour';
+        }
+
+        if ($rate === null || $rate === '') {
+            return [null, $label];
+        }
+
+        return [(float) $rate, $label];
+    }
+
+    /**
+     * Pricing payload for step-2 chair map (live rate/total updates).
+     */
+    private function buildChairPricingMap(array $chairIds, string $type, float $duration): array
+    {
+        $map = [];
+        foreach (array_unique(array_filter($chairIds)) as $chairId) {
+            $chair = Chair::find($chairId);
+            if (!$chair) {
+                continue;
             }
-            return [null, 'day'];
+            [$rate, $label] = $this->rateForChair($chair, $type);
+            $total = null;
+            if ($rate !== null) {
+                $total = $type === 'daily'
+                    ? round($rate, 2)
+                    : round($rate * max($duration, 1), 2);
+            }
+            $map[(string) $chairId] = [
+                'id' => (int) $chair->id,
+                'name' => $chair->name,
+                'type' => $chair->type,
+                'rate' => $rate,
+                'label' => $label,
+                'total' => $total,
+            ];
         }
 
-        if ($type === 'monthly' && $chair->price_monthly) {
-            return [(float) $chair->price_monthly, 'month'];
-        }
-
-        if ($type === 'yearly' && $chair->price_yearly) {
-            return [(float) $chair->price_yearly, 'year'];
-        }
-
-        if ($chair->price_hourly) {
-            return [(float) $chair->price_hourly, 'hour'];
-        }
-
-        return [null, 'hour'];
+        return $map;
     }
 }

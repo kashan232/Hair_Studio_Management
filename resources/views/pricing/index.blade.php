@@ -168,6 +168,12 @@
     .action-btn:hover .currency-symbol {
         color: var(--salon-dark) !important;
     }
+
+    /* SweetAlert must sit above Bootstrap modal + backdrop */
+    .swal2-container,
+    .swal-above-modal {
+        z-index: 20000 !important;
+    }
 </style>
 @endsection
 

@@ -820,37 +820,42 @@
             $durationHours = (int) session('stylist_booking.duration', 0);
             $bookingType = session('stylist_booking.type', 'hourly');
             $step2Total = $rawTotal ?? 0;
+            $availableIds = $avail['available_chair_ids'] ?? [];
+            $selectedChairId = session('stylist_booking.assigned_chair_ids.0')
+                ?? ($avail['chair_id'] ?? null);
         @endphp
 
-        @if($pricingRate !== null)
-            <div style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:var(--app-accent-dark); background:var(--app-accent-soft); padding:1rem 1.25rem; border-radius:8px;">
+        <div id="pricing-banner"
+             style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:var(--app-accent-dark); background:var(--app-accent-soft); padding:1rem 1.25rem; border-radius:8px; {{ $pricingRate === null ? 'display:none;' : '' }}">
+            <div id="pricing-chair-name" style="font-size:0.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.35rem; opacity:0.85;">
                 @if($pricingChair)
-                    <div style="font-size:0.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.35rem; opacity:0.85;">
-                        {{ $pricingChair->name }}{{ $pricingChair->type ? ' · '.$pricingChair->type : '' }}
-                    </div>
+                    {{ $pricingChair->name }}{{ $pricingChair->type ? ' · '.$pricingChair->type : '' }}
                 @endif
-                <div style="font-size:1rem; font-weight:600;">
-                    Rate: £{{ number_format($pricingRate, 2) }} / {{ $pricingRateLabel }}
-                </div>
-                <div style="font-size:1.4rem; font-weight:800; margin-top:0.25rem;">
-                    Total: £{{ number_format($step2Total, 2) }}
-                    @if($bookingType === 'hourly' && $durationHours > 0)
-                        <span style="font-size:0.75rem; font-weight:600; opacity:0.8;">({{ $durationHours }} hr{{ $durationHours > 1 ? 's' : '' }})</span>
-                    @endif
-                </div>
             </div>
-        @elseif(($avail['status'] ?? '') === 'single_chair' || ($avail['status'] ?? '') === 'multi_chair')
-            <div style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:#8a7d72; background:#fff; border:1px dashed #efe4dc; padding:1rem; border-radius:8px; font-size:0.85rem;">
-                No pricing set for this chair in admin. Please configure rates on the Pricing page.
+            <div style="font-size:1rem; font-weight:600;">
+                Rate: £<span id="pricing-rate">{{ $pricingRate !== null ? number_format($pricingRate, 2) : '0.00' }}</span> / <span id="pricing-rate-label">{{ $pricingRateLabel ?? ($bookingType === 'daily' ? 'day' : 'hour') }}</span>
             </div>
-        @endif
+            <div style="font-size:1.4rem; font-weight:800; margin-top:0.25rem;">
+                Total: £<span id="pricing-total">{{ number_format($step2Total, 2) }}</span>
+                @if($bookingType === 'hourly' && $durationHours > 0)
+                    <span style="font-size:0.75rem; font-weight:600; opacity:0.8;">({{ $durationHours }} hr{{ $durationHours > 1 ? 's' : '' }})</span>
+                @elseif($bookingType === 'daily')
+                    <span style="font-size:0.75rem; font-weight:600; opacity:0.8;">(full day)</span>
+                @endif
+            </div>
+        </div>
+
+        <div id="pricing-missing"
+             style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:#8a7d72; background:#fff; border:1px dashed #efe4dc; padding:1rem; border-radius:8px; font-size:0.85rem; {{ ($pricingRate !== null || !in_array(($avail['status'] ?? ''), ['single_chair','multi_chair'], true)) ? 'display:none;' : '' }}">
+            No pricing set for this chair in admin. Please configure rates on the Pricing page, or tap another available chair.
+        </div>
 
         @if($avail['status'] === 'single_chair' || $avail['status'] === 'multi_chair')
             <div class="av-card" style="max-width:800px; margin:0 auto; position: relative;">
 
                 <div style="background:#f4f6f8; border-radius:12px; border:1px solid var(--app-line); padding: 0; position: relative; overflow: hidden;">
                     @php
-                        $assignedChair = $avail['status'] === 'single_chair' ? $avail['chair_id'] : null;
+                        $assignedChair = $selectedChairId ?? ($avail['status'] === 'single_chair' ? $avail['chair_id'] : null);
                     @endphp
 
                     @include('stylist.designer-svg')
@@ -858,6 +863,7 @@
                 </div>
 
                 @if($avail['status'] === 'single_chair')
+                    <p style="text-align:center; font-size:0.8rem; color:var(--app-muted); margin:1rem 0 0;">Tap an available chair on the map to update rate &amp; total.</p>
                     <form method="POST" action="{{ route('stylist.book.availability.confirm') }}" id="single-chair-form" style="margin-top: 1.5rem;">
                         @csrf
                         <input type="hidden" name="action" value="accept_single_chair">
@@ -904,14 +910,34 @@
     @if($step === 3)
         <div class="summary-card mb-3">
             <h4>Booking recap</h4>
+            <div class="summary-line"><span>Type</span><span>{{ ucfirst(session('stylist_booking.type', 'hourly')) }}</span></div>
             <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>
-            <div class="summary-line"><span>Duration</span><span>{{ session('stylist_booking.duration') }} hours</span></div>
+            <div class="summary-line">
+                <span>Duration</span>
+                <span>
+                    @if(session('stylist_booking.type') === 'daily')
+                        Full day (8:00 AM – 9:00 PM)
+                    @else
+                        {{ session('stylist_booking.duration') }} hours
+                    @endif
+                </span>
+            </div>
             @php
                 $assignedIds = session('stylist_booking.assigned_chair_ids', []);
             @endphp
             @if(!empty($assignedIds))
                 <div class="summary-line"><span>Chairs</span><span>{{ implode(', ', array_map(function($id) { return \App\Models\Chair::find($id)->name ?? "Chair $id"; }, $assignedIds)) }}</span></div>
             @endif
+            @if($pricingRate !== null)
+                <div class="summary-line">
+                    <span>Rate</span>
+                    <span>£{{ number_format($pricingRate, 2) }} / {{ $pricingRateLabel }}</span>
+                </div>
+            @endif
+            <div class="summary-line" style="border-bottom:none;">
+                <span><strong>Total</strong></span>
+                <span><strong>£{{ number_format($rawTotal ?? 0, 2) }}</strong></span>
+            </div>
             @if($isOvernight)
                 <div class="summary-line" style="border:none;margin-top:0.5rem;color:#d84315;">
                     <span style="font-size:0.8rem;line-height:1.4;">🌙 Your booking falls between 9 PM and 8 AM. This requires admin approval.</span>
@@ -1050,6 +1076,18 @@
         @endif
 
         <div class="total-highlight" style="display: flex; flex-direction: column; align-items: stretch; padding: 1.25rem;">
+            @if($pricingChair)
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Chair</span>
+                <span style="font-size: 1rem; font-weight: 700; color: #fff;">{{ $pricingChair->name }}</span>
+            </div>
+            @endif
+            @if($pricingRate !== null)
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Rate</span>
+                <span style="font-size: 1rem; font-weight: 700; color: #fff;">£{{ number_format($pricingRate, 2) }} / {{ $pricingRateLabel }}</span>
+            </div>
+            @endif
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <span style="font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Booking Value</span>
                 <span style="font-size: 1.1rem; font-weight: 700; color: #fff;">£{{ number_format($rawTotal, 2) }}</span>
@@ -1171,6 +1209,78 @@
 @endsection
 
 @section('scripts')
+@if($step === 2)
+<script>
+(function () {
+    const pricingMap = @json($chairPricingMap ?? []);
+    const availableIds = (@json($availableIds ?? [])).map(String);
+    const selectedInput = document.getElementById('selected_chair_id');
+    const banner = document.getElementById('pricing-banner');
+    const missing = document.getElementById('pricing-missing');
+    const nameEl = document.getElementById('pricing-chair-name');
+    const rateEl = document.getElementById('pricing-rate');
+    const labelEl = document.getElementById('pricing-rate-label');
+    const totalEl = document.getElementById('pricing-total');
+    const continueBtn = document.getElementById('continue-btn');
+
+    function money(n) {
+        return (Number(n) || 0).toFixed(2);
+    }
+
+    function updatePricing(chairId) {
+        const info = pricingMap[String(chairId)];
+        if (selectedInput) selectedInput.value = chairId;
+
+        availableIds.forEach(function (id) {
+            const el = document.getElementById('chair-' + id);
+            if (!el) return;
+            if (String(id) === String(chairId)) {
+                el.setAttribute('filter', 'url(#chair-green)');
+            } else {
+                el.removeAttribute('filter');
+            }
+        });
+
+        if (!info || info.rate === null || info.rate === undefined) {
+            if (banner) banner.style.display = 'none';
+            if (missing) missing.style.display = 'block';
+            if (continueBtn) {
+                continueBtn.disabled = true;
+                continueBtn.style.opacity = '0.55';
+            }
+            return;
+        }
+
+        if (banner) banner.style.display = 'block';
+        if (missing) missing.style.display = 'none';
+        if (nameEl) {
+            nameEl.textContent = info.name + (info.type ? ' · ' + info.type : '');
+        }
+        if (rateEl) rateEl.textContent = money(info.rate);
+        if (labelEl) labelEl.textContent = info.label || 'hour';
+        if (totalEl) totalEl.textContent = money(info.total);
+        if (continueBtn) {
+            continueBtn.disabled = false;
+            continueBtn.style.opacity = '1';
+        }
+    }
+
+    availableIds.forEach(function (id) {
+        const el = document.getElementById('chair-' + id);
+        if (!el) return;
+        el.style.cursor = 'pointer';
+        el.style.pointerEvents = 'auto';
+        el.addEventListener('click', function () {
+            updatePricing(id);
+        });
+    });
+
+    if (selectedInput && selectedInput.value) {
+        updatePricing(selectedInput.value);
+    }
+})();
+</script>
+@endif
 @if($step === 1)
 <script>
 (function () {

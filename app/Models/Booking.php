@@ -16,6 +16,10 @@ class Booking extends Model
         'duration_hours',
         'package_hours_used',
         'total_amount',
+        'stripe_payment_intent',
+        'refund_status',
+        'refunded_amount',
+        'refunded_at',
         'status',
         'setup_type',
         'consent_photography',
@@ -28,6 +32,7 @@ class Booking extends Model
         'start_datetime' => 'datetime',
         'end_datetime' => 'datetime',
         'expires_at' => 'datetime',
+        'refunded_at' => 'datetime',
     ];
 
     public function user()

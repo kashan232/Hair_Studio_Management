@@ -1,14 +1,51 @@
+function closeOpenBootstrapModals() {
+    try {
+        document.querySelectorAll('.modal.show').forEach(function (modalEl) {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                var instance = bootstrap.Modal.getInstance(modalEl);
+                if (!instance) {
+                    instance = bootstrap.Modal.getOrCreateInstance
+                        ? bootstrap.Modal.getOrCreateInstance(modalEl)
+                        : new bootstrap.Modal(modalEl);
+                }
+                instance.hide();
+            } else if (window.jQuery) {
+                window.jQuery(modalEl).modal('hide');
+            }
+        });
+    } catch (e) {}
+
+    // Clear leftover backdrops so SweetAlert is not trapped behind them
+    setTimeout(function () {
+        document.querySelectorAll('.modal-backdrop').forEach(function (el) {
+            el.parentNode && el.parentNode.removeChild(el);
+        });
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right');
+        document.body.style.removeProperty('overflow');
+    }, 50);
+}
+
 function toast(msg, title, type, timer){
+    closeOpenBootstrapModals();
+
     var opts = {
         title: title,
         html: msg,
         type: type,
-        confirmButtonClass: "btn btn-confirm mt-2"
+        confirmButtonClass: "btn btn-confirm mt-2",
+        // Keep alert above Bootstrap modal / backdrop
+        customClass: {
+            container: 'swal-above-modal'
+        }
     };
     if(timer !== undefined){
         opts.timer = timer;
     }
-    swal.fire(opts);
+    // Small delay so modal hide finishes before Swal paints
+    setTimeout(function () {
+        swal.fire(opts);
+    }, 150);
 }
 
 
@@ -29,6 +66,7 @@ function my_ajax(url,param,method,callback) {
            
             
             $("#loading-wrapper").fadeOut();
+            $('.ajaxForm button[type="submit"]').prop('disabled', false);
         },
         error: function (jqXHR, textStatus, errorThrown) {
            
@@ -42,7 +80,7 @@ function my_ajax(url,param,method,callback) {
                 toast(data['success'], "Success!", 'success', timer);
                 setTimeout(function () {
                     window.location.reload(true);
-                }, 600);
+                }, 900);
                 return false;
             }
 
@@ -50,7 +88,7 @@ function my_ajax(url,param,method,callback) {
                 toast(data['success'], "Success!", 'success', timer);
                 setTimeout(function () {
                     window.location = data['redirect'];
-                }, 600);
+                }, 900);
                 return false;
             }
             if (data['error'] !== undefined) {

@@ -1,9 +1,24 @@
 @extends('layouts.main')
 
+@section('css')
+<style>
+    .bookings-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    .bookings-toolbar .card-title {
+        margin: 0;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="main-content app-content mt-0">
     <div class="side-app">
-        <!-- PAGE-HEADER -->
         <div class="page-header">
             <h1 class="page-title">Manage Bookings</h1>
             <div>
@@ -13,19 +28,25 @@
                 </ol>
             </div>
         </div>
-        <!-- PAGE-HEADER END -->
 
         <div class="row">
             <div class="col-12">
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
                 <div class="card">
                     <div class="card-header border-bottom-0">
-                        <h3 class="card-title">All Bookings</h3>
+                        <div class="bookings-toolbar w-100">
+                            <h3 class="card-title">All Bookings</h3>
+                            <span class="text-muted small">{{ $bookings->count() }} record(s)</span>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive" id="dt-wrapper" style="opacity: 0; transition: opacity 0.3s ease-in;">
+                        <div class="table-responsive" id="dt-wrapper">
                             <table class="table table-bordered border-bottom" id="basic-datatable">
                                 <thead>
                                     <tr>
@@ -46,11 +67,14 @@
                                             <td>
                                                 @if($b->user)
                                                     {{ $b->user->name }}
+                                                    <br>
+                                                    <small class="text-muted">{{ $b->user->email }}</small>
                                                 @else
-                                                    {{ $b->guest_name }} <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">Guest</span>
+                                                    {{ $b->guest_name ?? 'Guest' }}
+                                                    <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">Guest</span>
+                                                    <br>
+                                                    <small class="text-muted">{{ $b->guest_email }}</small>
                                                 @endif
-                                                <br>
-                                                <small class="text-muted">{{ $b->user ? $b->user->email : $b->guest_email }}</small>
                                                 <br>
                                                 @if($b->consent_photography)
                                                     <span class="badge bg-success mt-1" style="font-size: 0.65rem;"><i class="fe fe-camera"></i> Consented to Photography</span>
@@ -60,21 +84,23 @@
                                             </td>
                                             <td>
                                                 <small>
-                                                    <strong>Start:</strong> {{ \Carbon\Carbon::parse($b->start_datetime)->format('d M Y, h:i A') }}<br>
-                                                    <strong>End:</strong> {{ \Carbon\Carbon::parse($b->end_datetime)->format('d M Y, h:i A') }}
+                                                    <strong>Start:</strong> {{ optional($b->start_datetime)->format('d M Y, h:i A') ?? '—' }}<br>
+                                                    <strong>End:</strong> {{ optional($b->end_datetime)->format('d M Y, h:i A') ?? '—' }}
                                                 </small>
                                             </td>
                                             <td>{{ $b->duration_hours }} hrs</td>
                                             <td>
-                                                £{{ number_format($b->total_amount, 2) }}
+                                                £{{ number_format((float) $b->total_amount, 2) }}
                                                 @if($b->coupon_code)
-                                                    <br><small class="text-success"><i class="fe fe-tag"></i> {{ $b->coupon_code }} (-£{{ number_format($b->discount_amount, 2) }})</small>
+                                                    <br><small class="text-success"><i class="fe fe-tag"></i> {{ $b->coupon_code }} (-£{{ number_format((float) $b->discount_amount, 2) }})</small>
                                                 @endif
                                             </td>
                                             <td>
-                                                @foreach($b->chairs as $c)
+                                                @forelse($b->chairs as $c)
                                                     <span class="badge bg-light text-dark border">{{ $c->name }}</span>
-                                                @endforeach
+                                                @empty
+                                                    <span class="text-muted">—</span>
+                                                @endforelse
                                                 @if($b->setup_type && $b->setup_type !== 'any')
                                                     <br><small class="text-muted"><strong>Setup:</strong> {{ $b->setup_type === 'makeup' ? 'Make-up Chair' : 'Hair Stylist Chair' }}</small>
                                                 @endif
@@ -93,6 +119,8 @@
                                                     <span class="badge bg-danger">Cancelled</span>
                                                 @elseif($b->status === 'cancelled_late_response')
                                                     <span class="badge bg-danger">Cancelled (Late Response)</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $b->status }}</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -128,50 +156,59 @@
         </div>
     </div>
 </div>
+@endsection
 
 @section('JScript')
 <script>
     $(document).ready(function() {
-        $('#basic-datatable').DataTable({
-            "order": [[ 0, "desc" ]],
-            "pageLength": 10,
-            "language": {
-                "search": "",
-                "searchPlaceholder": "Search bookings...",
-                "paginate": {
-                    "next": '<i class="fe fe-chevron-right"></i>',
-                    "previous": '<i class="fe fe-chevron-left"></i>'
-                }
-            },
-            "initComplete": function(settings, json) {
-                document.getElementById('dt-wrapper').style.opacity = '1';
+        try {
+            if ($.fn.DataTable.isDataTable('#basic-datatable')) {
+                $('#basic-datatable').DataTable().destroy();
             }
-        });
+
+            $('#basic-datatable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                deferRender: true,
+                autoWidth: false,
+                language: {
+                    emptyTable: 'No bookings found.',
+                    search: '',
+                    searchPlaceholder: 'Search bookings...',
+                    lengthMenu: 'Show _MENU_ bookings',
+                    paginate: {
+                        next: '<i class="fe fe-chevron-right"></i>',
+                        previous: '<i class="fe fe-chevron-left"></i>'
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Bookings DataTable init failed:', e);
+        }
     });
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('DOMContentLoaded', function() {
         const timers = document.querySelectorAll('.admin-timer');
-        if (timers.length > 0) {
-            setInterval(() => {
-                const now = new Date().getTime();
-                timers.forEach(timer => {
-                    const expiresAt = new Date(timer.getAttribute('data-expires')).getTime();
-                    const distance = expiresAt - now;
-                    
-                    if (distance <= 0) {
-                        timer.innerHTML = "Expired";
-                        timer.classList.replace('text-danger', 'text-muted');
-                    } else {
-                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                        timer.innerHTML = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-                        if (minutes < 5) {
-                            timer.style.fontWeight = 'bold';
-                        }
-                    }
-                });
-            }, 1000);
-        }
+        if (!timers.length) return;
+
+        setInterval(function() {
+            const now = new Date().getTime();
+            timers.forEach(function(timer) {
+                const expiresAt = new Date(timer.getAttribute('data-expires')).getTime();
+                const distance = expiresAt - now;
+
+                if (distance <= 0) {
+                    timer.innerHTML = 'Expired';
+                    timer.classList.remove('text-danger');
+                    timer.classList.add('text-muted');
+                } else {
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    timer.innerHTML = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                    if (minutes < 5) timer.style.fontWeight = 'bold';
+                }
+            });
+        }, 1000);
     });
 </script>
 @endsection

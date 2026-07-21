@@ -31,6 +31,7 @@ Route::prefix('stylist')->name('stylist.')->group(function () {
 
         Route::get('/my-bookings', [HairstylistPortalController::class, 'myBookings'])->name('my_bookings');
         Route::post('/my-bookings/{id}/cancel', [HairstylistPortalController::class, 'cancelBooking'])->name('cancel_booking');
+        Route::get('/my-bookings/{id}/amend', [HairstylistPortalController::class, 'amendBooking'])->name('amend_booking');
     });
 });
 

@@ -16,8 +16,16 @@ class BookingController extends Controller
             ->whereDate('start_datetime', '<', today())
             ->update(['status' => 'cancelled_late_response']);
 
-        // Get all bookings with latest first
-        $bookings = Booking::with('user', 'chairs')->orderBy('created_at', 'desc')->get();
+        // Eager-load relations; limit payload for admin table performance
+        $bookings = Booking::query()
+            ->with([
+                'user:id,name,email',
+                'chairs:id,name',
+            ])
+            ->orderByDesc('id')
+            ->limit(500)
+            ->get();
+
         return view('admin.bookings.index', compact('bookings'));
     }
 
@@ -116,6 +124,9 @@ class BookingController extends Controller
                 'booking_id' => $booking->id,
             ],
         ]);
+
+        $booking->stripe_payment_intent = $intent->id;
+        $booking->save();
 
         return response()->json(['clientSecret' => $intent->client_secret]);
     }

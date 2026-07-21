@@ -33,6 +33,11 @@
     <link href="{{ asset('assets/switcher/demo.css') }}" rel="stylesheet">
 
     <link rel="stylesheet" href="{{asset('assets/plugins/sweetalert2/sweetalert2.min.css')}}">
+    <style>
+        /* Success/error alerts must appear above Bootstrap modals */
+        .swal2-container,
+        .swal-above-modal { z-index: 20000 !important; }
+    </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('css')
 </head>
