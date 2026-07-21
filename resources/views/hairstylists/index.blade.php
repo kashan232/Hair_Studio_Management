@@ -353,6 +353,7 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: `You are about to delete ${name}'s hairstylist profile and credentials.`,
+                type: 'warning',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#121212',
@@ -364,12 +365,15 @@
                     cancelButton: 'btn-light'
                 }
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.value || result.isConfirmed) {
                     $.ajax({
                         url: `{{ url('/hairstylists/delete') }}/${id}`,
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         dataType: 'json',
                         success: function(response) {
@@ -377,6 +381,7 @@
                                 Swal.fire({
                                     title: 'Deleted!',
                                     text: response.success,
+                                    type: 'success',
                                     icon: 'success',
                                     confirmButtonColor: '#121212'
                                 });
@@ -387,8 +392,11 @@
                                 Swal.fire('Error!', response.error, 'error');
                             }
                         },
-                        error: function() {
-                            Swal.fire('Error!', 'Something went wrong while processing deletion.', 'error');
+                        error: function(xhr) {
+                            const msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                                ? (xhr.responseJSON.error || xhr.responseJSON.message)
+                                : 'Something went wrong while processing deletion.';
+                            Swal.fire('Error!', msg, 'error');
                         }
                     });
                 }

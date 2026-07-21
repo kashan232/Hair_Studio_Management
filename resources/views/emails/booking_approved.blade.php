@@ -16,5 +16,5 @@ Pay £{{ number_format($booking->total_amount, 2) }} Now
 </x-mail::button>
 
 Thanks,<br>
-{{ config('app.name') }}
+Eladé Studio
 </x-mail::message>

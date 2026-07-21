@@ -58,12 +58,21 @@ class ChairController extends Controller
 
     public function destroy($id)
     {
-        $chair = Chair::findOrFail($id);
-        $chair->delete();
+        try {
+            $chair = Chair::findOrFail($id);
 
-        return response()->json([
-            'success' => 'Chair removed successfully from the studio.',
-            'redirect' => route('chairs.index')
-        ]);
+            // Clear pivot links first (safe even if FK cascade exists)
+            $chair->bookings()->detach();
+            $chair->delete();
+
+            return response()->json([
+                'success' => 'Chair removed successfully from the studio.',
+                'redirect' => route('chairs.index'),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Unable to delete chair. It may be linked to existing records.',
+            ], 422);
+        }
     }
 }

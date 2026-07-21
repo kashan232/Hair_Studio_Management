@@ -213,6 +213,7 @@ class HairstylistPortalController extends Controller
     public function confirmDetails(Request $request): RedirectResponse
     {
         $isGuest = $request->boolean('is_guest');
+        $isAdminBooking = $request->boolean('admin_booking_for_customer');
 
         $rules = [
             'name'   => ['required', 'string', 'max:255'],
@@ -225,7 +226,7 @@ class HairstylistPortalController extends Controller
             'mobile.digits_between' => 'invalid number, please re enter',
         ];
 
-        if (!$isGuest) {
+        if (!$isGuest && !$isAdminBooking) {
             $rules['password'] = ['required', 'string', 'min:6', 'confirmed'];
             if ($request->user()) {
                 $rules['email'][]  = 'unique:users,email,' . $request->user()->id;
@@ -244,7 +245,9 @@ class HairstylistPortalController extends Controller
                 'mobile'   => $validated['mobile'] ?? null,
                 'password' => $validated['password'] ?? null,
                 'is_guest' => $isGuest,
+                'is_admin_booking' => $isAdminBooking,
             ],
+            'stylist_booking.consent_photography' => $request->boolean('consent_photography'),
         ]);
 
         $isOvernight = $this->isOvernightBooking();
@@ -436,6 +439,7 @@ class HairstylistPortalController extends Controller
             'discount_amount' => session('stylist_booking.discount', 0),
             'status' => $status,
             'setup_type' => session('stylist_booking.setup_type', 'hair'),
+            'consent_photography' => session('stylist_booking.consent_photography', false),
             'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
 
@@ -532,6 +536,27 @@ class HairstylistPortalController extends Controller
         }
 
         if ($request->user()) {
+            if (in_array($request->user()->role, ['admin', 'staff']) && !empty($guestDetails['is_admin_booking'])) {
+                $existing = User::where('email', $guestDetails['email'])->first();
+                if ($existing) {
+                    return $existing;
+                }
+
+                $hairstylistRole = Role::where('slug', 'hairstylist')->firstOrFail();
+                return User::create([
+                    'name'        => $guestDetails['name'],
+                    'email'       => $guestDetails['email'],
+                    'mobile'      => $guestDetails['mobile'] ?? null,
+                    'password'    => Hash::make('password123'),
+                    'role_id'     => $hairstylistRole->id,
+                    'role'        => 'hairstylist',
+                    'designation' => 'Hairstylist',
+                    'joining_date'=> date('Y-m-d'),
+                    'status'      => 1,
+                    'avatar'      => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+                ]);
+            }
+
             $update = [
                 'name'   => $guestDetails['name']   ?? $request->user()->name,
                 'mobile' => $guestDetails['mobile'] ?? $request->user()->mobile,

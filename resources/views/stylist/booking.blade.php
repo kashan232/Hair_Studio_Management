@@ -978,6 +978,14 @@
                     });
                 </script>
             @else
+                @if($user && in_array($user->role, ['admin', 'staff']))
+                    <div class="form-field" style="margin-top: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; background: #e3f2fd; padding: 1rem; border-radius: 8px; border: 1px solid #bbdefb;">
+                        <input type="checkbox" name="admin_booking_for_customer" id="admin_booking_for_customer" value="1" style="width: 20px; height: 20px; accent-color: #1976d2;" {{ old('admin_booking_for_customer', !empty($guestDetails['is_admin_booking'])) ? 'checked' : '' }}>
+                        <label for="admin_booking_for_customer" style="margin: 0; text-transform: none; font-size: 0.85rem; font-weight: 600; color: #0d47a1; cursor: pointer;">
+                            Book on behalf of Customer (Enter customer details above to link/create their account)
+                        </label>
+                    </div>
+                @endif
                 <div style="margin-top: 1rem; padding: 0.85rem; background: #fdfdfd; border: 1px solid var(--app-line); border-radius: 8px; font-size: 0.8rem; color: var(--app-muted);">
                     <strong>Note:</strong> You are booking this session using your logged-in account (<strong>{{ $user->email }}</strong>). 
                     <br>

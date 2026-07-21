@@ -18,6 +18,10 @@ class Booking extends Model
         'total_amount',
         'status',
         'setup_type',
+        'consent_photography',
+        'coupon_code',
+        'discount_amount',
+        'expires_at',
     ];
 
     protected $casts = [

@@ -495,12 +495,38 @@
         </div>
     </div>
 
-    <header class="top-nav">
-        <i class="zmdi zmdi-menu menu-icon"></i>
-        <div class="logo">
-            <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio">
+    <div class="top-profile-bar" style="background: var(--app-surface, #ffffff); border-bottom: 1px solid var(--app-line, #efe4dc); padding: 0.85rem 1.25rem;">
+        <div class="top-profile-inner" style="max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div class="profile-info" style="display: flex; align-items: center; gap: 0.85rem; min-width: 0; flex: 1;">
+                <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 45px; width: auto; object-fit: contain;">
+            </div>
+            @if(Auth::check())
+                @php
+                    $pendingCount = \App\Models\Booking::where('user_id', Auth::user()->id)
+                                    ->where('status', 'pending_approval')
+                                    ->count();
+                @endphp
+                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap: wrap; justify-content: center;">
+                    <a href="{{ route('stylist.packages.index') }}" class="btn-logout" style="text-decoration:none; border-color: #461111; color: #461111; flex-shrink: 0; height: 40px; padding: 0 1rem; border: 1px solid #461111; background: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+                        My Packages
+                    </a>
+                    <a href="{{ route('stylist.my_bookings') }}" class="btn-logout" style="text-decoration:none; position: relative; flex-shrink: 0; height: 40px; padding: 0 1rem; border: 1px solid var(--app-line, #efe4dc); background: #fff; color: var(--app-text, #2a2420); font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+                        My Bookings
+                        @if($pendingCount > 0)
+                            <span style="position: absolute; top: -6px; right: -6px; background: #e74c3c; color: #fff; font-size: 0.6rem; font-weight: bold; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="btn-logout" style="flex-shrink: 0; height: 40px; padding: 0 1rem; border: 1px solid var(--app-line, #efe4dc); background: #fff; color: var(--app-text, #2a2420); font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            @endif
         </div>
-    </header>
+    </div>
 
     <main class="main-container">
         

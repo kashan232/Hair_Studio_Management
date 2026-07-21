@@ -96,19 +96,25 @@ class RoleController extends Controller
 
     public function destroy($id)
     {
-        $role = Role::findOrFail($id);
+        try {
+            $role = Role::findOrFail($id);
 
-        if ($role->slug === 'super-admin') {
+            if ($role->slug === 'super-admin') {
+                return response()->json([
+                    'error' => 'You cannot delete the core Super Admin system role.'
+                ]);
+            }
+
+            $role->delete();
+
             return response()->json([
-                'error' => 'You cannot delete the core Super Admin system role.'
+                'success' => 'Role deleted successfully.',
+                'redirect' => route('roles.index')
             ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Unable to delete this role. It may still be assigned to users.'
+            ], 422);
         }
-
-        $role->delete();
-
-        return response()->json([
-            'success' => 'Role deleted successfully.',
-            'redirect' => route('roles.index')
-        ]);
     }
 }

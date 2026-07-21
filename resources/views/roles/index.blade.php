@@ -259,6 +259,7 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: `You are about to delete the role "${name}". Users assigned to this role will lose their custom permissions.`,
+                type: 'warning',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#121212',
@@ -266,12 +267,15 @@
                 confirmButtonText: 'Yes, Delete Role',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.value || result.isConfirmed) {
                     $.ajax({
                         url: `{{ url('/roles/delete') }}/${id}`,
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         dataType: 'json',
                         success: function(response) {
@@ -279,6 +283,7 @@
                                 Swal.fire({
                                     title: 'Deleted!',
                                     text: response.success,
+                                    type: 'success',
                                     icon: 'success',
                                     confirmButtonColor: '#121212'
                                 });
@@ -289,8 +294,11 @@
                                 Swal.fire('Forbidden!', response.error, 'error');
                             }
                         },
-                        error: function() {
-                            Swal.fire('Error!', 'An error occurred while deleting role.', 'error');
+                        error: function(xhr) {
+                            const msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                                ? (xhr.responseJSON.error || xhr.responseJSON.message)
+                                : 'An error occurred while deleting role.';
+                            Swal.fire('Error!', msg, 'error');
                         }
                     });
                 }

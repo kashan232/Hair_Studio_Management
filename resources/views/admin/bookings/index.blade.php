@@ -25,7 +25,7 @@
                         <h3 class="card-title">All Bookings</h3>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div class="table-responsive" id="dt-wrapper" style="opacity: 0; transition: opacity 0.3s ease-in;">
                             <table class="table table-bordered border-bottom" id="basic-datatable">
                                 <thead>
                                     <tr>
@@ -51,6 +51,12 @@
                                                 @endif
                                                 <br>
                                                 <small class="text-muted">{{ $b->user ? $b->user->email : $b->guest_email }}</small>
+                                                <br>
+                                                @if($b->consent_photography)
+                                                    <span class="badge bg-success mt-1" style="font-size: 0.65rem;"><i class="fe fe-camera"></i> Consented to Photography</span>
+                                                @else
+                                                    <span class="badge bg-light text-muted mt-1 border" style="font-size: 0.65rem;"><i class="fe fe-camera-off"></i> No Photo Consent</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 <small>
@@ -136,6 +142,9 @@
                     "next": '<i class="fe fe-chevron-right"></i>',
                     "previous": '<i class="fe fe-chevron-left"></i>'
                 }
+            },
+            "initComplete": function(settings, json) {
+                document.getElementById('dt-wrapper').style.opacity = '1';
             }
         });
     });

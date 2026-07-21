@@ -212,7 +212,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($chairs as $chair)
+                            @foreach ($chairs as $chair)
                                 <tr>
                                     <td>
                                         <div class="fw-bold text-dark" style="font-size: 0.95rem; letter-spacing: 0.5px;">
@@ -244,14 +244,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">
-                                        <i class="fe fe-grid display-6 d-block mb-3" style="color: #dcd3be;"></i>
-                                        No styling chairs registered in the inventory.
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -358,10 +351,11 @@
 <script>
     $(document).ready(function() {
         // Initialize dynamic DataTable
-        $('#chairs-table').DataTable({
+        const chairsTable = $('#chairs-table').DataTable({
             "order": [],
             "pageLength": 10,
             "language": {
+                "emptyTable": "No styling chairs registered in the inventory.",
                 "search": "",
                 "searchPlaceholder": "Instant Search...",
                 "lengthMenu": "Show _MENU_ chairs",
@@ -393,7 +387,8 @@
 
             Swal.fire({
                 title: 'Are you sure?',
-                text: `You are about to remove chair "${name}". Existing active styling bookings may be affected.`,
+                text: `You are about to remove chair "${name}". Existing styling bookings linked to this chair will be unlinked.`,
+                type: 'warning',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#121212',
@@ -401,12 +396,15 @@
                 confirmButtonText: 'Yes, Delete Chair',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.value || result.isConfirmed) {
                     $.ajax({
-                        url: `{{ url('/chairs/delete') }}/${id}`,
+                        url: `{{ route('chairs.destroy', ['id' => '__ID__']) }}`.replace('__ID__', id),
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         dataType: 'json',
                         success: function(response) {
@@ -414,18 +412,20 @@
                                 Swal.fire({
                                     title: 'Deleted!',
                                     text: response.success,
+                                    type: 'success',
                                     icon: 'success',
                                     confirmButtonColor: '#121212'
                                 });
-                                row.fadeOut(500, function() {
-                                    $(this).remove();
-                                });
+                                chairsTable.row(row).remove().draw(false);
                             } else if (response.error) {
-                                Swal.fire('Forbidden!', response.error, 'error');
+                                Swal.fire('Error!', response.error, 'error');
                             }
                         },
-                        error: function() {
-                            Swal.fire('Error!', 'An error occurred while deleting chair.', 'error');
+                        error: function(xhr) {
+                            const msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                                ? (xhr.responseJSON.error || xhr.responseJSON.message)
+                                : 'An error occurred while deleting chair.';
+                            Swal.fire('Error!', msg, 'error');
                         }
                     });
                 }

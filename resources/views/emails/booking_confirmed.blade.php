@@ -20,5 +20,5 @@ Create Account
 @endif
 
 Thanks,<br>
-{{ config('app.name') }}
+Eladé Studio
 </x-mail::message>

@@ -134,18 +134,34 @@ class HairstylistController extends Controller
 
     public function destroy($id)
     {
-        $stylist = User::where('role', 'hairstylist')->findOrFail($id);
-        
-        // Delete old avatar if exists locally
-        if ($stylist->avatar && file_exists(public_path($stylist->avatar)) && strpos($stylist->avatar, 'uploads/') === 0) {
-            @unlink(public_path($stylist->avatar));
+        try {
+            $stylist = User::where('role', 'hairstylist')->findOrFail($id);
+
+            if ($stylist->id === auth()->id()) {
+                return response()->json([
+                    'error' => 'You cannot delete your own logged-in account.'
+                ], 422);
+            }
+
+            // Delete old avatar if exists locally
+            if ($stylist->avatar && file_exists(public_path($stylist->avatar)) && strpos($stylist->avatar, 'uploads/') === 0) {
+                @unlink(public_path($stylist->avatar));
+            }
+
+            $stylist->delete();
+
+            return response()->json([
+                'success' => 'Stylist account deleted successfully.',
+                'redirect' => route('hairstylists.index')
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'error' => 'Cannot delete stylist because they have associated bookings. Remove related records first.'
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'An error occurred while deleting the stylist.'
+            ], 422);
         }
-
-        $stylist->delete();
-
-        return response()->json([
-            'success' => 'Stylist account deleted successfully.',
-            'redirect' => route('hairstylists.index')
-        ]);
     }
 }
