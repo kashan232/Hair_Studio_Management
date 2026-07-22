@@ -3,9 +3,10 @@
 @section('title', 'Select Booking Type')
 
 @section('css')
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
     :root {
-        --app-bg: #fffcf2;
+        --app-bg: #F3F2EC;
         --app-surface: #ffffff;
         --app-accent: #461111;
         --app-accent-hover: #5a1818;
@@ -16,7 +17,7 @@
 
     body {
         background-color: var(--app-bg);
-        font-family: 'Outfit', sans-serif;
+        font-family: 'Montserrat', sans-serif;
         color: var(--app-text);
         margin: 0;
     }
@@ -25,6 +26,64 @@
         padding: 4rem 1rem;
         max-width: 1000px;
         margin: 0 auto;
+        position: relative;
+    }
+
+    .booking-top-actions {
+        position: absolute;
+        top: 1.25rem;
+        right: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        z-index: 2;
+    }
+
+    .btn-logout {
+        flex-shrink: 0;
+        height: 40px;
+        padding: 0 1rem;
+        border: 1px solid var(--app-line);
+        background: #fff;
+        color: var(--app-text);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-logout:hover {
+        border-color: var(--app-accent);
+        color: var(--app-accent);
+    }
+
+    .btn-signin-link {
+        flex-shrink: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--app-accent);
+        text-decoration: none;
+        padding: 0.65rem 0.85rem;
+        border: 1px solid rgba(70, 17, 17, 0.15);
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .btn-signin-link:hover {
+        border-color: var(--app-accent);
     }
 
     /* HEADER */
@@ -37,14 +96,15 @@
         margin-bottom: 2.5rem;
     }
     .header-title {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Bebas Neue', sans-serif;
         font-size: 3.2rem;
-        font-weight: 300;
+        font-weight: 400;
+        letter-spacing: 0.04em;
         margin-bottom: 0.75rem;
     }
     .header-subtitle {
         font-size: 1.05rem;
-        font-weight: 300;
+        font-weight: 400;
         color: var(--app-muted);
     }
 
@@ -57,108 +117,104 @@
     }
 
     .booking-card {
-        background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
-        border: 1px solid rgba(70, 17, 17, 0.05);
+        background: #ffffff;
+        border: none;
         border-radius: 24px;
-        padding: 3.5rem 2rem;
+        padding: 3rem 2rem 2.5rem;
         text-align: center;
         text-decoration: none;
-        transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transition: transform 0.35s ease, box-shadow 0.35s ease;
         display: flex;
         flex-direction: column;
         align-items: center;
         color: var(--app-text);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
         position: relative;
         overflow: hidden;
     }
-    
-    /* Decorative top accent line */
-    .booking-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: var(--app-accent);
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
 
     .booking-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 25px 50px rgba(70, 17, 17, 0.08);
-        border-color: rgba(70, 17, 17, 0.15);
-        background: #ffffff;
-    }
-    .booking-card:hover::before {
-        opacity: 1;
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(70, 17, 17, 0.12);
     }
 
     .card-icon {
-        width: 75px;
-        height: 75px;
-        border-radius: 20px;
-        background: var(--app-accent); /* Permanently maroon */
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+        background: var(--app-accent);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 2rem;
-        box-shadow: 0 8px 20px rgba(70, 17, 17, 0.15);
-        transition: transform 0.3s ease;
+        flex-shrink: 0;
     }
-    
-    .booking-card:hover .card-icon {
-        transform: translateY(-3px); /* Simple hover effect */
-    }
+
     .card-icon svg { width: 34px; height: 34px; }
 
-    .card-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.9rem;
-        font-weight: 500;
-        margin-bottom: 1rem;
-        color: #1a1a1a;
-        transition: color 0.3s ease;
+    .card-title-styled {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(2.75rem, 5vw, 4.25rem);
+        font-weight: 400;
+        line-height: 0.92;
+        letter-spacing: 0.03em;
+        margin: 0 0 2.5rem;
+        text-transform: uppercase;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        min-height: 7.5rem;
     }
-    .booking-card:hover .card-title {
+
+    .card-title-line {
+        display: block;
+        color: #000;
+    }
+
+    .card-title-mixed {
+        text-transform: uppercase;
+    }
+
+    .card-title-by {
+        font-family: 'Instrument Serif', serif;
+        font-style: italic;
+        font-weight: 400;
+        text-transform: lowercase;
+        letter-spacing: 0;
+    }
+
+    .card-title-accent {
         color: var(--app-accent);
-    }
-    
-    .card-desc {
-        font-size: 1rem;
-        font-weight: 300;
-        color: var(--app-muted);
-        margin-bottom: 2.5rem;
-        line-height: 1.6;
-        padding: 0 0.5rem;
     }
 
     .card-btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.9rem 2rem;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.95rem 2.25rem;
         border-radius: 100px;
-        font-size: 0.8rem;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.78rem;
         font-weight: 700;
-        letter-spacing: 1.5px;
+        letter-spacing: 1.4px;
         text-transform: uppercase;
         margin-top: auto;
-        background: var(--app-accent); /* Permanently maroon */
+        background: var(--app-accent);
         color: #fff;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(70, 17, 17, 0.15);
+        transition: background 0.3s ease, transform 0.3s ease;
     }
+
     .booking-card:hover .card-btn {
-        background: #5a1818; /* Slightly lighter maroon on hover */
-        transform: translateY(-2px);
+        background: var(--app-accent-hover);
+        transform: translateY(-1px);
     }
 
     .save-tag {
-        background: var(--app-accent); /* Restored to brand color */
+        background: var(--app-accent);
         color: #fff;
         font-size: 0.7rem;
         font-weight: 800;
@@ -168,7 +224,7 @@
         border-bottom-right-radius: 8px;
         box-shadow: 0 4px 15px rgba(70, 17, 17, 0.2);
         z-index: 1;
-        margin-top: -3.5rem;
+        margin-top: -3rem;
         margin-bottom: 1.5rem;
     }
 
@@ -188,15 +244,16 @@
         margin-bottom: 5rem;
     }
     .about-title {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Bebas Neue', sans-serif;
         font-size: 2.5rem;
-        font-weight: 300;
+        font-weight: 400;
+        letter-spacing: 0.04em;
         margin-bottom: 1.5rem;
         color: var(--app-accent);
     }
     .about-text {
         font-size: 1.15rem;
-        font-weight: 300;
+        font-weight: 400;
         line-height: 1.8;
         color: var(--app-text);
         margin-bottom: 1.5rem;
@@ -223,9 +280,10 @@
         box-shadow: 0 15px 50px rgba(0,0,0,0.05);
     }
     .studio-box h3 {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Bebas Neue', sans-serif;
         font-size: 1.5rem;
         font-weight: 400;
+        letter-spacing: 0.04em;
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
@@ -234,7 +292,7 @@
     }
     .studio-box p {
         font-size: 1rem;
-        font-weight: 300;
+        font-weight: 400;
         line-height: 1.8;
         color: var(--app-text);
         margin-bottom: 0.75rem;
@@ -269,7 +327,7 @@
     .footer-copyright {
         font-size: 0.8rem;
         color: var(--app-muted);
-        font-weight: 300;
+        font-weight: 400;
         letter-spacing: 0.5px;
     }
 
@@ -279,51 +337,77 @@
             max-width: 450px; 
             margin-left: auto; 
             margin-right: auto; 
-            gap: 1rem; 
+            gap: 1.25rem; 
         }
         .booking-card {
-            padding: 1.5rem 1.25rem;
-            border-radius: 16px;
+            padding: 2rem 1.5rem 1.75rem;
+            border-radius: 20px;
         }
         .card-icon {
-            width: 55px;
-            height: 55px;
-            margin-bottom: 1rem;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1.5rem;
             border-radius: 14px;
         }
-        .card-icon svg { width: 26px; height: 26px; }
-        .card-title {
-            font-size: 1.4rem;
-            margin-bottom: 0.4rem;
-        }
-        .card-desc {
-            font-size: 0.85rem;
-            margin-bottom: 1.25rem;
+        .card-icon svg { width: 28px; height: 28px; }
+        .card-title-styled {
+            margin-bottom: 2rem;
         }
         .card-btn {
-            padding: 0.7rem 1.5rem;
-            font-size: 0.75rem;
+            padding: 0.85rem 2rem;
+            font-size: 0.72rem;
         }
         .save-tag {
             padding: 0.35rem 1.5rem;
             font-size: 0.6rem;
-            margin-top: -1.5rem;
+            margin-top: -2rem;
             margin-bottom: 1rem;
         }
         
         .info-section { padding-top: 3rem; margin-top: 3rem; }
         .contact-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-        .header-title { font-size: 2.2rem; }
+        .header-title { font-size: 2.4rem; }
         .header-logo { height: 40px; margin-bottom: 1.5rem; }
         .header-section { margin-bottom: 2rem; }
         .about-title { font-size: 2rem; }
         .about-text { font-size: 1rem; }
+        .booking-top-actions {
+            position: static;
+            justify-content: center;
+            margin-bottom: 1rem;
+            padding: 0 0.25rem;
+        }
     }
 </style>
 @endsection
 
 @section('content')
 <div class="booking-page">
+
+    <div class="booking-top-actions">
+        @auth
+            @php
+                $pendingCount = \App\Models\Booking::where('user_id', auth()->id())
+                    ->where('status', 'pending_approval')
+                    ->count();
+            @endphp
+            <a href="{{ route('stylist.my_bookings') }}" class="btn-logout" style="position: relative;">
+                My Bookings
+                @if($pendingCount > 0)
+                    <span style="position: absolute; top: -6px; right: -6px; background: #e74c3c; color: #fff; font-size: 0.6rem; font-weight: bold; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">{{ $pendingCount }}</span>
+                @endif
+            </a>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="btn-signin-link">Sign in</a>
+        @endauth
+    </div>
     
     <div class="header-section">
         <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio" class="header-logo">
@@ -339,8 +423,11 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h3 class="card-title">Book By The Hour</h3>
-            <p class="card-desc">Flexible Hourly Chair Rental Designed To Fit Seamlessly Around Your Schedule.</p>
+            <h3 class="card-title-styled">
+                <span class="card-title-line">BOOK</span>
+                <span class="card-title-line card-title-mixed"><span class="card-title-by">by</span> THE</span>
+                <span class="card-title-line card-title-accent">HOUR</span>
+            </h3>
             <div class="card-btn">
                 Select Time &rarr;
             </div>
@@ -353,8 +440,11 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
             </div>
-            <h3 class="card-title">Daily Booking</h3>
-            <p class="card-desc">Secure A Chair For The Full Day And Dedicate Your Complete Attention To Your Clients.</p>
+            <h3 class="card-title-styled">
+                <span class="card-title-line">BOOK</span>
+                <span class="card-title-line card-title-mixed"><span class="card-title-by">by</span> THE</span>
+                <span class="card-title-line card-title-accent">DAY</span>
+            </h3>
             <div class="card-btn">
                 Select Date &rarr;
             </div>
@@ -372,8 +462,10 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                 </svg>
             </div>
-            <h3 class="card-title">Monthly Bundles</h3>
-            <p class="card-desc">Pre-Purchase Hours In Bulk And Save Significantly On Your Booking.</p>
+            <h3 class="card-title-styled">
+                <span class="card-title-line">MONTHLY</span>
+                <span class="card-title-line card-title-accent">BUNDLES</span>
+            </h3>
             <div class="card-btn">
                 View Bundles &rarr;
             </div>
@@ -392,7 +484,7 @@
         @else
             Daily rates set per chair
         @endif
-        &nbsp;&bull;&nbsp; Studio Bundles available
+        &nbsp;&bull;&nbsp; Monthly Bundles available
     </div>
 
     <div class="info-section">

@@ -39,26 +39,14 @@ class UserPackageController extends Controller
 
         if ($couponCode) {
             $coupon = \App\Models\Coupon::where('code', strtoupper(trim($couponCode)))->first();
-            if ($coupon && $coupon->is_active && $coupon->expires_at->gte(\Carbon\Carbon::today())) {
-                $hasUsed = false;
-                if (auth()->check()) {
-                    $hasUsed = $coupon->users()->where('user_id', auth()->id())->exists();
+            if ($coupon && $coupon->isValidNow()) {
+                if ($coupon->hasBeenUsedBy(auth()->user(), auth()->user()?->email)) {
+                    return response()->json(['error' => 'This coupon has already been used with this email address.'], 400);
                 }
-                
-                if (!$hasUsed) {
-                    if ($coupon->discount_type === 'fixed') {
-                        $discount = (float) $coupon->discount_value;
-                    } else {
-                        $discount = $finalAmount * ((float) $coupon->discount_value / 100);
-                    }
-                    if ($discount > $finalAmount) $discount = $finalAmount;
-                    $finalAmount -= $discount;
-                    
-                    // store in session for the success method
-                    session(['package_checkout_coupon' => $coupon->code, 'package_checkout_discount' => $discount]);
-                } else {
-                    return response()->json(['error' => 'You have already used this coupon.'], 400);
-                }
+
+                $discount = $coupon->calculateDiscount($finalAmount);
+                $finalAmount -= $discount;
+                session(['package_checkout_coupon' => $coupon->code, 'package_checkout_discount' => $discount]);
             } else {
                 return response()->json(['error' => 'Invalid or expired coupon.'], 400);
             }
@@ -127,15 +115,7 @@ class UserPackageController extends Controller
         if (session()->has('package_checkout_coupon')) {
             $coupon = \App\Models\Coupon::where('code', session('package_checkout_coupon'))->first();
             if ($coupon) {
-                if (!$coupon->users()->where('user_id', auth()->id())->exists()) {
-                    $coupon->users()->attach(auth()->id(), [
-                        'used_at' => now(),
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-                $coupon->is_active = false;
-                $coupon->save();
+                $coupon->recordUsage(auth()->user(), auth()->user()?->email);
             }
             session()->forget('package_checkout_coupon');
             session()->forget('package_checkout_discount');

@@ -825,6 +825,10 @@
                 ?? ($avail['chair_id'] ?? null);
         @endphp
 
+        @if($avail['status'] === 'single_chair')
+            <p style="max-width:800px; margin:0 auto 1rem; text-align:center; font-size:0.8rem; color:var(--app-muted);">Select An Available Chair Of Your Choice</p>
+        @endif
+
         <div id="pricing-banner"
              style="max-width:800px; margin:0 auto 1.25rem; text-align:center; color:var(--app-accent-dark); background:var(--app-accent-soft); padding:1rem 1.25rem; border-radius:8px; {{ $pricingRate === null ? 'display:none;' : '' }}">
             <div id="pricing-chair-name" style="font-size:0.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.35rem; opacity:0.85;">
@@ -863,7 +867,6 @@
                 </div>
 
                 @if($avail['status'] === 'single_chair')
-                    <p style="text-align:center; font-size:0.8rem; color:var(--app-muted); margin:1rem 0 0;">Tap an available chair on the map to update rate &amp; total.</p>
                     <form method="POST" action="{{ route('stylist.book.availability.confirm') }}" id="single-chair-form" style="margin-top: 1.5rem;">
                         @csrf
                         <input type="hidden" name="action" value="accept_single_chair">
@@ -1004,7 +1007,7 @@
                     });
                 </script>
             @else
-                @if($user && $user->canManageChairBookings())
+                @if($user && $user->canBookOnBehalfOfCustomer())
                     <div class="form-field" style="margin-top: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; background: #e3f2fd; padding: 1rem; border-radius: 8px; border: 1px solid #bbdefb;">
                         <input type="checkbox" name="admin_booking_for_customer" id="admin_booking_for_customer" value="1" style="width: 20px; height: 20px; accent-color: #1976d2;" {{ old('admin_booking_for_customer', !empty($guestDetails['is_admin_booking'])) ? 'checked' : '' }}>
                         <label for="admin_booking_for_customer" style="margin: 0; text-transform: none; font-size: 0.85rem; font-weight: 600; color: #0d47a1; cursor: pointer;">
@@ -1052,6 +1055,17 @@
     @endif
 
     @if($step === 4)
+        @if(!empty($amendPricing))
+            <div style="border-radius: 8px; margin-bottom: 1.5rem; background: #fff; border: 1px solid var(--app-line); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--app-text);">
+                <strong>Amending booking</strong> — original {{ $amendPricing['old_duration'] }} hr{{ $amendPricing['old_duration'] > 1 ? 's' : '' }}, £{{ number_format($amendPricing['old_total'], 2) }} already paid.
+                @if($computedTotal <= 0)
+                    No additional payment is required for this change.
+                @else
+                    You only pay for the extra hours at the hourly rate.
+                @endif
+            </div>
+        @endif
+
         @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
             <div class="alert alert-success" style="border-radius: 8px; margin-bottom: 1.5rem; background-color: #f1f8e9; border: 1px solid #c5e1a5; color: #33691e;">
                 <h5 class="mb-1" style="font-weight: 600;">Package Applied!</h5>
@@ -1093,7 +1107,14 @@
                 <span style="font-size: 1.1rem; font-weight: 700; color: #fff;">£{{ number_format($rawTotal, 2) }}</span>
             </div>
 
-            @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
+            @if(!empty($amendPricing))
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Already paid</span>
+                <span style="font-size: 1rem; font-weight: 700; color: #fff;">£{{ number_format($amendPricing['old_total'], 2) }}</span>
+            </div>
+            @endif
+
+            @if(isset($packageHoursUsed) && $packageHoursUsed > 0 && empty($amendPricing))
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <span style="font-size: 0.85rem; font-weight: 600; color: #a5d6a7; text-transform: uppercase; letter-spacing: 1px;">Package ({{ $packageHoursUsed }} hrs)</span>
                 <span style="font-size: 1.1rem; font-weight: 700; color: #a5d6a7;">-£{{ number_format($rawTotal - $computedTotal, 2) }}</span>
@@ -1103,7 +1124,7 @@
             <hr style="border-color: rgba(255,255,255,0.2); margin: 0.75rem 0;">
 
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="total-highlight-label" style="margin-bottom: 0;">Amount due</span>
+                <span class="total-highlight-label" style="margin-bottom: 0;">{{ !empty($amendPricing) ? 'Additional charge' : 'Amount due' }}</span>
                 <span class="total-highlight-amount" id="final-amount-display" style="margin-bottom: 0; font-size: 2rem;">£{{ number_format($computedTotal, 2) }}</span>
             </div>
         </div>
@@ -1201,8 +1222,14 @@
     @if($step === 1)
         <button type="submit" form="schedule-form" class="btn-app btn-app-next">Next &rarr;</button>
     @elseif($step === 3)
-        <button type="submit" form="confirm-form" class="btn-app btn-app-next">
-            {!! $isOvernight ? 'Submit for Approval' : 'Payment' !!}
+        @php
+            $isAdminBookingStep = !empty($guestDetails['is_admin_booking']);
+            $step3SubmitLabel = $isOvernight
+                ? 'Submit for Approval'
+                : ($isAdminBookingStep ? 'Confirm Booking' : 'Payment');
+        @endphp
+        <button type="submit" form="confirm-form" class="btn-app btn-app-next" id="step3-submit-btn">
+            {!! $step3SubmitLabel !!}
         </button>
     @endif
 </nav>
@@ -1227,19 +1254,45 @@
         return (Number(n) || 0).toFixed(2);
     }
 
+    function updateChairDetailsBox(chairId) {
+        const box = document.getElementById('chair-details-box');
+        if (!box) return;
+
+        const info = pricingMap[String(chairId)];
+        const rect = document.getElementById('chair-details-rect');
+        const line1 = document.getElementById('chair-details-line1');
+        const line2 = document.getElementById('chair-details-line2');
+
+        if (!info || info.x === undefined || info.y === undefined || !rect || !line1 || !line2) {
+            box.style.display = 'none';
+            return;
+        }
+
+        rect.setAttribute('x', String(info.x - 20));
+        rect.setAttribute('y', String(info.y - 120));
+        line1.setAttribute('x', String(info.x + 10));
+        line1.setAttribute('y', String(info.y - 75));
+        line2.setAttribute('x', String(info.x + 10));
+        line2.setAttribute('y', String(info.y - 40));
+        line1.textContent = info.name + ': ' + info.startHour + ' - ' + info.endHour;
+        line2.textContent = '(' + (info.hourLabel || 'Full Duration') + ')';
+        box.style.display = '';
+    }
+
+    function highlightAvailableChairs() {
+        availableIds.forEach(function (id) {
+            const el = document.getElementById('chair-' + id);
+            if (el) el.setAttribute('filter', 'url(#chair-green)');
+        });
+    }
+
     function updatePricing(chairId) {
         const info = pricingMap[String(chairId)];
         if (selectedInput) selectedInput.value = chairId;
 
-        availableIds.forEach(function (id) {
-            const el = document.getElementById('chair-' + id);
-            if (!el) return;
-            if (String(id) === String(chairId)) {
-                el.setAttribute('filter', 'url(#chair-green)');
-            } else {
-                el.removeAttribute('filter');
-            }
-        });
+        highlightAvailableChairs();
+
+        updateChairDetailsBox(chairId);
 
         if (!info || info.rate === null || info.rate === undefined) {
             if (banner) banner.style.display = 'none';
@@ -1278,6 +1331,24 @@
     if (selectedInput && selectedInput.value) {
         updatePricing(selectedInput.value);
     }
+})();
+</script>
+@endif
+@if($step === 3)
+<script>
+(function () {
+    const adminCheckbox = document.getElementById('admin_booking_for_customer');
+    const submitBtn = document.getElementById('step3-submit-btn');
+    const isOvernight = @json($isOvernight ?? false);
+
+    if (!adminCheckbox || !submitBtn || isOvernight) return;
+
+    function updateStep3Label() {
+        submitBtn.textContent = adminCheckbox.checked ? 'Confirm Booking' : 'Payment';
+    }
+
+    adminCheckbox.addEventListener('change', updateStep3Label);
+    updateStep3Label();
 })();
 </script>
 @endif
@@ -1519,7 +1590,11 @@
             const res = await fetch('{{ route("stylist.coupon.apply") }}', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify({ code: code, total_amount: baseTotal })
+                body: JSON.stringify({
+                    code: code,
+                    total_amount: baseTotal,
+                    email: @json(session('stylist_booking.guest.email') ?? ($user->email ?? null))
+                })
             });
 
             const data = await res.json();

@@ -78,6 +78,14 @@ class User extends Authenticatable
         return $this->hasPermission('manage-chairs') || $this->hasPermission('manage-bookings');
     }
 
+    /**
+     * Admin/receptionist staff booking for a customer — not regular registered stylists.
+     */
+    public function canBookOnBehalfOfCustomer(): bool
+    {
+        return $this->canManageChairBookings() && !$this->isHairstylist();
+    }
+
     public function isHairstylist(): bool
     {
         if ($this->role === 'hairstylist') {

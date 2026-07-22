@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CouponController extends Controller
 {
@@ -23,6 +22,7 @@ class CouponController extends Controller
             'discount_value' => 'required|numeric|min:0',
             'expires_at' => 'required|date',
             'is_active' => 'boolean',
+            'is_reusable' => 'boolean',
         ]);
 
         Coupon::create([
@@ -31,6 +31,7 @@ class CouponController extends Controller
             'discount_value' => $request->discount_value,
             'expires_at' => $request->expires_at,
             'is_active' => $request->has('is_active'),
+            'is_reusable' => $request->has('is_reusable'),
         ]);
 
         return redirect()->route('coupons.index')->with('success', 'Coupon created successfully.');
@@ -43,12 +44,13 @@ class CouponController extends Controller
         return redirect()->route('coupons.index')->with('success', 'Coupon deleted successfully.');
     }
 
-    // Public / Stylist API to apply coupon
     public function apply(Request $request)
     {
         $request->validate([
             'code' => 'required|string',
-            'total_amount' => 'required|numeric|min:0'
+            'total_amount' => 'required|numeric|min:0',
+            'email' => 'nullable|email',
+            'booking_id' => 'nullable|integer',
         ]);
 
         $coupon = Coupon::where('code', strtoupper(trim($request->code)))->first();
@@ -66,51 +68,37 @@ class CouponController extends Controller
         }
 
         $user = $request->user();
-        if ($user) {
-            $hasUsed = $coupon->users()->where('user_id', $user->id)->exists();
-            if ($hasUsed) {
-                return response()->json(['error' => 'You have already used this coupon.'], 400);
-            }
-        } else {
-            // For guests, we can't reliably track usage, but we can check if they are trying to use it without login.
-            // But they are usually logged in when paying the balance. 
-            // In case of pay balance, they might not be authenticated if it's a public link?
-            // Actually, the prompt says "only 1 time user pr wo coupon expire ho jaeyga".
-            // So if user is not logged in, we should probably require them to log in or just apply it and rely on booking user tracking.
-            // Wait, booking has a user_id! The pay balance route knows the booking ID!
-        }
-        
-        // If booking_id is provided (like in pay balance screen)
-        if ($request->has('booking_id')) {
+        $email = $request->input('email');
+
+        if ($request->filled('booking_id')) {
             $booking = \App\Models\Booking::find($request->booking_id);
-            if ($booking && $booking->user_id) {
-                $hasUsed = $coupon->users()->where('user_id', $booking->user_id)->exists();
-                if ($hasUsed) {
-                    return response()->json(['error' => 'You have already used this coupon.'], 400);
-                }
+            if ($booking) {
+                $user = $user ?: $booking->user;
+                $email = $email
+                    ?: $booking->guest_email
+                    ?: $booking->user?->email;
             }
+        }
+
+        if (!$email) {
+            $email = session('stylist_booking.guest.email')
+                ?: $user?->email;
+        }
+
+        if ($coupon->hasBeenUsedBy($user, $email)) {
+            return response()->json(['error' => 'This coupon has already been used with this email address.'], 400);
         }
 
         $originalTotal = (float) $request->total_amount;
-        $discountAmount = 0;
-
-        if ($coupon->discount_type === 'fixed') {
-            $discountAmount = (float) $coupon->discount_value;
-        } else {
-            $discountAmount = $originalTotal * ((float) $coupon->discount_value / 100);
-        }
-
-        if ($discountAmount > $originalTotal) {
-            $discountAmount = $originalTotal;
-        }
-
+        $discountAmount = $coupon->calculateDiscount($originalTotal);
         $newTotal = $originalTotal - $discountAmount;
 
         return response()->json([
             'success' => true,
             'discount_amount' => round($discountAmount, 2),
             'new_total' => round($newTotal, 2),
-            'coupon_code' => $coupon->code
+            'coupon_code' => $coupon->code,
+            'is_reusable' => (bool) $coupon->is_reusable,
         ]);
     }
 }

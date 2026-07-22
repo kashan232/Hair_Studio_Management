@@ -64,6 +64,10 @@ class HairstylistPortalController extends Controller
             return redirect()->route('stylist.book', ['step' => 1, 'type' => $type]);
         }
 
+        if ($step === 4 && $this->isAdminBookingSession() && !session('stylist_booking.completed')) {
+            return $this->processAdminBooking($request);
+        }
+
         $steps = [
             1 => ['label' => 'Schedule', 'title' => 'Select Date & Duration'],
             2 => ['label' => 'Options',  'title' => 'Review Availability'],
@@ -79,9 +83,13 @@ class HairstylistPortalController extends Controller
         $computedTotal = $rawTotal;
         $packageHoursUsed = 0;
         $duration = session('stylist_booking.duration', 0);
+        $amendPricing = $this->resolveAmendPricing($user);
 
-        // Package hours apply to hourly bookings only (daily uses flat chair daily rate)
-        if ($user && $duration > 0 && $type !== 'daily') {
+        if ($amendPricing) {
+            $rawTotal = $amendPricing['raw_total'];
+            $computedTotal = $amendPricing['amount_due'];
+            $packageHoursUsed = $amendPricing['package_hours_used'];
+        } elseif ($user && $duration > 0 && $type !== 'daily') {
             $packageBalance = $user->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -119,7 +127,12 @@ class HairstylistPortalController extends Controller
             $rawTotal = $this->calculateTotal();
             $computedTotal = $rawTotal;
             $packageHoursUsed = 0;
-            if ($user && $duration > 0 && $type !== 'daily') {
+            $amendPricing = $this->resolveAmendPricing($user);
+            if ($amendPricing) {
+                $rawTotal = $amendPricing['raw_total'];
+                $computedTotal = $amendPricing['amount_due'];
+                $packageHoursUsed = $amendPricing['package_hours_used'];
+            } elseif ($user && $duration > 0 && $type !== 'daily') {
                 $packageBalance = $user->package_balance;
                 if ($packageBalance > 0) {
                     $packageHoursUsed = min($packageBalance, $duration);
@@ -135,7 +148,8 @@ class HairstylistPortalController extends Controller
                 ?? session('stylist_booking.assigned_chair_ids', [])
                 ?? [],
             $type,
-            (float) session('stylist_booking.duration', 0)
+            (float) session('stylist_booking.duration', 0),
+            is_array($availabilityState) ? $availabilityState : null
         );
 
         $availableIds = $availabilityState['available_chair_ids'] ?? [];
@@ -143,7 +157,8 @@ class HairstylistPortalController extends Controller
         return view('stylist.booking', compact(
             'step', 'user', 'steps', 'guestDetails', 'computedTotal', 'isOvernight',
             'availabilityState', 'packageHoursUsed', 'rawTotal', 'type',
-            'pricingChair', 'pricingRate', 'pricingRateLabel', 'chairPricingMap', 'availableIds'
+            'pricingChair', 'pricingRate', 'pricingRateLabel', 'chairPricingMap', 'availableIds',
+            'amendPricing'
         ));
     }
 
@@ -240,7 +255,8 @@ class HairstylistPortalController extends Controller
     public function confirmDetails(Request $request): RedirectResponse
     {
         $isGuest = $request->boolean('is_guest');
-        $isAdminBooking = $request->boolean('admin_booking_for_customer');
+        $isAdminBooking = $request->user()?->canBookOnBehalfOfCustomer()
+            && $request->boolean('admin_booking_for_customer');
 
         $rules = [
             'name'   => ['required', 'string', 'max:255'],
@@ -277,6 +293,16 @@ class HairstylistPortalController extends Controller
             'stylist_booking.consent_photography' => $request->boolean('consent_photography'),
         ]);
 
+        if ($isAdminBooking) {
+            $this->syncAdminBookingTotals($validated['email']);
+
+            if ($this->isOvernightBooking()) {
+                return $this->processPendingApproval($request);
+            }
+
+            return $this->processAdminBooking($request);
+        }
+
         $isOvernight = $this->isOvernightBooking();
         if ($isOvernight) {
             // Need Admin Approval - create booking immediately as pending_approval, skip Stripe
@@ -297,6 +323,7 @@ class HairstylistPortalController extends Controller
         $duration = session('stylist_booking.duration', 0);
         $bookingType = session('stylist_booking.type', 'hourly');
         $packageHoursUsed = 0;
+        $bookingTotal = null;
 
         $user = $request->user();
         if (!$user) {
@@ -306,7 +333,12 @@ class HairstylistPortalController extends Controller
             }
         }
 
-        if ($user && $duration > 0 && $bookingType !== 'daily') {
+        $amendPricing = $this->resolveAmendPricing($user);
+        if ($amendPricing) {
+            $total = $amendPricing['amount_due'];
+            $packageHoursUsed = $amendPricing['package_hours_used'];
+            $bookingTotal = $amendPricing['booking_total'];
+        } elseif ($user && $duration > 0 && $bookingType !== 'daily') {
             $packageBalance = $user->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -320,32 +352,28 @@ class HairstylistPortalController extends Controller
 
         $discount = 0;
         $couponCode = null;
+        $guestEmail = session('stylist_booking.guest.email') ?: $user?->email;
 
         if ($request->has('coupon_code') && $total > 0) {
             $code = strtoupper(trim($request->coupon_code));
             $coupon = \App\Models\Coupon::where('code', $code)->first();
-            if ($coupon && $coupon->is_active && $coupon->expires_at->gte(\Carbon\Carbon::today())) {
-                $hasUsed = false;
-                if ($user) {
-                    $hasUsed = $coupon->users()->where('user_id', $user->id)->exists();
-                }
-
-                if (!$hasUsed) {
-                    $discountAmount = $coupon->discount_type === 'fixed' 
-                        ? (float) $coupon->discount_value 
-                        : $total * ((float) $coupon->discount_value / 100);
-                    
-                    $discount = min($discountAmount, $total);
-                    $total = $total - $discount;
-                    $couponCode = $code;
-                }
+            if ($coupon && $coupon->isValidNow() && !$coupon->hasBeenUsedBy($user, $guestEmail)) {
+                $discount = $coupon->calculateDiscount($total);
+                $total = $total - $discount;
+                $couponCode = $code;
             }
+        }
+
+        $storedBookingTotal = $total;
+        if ($amendPricing) {
+            $storedBookingTotal = round($amendPricing['old_total'] + $total, 2);
         }
 
         session([
             'stylist_booking.coupon_code' => $couponCode,
             'stylist_booking.discount' => $discount,
-            'stylist_booking.final_total' => $total,
+            'stylist_booking.final_total' => $storedBookingTotal,
+            'stylist_booking.amount_due' => $total,
             'stylist_booking.package_hours_used' => $packageHoursUsed
         ]);
 
@@ -408,6 +436,10 @@ class HairstylistPortalController extends Controller
 
     public function paymentSuccess(Request $request): RedirectResponse
     {
+        if ($this->isAdminBookingSession()) {
+            return $this->processAdminBooking($request);
+        }
+
         if (session('stylist_booking.completed')) {
             return redirect()->route('stylist.book', ['step' => 5]);
         }
@@ -449,21 +481,84 @@ class HairstylistPortalController extends Controller
             ->with('booking_success', 'Booking submitted. Pending Admin Approval for overnight hours.');
     }
 
+    private function processAdminBooking(Request $request): RedirectResponse
+    {
+        if (session('stylist_booking.completed')) {
+            return redirect()->route('stylist.book', ['step' => 5]);
+        }
+
+        if (!session('stylist_booking.start_date')) {
+            return redirect()->route('stylist.book', ['step' => 1]);
+        }
+
+        if (!$this->verifyChairsAreFree()) {
+            return redirect()->route('stylist.book', ['step' => 1])
+                ->with('error', 'Sorry, the selected chairs are no longer available. They might have just been booked.');
+        }
+
+        $user = $this->getOrCreateUser($request);
+        $this->createBookingRecord($user, 'confirmed');
+        session(['stylist_booking.completed' => true]);
+
+        return redirect()->route('stylist.book', ['step' => 5])
+            ->with('booking_success', 'Booking confirmed for customer.');
+    }
+
+    private function isAdminBookingSession(): bool
+    {
+        return !empty(session('stylist_booking.guest.is_admin_booking'));
+    }
+
+    private function syncAdminBookingTotals(string $customerEmail): void
+    {
+        $rawTotal = $this->calculateTotal();
+        $total = $rawTotal;
+        $packageHoursUsed = 0;
+        $duration = session('stylist_booking.duration', 0);
+        $type = session('stylist_booking.type', 'hourly');
+        $customer = User::where('email', $customerEmail)->first();
+
+        if ($customer && $duration > 0 && $type !== 'daily') {
+            $packageBalance = $customer->package_balance;
+            if ($packageBalance > 0) {
+                $packageHoursUsed = min($packageBalance, $duration);
+                $remainingDuration = $duration - $packageHoursUsed;
+                $unitPrice = $total / $duration;
+                $total = round($unitPrice * $remainingDuration, 2);
+            }
+        }
+
+        session([
+            'stylist_booking.final_total' => max($total, 0),
+            'stylist_booking.package_hours_used' => $packageHoursUsed,
+        ]);
+    }
+
     private function createBookingRecord($user, $status)
     {
         $start = Carbon::parse(session('stylist_booking.start_date') . ' ' . session('stylist_booking.start_time'));
         $end = Carbon::parse(session('stylist_booking.end_date') . ' ' . session('stylist_booking.end_time'));
         $guestDetails = session('stylist_booking.guest', []);
         $packageHoursUsed = session('stylist_booking.package_hours_used', 0);
+        $amendPricing = $this->resolveAmendPricing($user);
 
-        // Amendment: cancel previous booking first so package hours are restored before new deduction
+        // Amendment: cancel previous booking without refund so paid value carries over.
         $amendId = session('stylist_booking.amend_booking_id');
         if ($amendId && $user) {
             $oldBooking = Booking::where('id', $amendId)->where('user_id', $user->id)->first();
             if ($oldBooking && !in_array($oldBooking->status, ['cancelled', 'cancelled_late_response'], true)) {
-                app(BookingCancellationService::class)->cancel($oldBooking, true);
+                app(BookingCancellationService::class)->cancel($oldBooking, false);
             }
             session()->forget('stylist_booking.amend_booking_id');
+        }
+
+        $totalAmount = session('stylist_booking.final_total', $this->calculateTotal());
+        $paymentIntentId = session('stylist_booking.payment_intent_id');
+        if ($amendPricing) {
+            $totalAmount = $amendPricing['booking_total'];
+            if ($amendPricing['amount_due'] <= 0 && !empty($amendPricing['original_payment_intent'])) {
+                $paymentIntentId = $amendPricing['original_payment_intent'];
+            }
         }
 
         $booking = Booking::create([
@@ -475,8 +570,8 @@ class HairstylistPortalController extends Controller
             'end_datetime' => $end,
             'duration_hours' => session('stylist_booking.duration'),
             'package_hours_used' => $packageHoursUsed,
-            'total_amount' => session('stylist_booking.final_total', $this->calculateTotal()),
-            'stripe_payment_intent' => session('stylist_booking.payment_intent_id'),
+            'total_amount' => $totalAmount,
+            'stripe_payment_intent' => $paymentIntentId,
             'coupon_code' => session('stylist_booking.coupon_code'),
             'discount_amount' => session('stylist_booking.discount', 0),
             'status' => $status,
@@ -514,58 +609,80 @@ class HairstylistPortalController extends Controller
             }
         }
 
-        // Attach coupon if used
+        // Attach coupon if used (standard = 1 per email; reusable = unlimited)
         $couponCode = session('stylist_booking.coupon_code');
         if ($couponCode) {
             $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
             if ($coupon) {
-                if ($user) {
-                    // Ensure no duplicate entry
-                    if (!$coupon->users()->where('user_id', $user->id)->exists()) {
-                        $coupon->users()->attach($user->id, [
-                            'used_at' => now(),
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ]);
-                    }
-                }
-                
-                // Make the coupon expire globally after one use
-                $coupon->is_active = false;
-                $coupon->save();
+                $redeemEmail = strtolower(trim((string) (
+                    session('stylist_booking.guest.email')
+                    ?: $user?->email
+                    ?: $booking->guest_email
+                )));
+                $coupon->recordUsage($user, $redeemEmail);
             }
         }
 
         $assignedChairs = session('stylist_booking.assigned_chair_ids', []);
-        
-        // Split time across assigned chairs
-        $durationPerChair = ceil(session('stylist_booking.duration') / count($assignedChairs));
-        $currentStart = $start->copy();
+        if (!is_array($assignedChairs)) {
+            $assignedChairs = [];
+        }
 
-        foreach ($assignedChairs as $chairId) {
-            $currentEnd = $currentStart->copy()->addHours($durationPerChair);
-            if ($currentEnd->gt($end)) $currentEnd = $end->copy();
+        if (!empty($assignedChairs)) {
+            // Split time across assigned chairs
+            $durationPerChair = ceil(session('stylist_booking.duration') / count($assignedChairs));
+            $currentStart = $start->copy();
 
-            $booking->chairs()->attach($chairId, [
-                'start_time' => $currentStart,
-                'end_time' => $currentEnd,
-            ]);
+            foreach ($assignedChairs as $chairId) {
+                $currentEnd = $currentStart->copy()->addHours($durationPerChair);
+                if ($currentEnd->gt($end)) $currentEnd = $end->copy();
 
-            $currentStart = $currentEnd->copy();
+                $booking->chairs()->attach($chairId, [
+                    'start_time' => $currentStart,
+                    'end_time' => $currentEnd,
+                ]);
+
+                $currentStart = $currentEnd->copy();
+            }
         }
 
         session(['stylist_booking.final_booking_id' => $booking->id]);
 
+        $this->sendBookingConfirmationEmail($booking, $user, session('stylist_booking.guest', []));
+    }
+
+    private function sendBookingConfirmationEmail(Booking $booking, $user = null, array $guestDetails = []): void
+    {
         try {
-            $emailToSend = $user ? $user->email : $booking->guest_email;
-            if ($emailToSend) {
-                Mail::to($emailToSend)
-                    ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
-                    ->send(new BookingConfirmed($booking));
+            $booking->loadMissing(['user', 'chairs']);
+
+            $emailToSend = strtolower(trim((string) (
+                ($guestDetails['email'] ?? null)
+                ?: $booking->guest_email
+                ?: $user?->email
+                ?: $booking->user?->email
+            )));
+
+            if ($emailToSend === '') {
+                \Illuminate\Support\Facades\Log::warning('Booking confirmation skipped: no recipient email', [
+                    'booking_id' => $booking->id,
+                ]);
+                return;
             }
-        } catch (\Exception $e) {
-            // Log or ignore email errors so booking doesn't fail if SMTP is broken
-            \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
+
+            Mail::to($emailToSend)
+                ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                ->send(new BookingConfirmed($booking));
+        } catch (\Throwable $e) {
+            // Retry without BCC if the provider rejects the combined message
+            try {
+                Mail::to($emailToSend)->send(new BookingConfirmed($booking));
+            } catch (\Throwable $retryError) {
+                \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation email: ' . $retryError->getMessage(), [
+                    'booking_id' => $booking->id,
+                    'first_error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 
@@ -578,7 +695,7 @@ class HairstylistPortalController extends Controller
         }
 
         if ($request->user()) {
-            if ($request->user()->canManageChairBookings() && !empty($guestDetails['is_admin_booking'])) {
+            if ($request->user()->canBookOnBehalfOfCustomer() && !empty($guestDetails['is_admin_booking'])) {
                 $existing = User::where('email', $guestDetails['email'])->first();
                 if ($existing) {
                     return $existing;
@@ -981,9 +1098,16 @@ class HairstylistPortalController extends Controller
     /**
      * Pricing payload for step-2 chair map (live rate/total updates).
      */
-    private function buildChairPricingMap(array $chairIds, string $type, float $duration): array
+    private function buildChairPricingMap(array $chairIds, string $type, float $duration, ?array $availability = null): array
     {
         $map = [];
+        $positions = $this->chairMapPositions();
+        $startTime = session('stylist_booking.start_time');
+        $endTime = session('stylist_booking.end_time');
+        $multiSchedule = ($availability['status'] ?? '') === 'multi_chair'
+            ? ($availability['schedule'] ?? [])
+            : [];
+
         foreach (array_unique(array_filter($chairIds)) as $chairId) {
             $chair = Chair::find($chairId);
             if (!$chair) {
@@ -996,6 +1120,13 @@ class HairstylistPortalController extends Controller
                     ? round($rate, 2)
                     : round($rate * max($duration, 1), 2);
             }
+            [$startHour, $endHour, $hourLabel] = $this->chairScheduleLabel(
+                (int) $chairId,
+                $startTime,
+                $endTime,
+                $multiSchedule
+            );
+            $pos = $positions[(int) $chairId] ?? ['x' => 0, 'y' => 0];
             $map[(string) $chairId] = [
                 'id' => (int) $chair->id,
                 'name' => $chair->name,
@@ -1003,9 +1134,134 @@ class HairstylistPortalController extends Controller
                 'rate' => $rate,
                 'label' => $label,
                 'total' => $total,
+                'startHour' => $startHour,
+                'endHour' => $endHour,
+                'hourLabel' => $hourLabel,
+                'x' => $pos['x'],
+                'y' => $pos['y'],
             ];
         }
 
         return $map;
+    }
+
+    private function chairMapPositions(): array
+    {
+        return [
+            1 => ['x' => 365, 'y' => 1019],
+            2 => ['x' => 365, 'y' => 1529],
+            3 => ['x' => 365, 'y' => 2039],
+            4 => ['x' => 1115, 'y' => 1529],
+            5 => ['x' => 1115, 'y' => 1988],
+            6 => ['x' => 1523, 'y' => 1529],
+            7 => ['x' => 1523, 'y' => 1988],
+        ];
+    }
+
+    private function getAmendOriginalBooking(): ?Booking
+    {
+        $amendId = session('stylist_booking.amend_booking_id');
+        if (!$amendId) {
+            return null;
+        }
+
+        return Booking::find($amendId);
+    }
+
+    private function resolveAmendPricing(?User $user): ?array
+    {
+        $oldBooking = $this->getAmendOriginalBooking();
+        if (!$oldBooking) {
+            return null;
+        }
+
+        $type = session('stylist_booking.type', 'hourly');
+        $newDuration = (float) session('stylist_booking.duration', 0);
+        $oldDuration = (float) $oldBooking->duration_hours;
+        $oldTotal = (float) $oldBooking->total_amount;
+        $oldType = ((int) $oldBooking->duration_hours >= 12) ? 'daily' : 'hourly';
+        $rawTotal = $this->calculateTotal();
+        $packageBalance = ($user && $type !== 'daily')
+            ? (int) $user->package_balance + (int) $oldBooking->package_hours_used
+            : 0;
+
+        if (($type === 'daily' || $newDuration >= 12) && $oldType === 'daily') {
+            return $this->formatAmendPricing(
+                $oldTotal,
+                0.0,
+                $rawTotal,
+                min($packageBalance, (int) $newDuration),
+                $oldBooking
+            );
+        }
+
+        if ($newDuration <= $oldDuration) {
+            return $this->formatAmendPricing(
+                $oldTotal,
+                0.0,
+                $rawTotal,
+                min($packageBalance, (int) $newDuration),
+                $oldBooking
+            );
+        }
+
+        $extraHours = $newDuration - $oldDuration;
+        [$unitPrice] = $this->rateForChair($this->resolveBookingChair(), 'hourly');
+        if ($unitPrice === null && $oldDuration > 0) {
+            $unitPrice = $oldTotal / $oldDuration;
+        }
+        $unitPrice = (float) ($unitPrice ?? 0);
+
+        $packageOnExtra = min($packageBalance, (int) $extraHours);
+        $billableExtra = max(0, $extraHours - $packageOnExtra);
+        $amountDue = round($unitPrice * $billableExtra, 2);
+        $bookingTotal = round($oldTotal + $amountDue, 2);
+
+        return $this->formatAmendPricing(
+            $bookingTotal,
+            $amountDue,
+            $rawTotal,
+            min($packageBalance, (int) $newDuration),
+            $oldBooking
+        );
+    }
+
+    private function formatAmendPricing(
+        float $bookingTotal,
+        float $amountDue,
+        float $rawTotal,
+        int $packageHoursUsed,
+        Booking $oldBooking
+    ): array {
+        return [
+            'booking_total' => round($bookingTotal, 2),
+            'amount_due' => round(max(0, $amountDue), 2),
+            'raw_total' => round($rawTotal, 2),
+            'package_hours_used' => max(0, $packageHoursUsed),
+            'original_payment_intent' => $oldBooking->stripe_payment_intent,
+            'is_amend' => true,
+            'old_duration' => (int) $oldBooking->duration_hours,
+            'old_total' => round((float) $oldBooking->total_amount, 2),
+        ];
+    }
+
+    private function chairScheduleLabel(int $chairId, $startTime, $endTime, array $multiSchedule): array
+    {
+        if (!empty($multiSchedule) && in_array($chairId, $multiSchedule, true)) {
+            $hourIndex = array_search($chairId, $multiSchedule);
+            $start = \Carbon\Carbon::parse($startTime)->addHours($hourIndex);
+            $end = \Carbon\Carbon::parse($startTime)->addHours($hourIndex + 1);
+            $hourLabel = $hourIndex === 0
+                ? '1st Hour'
+                : ($hourIndex === 1 ? '2nd Hour' : 'Hour ' . ($hourIndex + 1));
+
+            return [$start->format('g:i A'), $end->format('g:i A'), $hourLabel];
+        }
+
+        return [
+            \Carbon\Carbon::parse($startTime)->format('g:i A'),
+            \Carbon\Carbon::parse($endTime)->format('g:i A'),
+            'Full Duration',
+        ];
     }
 }

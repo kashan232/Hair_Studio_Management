@@ -166,6 +166,7 @@
                             <tr>
                                 <th>Code</th>
                                 <th>Discount</th>
+                                <th>Type</th>
                                 <th>Expiry Date</th>
                                 <th>Status</th>
                                 <th>Created</th>
@@ -181,6 +182,13 @@
                                             £{{ number_format($coupon->discount_value, 2) }}
                                         @else
                                             {{ $coupon->discount_value }}%
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(!empty($coupon->is_reusable))
+                                            <span class="badge-status active">Reusable</span>
+                                        @else
+                                            <span class="badge-status" style="background: rgba(52,152,219,0.12); color: #3498db;">1 per email</span>
                                         @endif
                                     </td>
                                     <td>
@@ -253,6 +261,13 @@
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="is_active" class="form-check-input" id="isActiveCheck" value="1" checked>
                         <label class="form-check-label" for="isActiveCheck">Is Active</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_reusable" class="form-check-input" id="isReusableCheck" value="1">
+                        <label class="form-check-label" for="isReusableCheck">Reusable (unlimited uses)</label>
+                        <div class="form-text" style="font-size: 0.75rem; color: #8c7e6c;">
+                            If unchecked, this is a standard code: valid until expiry, limited to 1 use per email (including guests).
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid #eae2d5;">

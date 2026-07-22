@@ -209,20 +209,10 @@ class BookingController extends Controller
 
         if ($request->has('coupon_code')) {
             $coupon = \App\Models\Coupon::where('code', $request->coupon_code)->first();
-            if ($coupon && $coupon->is_active && $coupon->expires_at->gte(\Carbon\Carbon::today())) {
-                $hasUsed = $coupon->users()->where('user_id', $booking->user_id)->exists();
-                if (!$hasUsed) {
-                    if ($coupon->discount_type === 'fixed') {
-                        $discountAmount = (float) $coupon->discount_value;
-                    } else {
-                        $discountAmount = $finalAmount * ((float) $coupon->discount_value / 100);
-                    }
-                    if ($discountAmount > $finalAmount) {
-                        $discountAmount = $finalAmount;
-                    }
-
-                    session(['pay_balance_coupon' => $coupon->code, 'pay_balance_discount' => $discountAmount]);
-                }
+            $email = $booking->guest_email ?: $booking->user?->email;
+            if ($coupon && $coupon->isValidNow() && !$coupon->hasBeenUsedBy($booking->user, $email)) {
+                $discountAmount = $coupon->calculateDiscount((float) $finalAmount);
+                session(['pay_balance_coupon' => $coupon->code, 'pay_balance_discount' => $discountAmount]);
             }
         } else {
             session()->forget('pay_balance_coupon');
@@ -256,21 +246,26 @@ class BookingController extends Controller
             if ($coupon) {
                 $booking->coupon_code = $couponCode;
                 $booking->discount_amount = session('pay_balance_discount');
-                if ($booking->user_id) {
-                    $coupon->users()->attach($booking->user_id, [
-                        'used_at' => now(),
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-                $coupon->is_active = false;
-                $coupon->save();
+                $coupon->recordUsage(
+                    $booking->user,
+                    $booking->guest_email ?: $booking->user?->email
+                );
             }
             session()->forget('pay_balance_coupon');
             session()->forget('pay_balance_discount');
         }
 
         $booking->save();
+
+        try {
+            $emailToSend = $booking->guest_email ?: $booking->user?->email;
+            if ($emailToSend) {
+                \Illuminate\Support\Facades\Mail::to($emailToSend)
+                    ->send(new \App\Mail\BookingConfirmed($booking->fresh(['user', 'chairs'])));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation after balance payment: ' . $e->getMessage());
+        }
 
         return view('stylist.pay_balance_success', compact('booking'));
     }
