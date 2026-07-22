@@ -506,8 +506,11 @@
                     $startAt = \Carbon\Carbon::parse($b->start_datetime);
                     $hoursUntilStart = ($startAt->getTimestamp() - now()->getTimestamp()) / 3600;
                     $canManage = in_array($b->status, ['pending_payment', 'pending_approval'], true)
-                        || ($b->status === 'confirmed' && $startAt->gt(now()->addHours(24)));
+                        || ($b->status === 'confirmed' && $startAt->isFuture());
                     $canAmend = $canManage && $startAt->isFuture();
+                    $refundEligible = $b->status === 'confirmed'
+                        && (float) $b->total_amount > 0
+                        && $startAt->gt(now()->addHours(24));
                 @endphp
                 <div class="b-card status-{{ $b->status }}">
                     <div class="b-info">
@@ -583,20 +586,12 @@
                                 Pay £{{ number_format($b->total_amount, 2) }}
                             </a>
                         @endif
-                        @if($b->status === 'confirmed' && !$canManage)
+                        @if($b->status === 'confirmed' && $startAt->isFuture())
                             <button class="btn-outline btn-disabled" disabled>Paid & Confirmed</button>
-                            <p class="policy-note">
-                                @if($startAt->isFuture())
-                                    Starts in ~{{ max(1, (int) round($hoursUntilStart)) }} hrs — cancel/refund only when more than 24 hrs before start.
-                                @else
-                                    This booking has already started — cancellation is not available.
-                                @endif
-                                <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Policy</a>
-                            </p>
                         @elseif($b->status === 'confirmed')
-                            <button class="btn-outline btn-disabled" disabled>Paid & Confirmed</button>
+                            <button class="btn-outline btn-disabled" disabled>Completed</button>
                         @endif
-                        @if($b->status === 'pending_approval' && !$canManage)
+                        @if($b->status === 'pending_approval')
                             <button class="btn-outline btn-disabled" disabled>Awaiting Admin</button>
                         @endif
                         @if($b->status === 'cancelled' || $b->status === 'cancelled_late_response')
@@ -620,14 +615,18 @@
                         @if($canManage)
                             <form action="{{ route('stylist.cancel_booking', $b->id) }}" method="POST" style="margin:0;"
                                   class="cancel-booking-form"
-                                  data-refund-eligible="{{ ($b->status === 'confirmed' && (float) $b->total_amount > 0) ? '1' : '0' }}"
+                                  data-refund-eligible="{{ $refundEligible ? '1' : '0' }}"
                                   data-refund-amount="{{ number_format((float) $b->total_amount, 2, '.', '') }}">
                                 @csrf
                                 <button type="submit" class="btn-outline btn-cancel-booking">Cancel Booking</button>
                             </form>
                             @if($b->status === 'confirmed')
                                 <p class="policy-note">
-                                    Cancel 24h+ before start for a full refund.
+                                    @if($refundEligible)
+                                        Cancel 24h+ before start for a full refund.
+                                    @else
+                                        Cancellation available, but refunds require 24h+ notice before start.
+                                    @endif
                                     <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Booking &amp; Cancellation Policy</a>
                                 </p>
                             @endif

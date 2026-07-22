@@ -18,6 +18,7 @@ use Stripe\PaymentIntent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingConfirmed;
+use App\Mail\BookingPendingApproval;
 use App\Services\BookingCancellationService;
 
 class HairstylistPortalController extends Controller
@@ -303,9 +304,8 @@ class HairstylistPortalController extends Controller
             return $this->processAdminBooking($request);
         }
 
-        $isOvernight = $this->isOvernightBooking();
-        if ($isOvernight) {
-            // Need Admin Approval - create booking immediately as pending_approval, skip Stripe
+        if ($this->isOvernightBooking()) {
+            // Overnight hours need admin approval — create as pending_approval, skip Stripe
             return $this->processPendingApproval($request);
         }
 
@@ -670,13 +670,20 @@ class HairstylistPortalController extends Controller
                 return;
             }
 
+            $mailable = $booking->status === 'pending_approval'
+                ? new BookingPendingApproval($booking)
+                : new BookingConfirmed($booking);
+
             Mail::to($emailToSend)
                 ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
-                ->send(new BookingConfirmed($booking));
+                ->send($mailable);
         } catch (\Throwable $e) {
             // Retry without BCC if the provider rejects the combined message
             try {
-                Mail::to($emailToSend)->send(new BookingConfirmed($booking));
+                $mailable = $booking->status === 'pending_approval'
+                    ? new BookingPendingApproval($booking)
+                    : new BookingConfirmed($booking);
+                Mail::to($emailToSend)->send($mailable);
             } catch (\Throwable $retryError) {
                 \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation email: ' . $retryError->getMessage(), [
                     'booking_id' => $booking->id,
@@ -842,7 +849,7 @@ class HairstylistPortalController extends Controller
 
     /**
      * Pending payment / approval: always cancellable.
-     * Confirmed: only if start is more than 24 hours away (studio policy).
+     * Confirmed: cancellable any time before start (refund only if 24h+ notice).
      */
     private function bookingCanBeCancelled(Booking $booking): bool
     {
@@ -851,7 +858,7 @@ class HairstylistPortalController extends Controller
         }
 
         if ($booking->status === 'confirmed') {
-            return Carbon::parse($booking->start_datetime)->gt(now()->addHours(24));
+            return Carbon::parse($booking->start_datetime)->isFuture();
         }
 
         return false;
@@ -859,7 +866,6 @@ class HairstylistPortalController extends Controller
 
     private function bookingCanBeAmended(Booking $booking): bool
     {
-        // Same window as cancel for upcoming bookings
         return $this->bookingCanBeCancelled($booking)
             && Carbon::parse($booking->start_datetime)->isFuture();
     }
@@ -868,10 +874,6 @@ class HairstylistPortalController extends Controller
     {
         if (in_array($booking->status, ['cancelled', 'cancelled_late_response'], true)) {
             return 'This booking is already cancelled.';
-        }
-
-        if ($booking->status === 'confirmed' && Carbon::parse($booking->start_datetime)->lte(now()->addHours(24))) {
-            return 'Confirmed bookings can only be cancelled or amended more than 24 hours before start time.';
         }
 
         if (Carbon::parse($booking->start_datetime)->isPast()) {
@@ -998,7 +1000,23 @@ class HairstylistPortalController extends Controller
 
     private function isOvernightBooking(): bool
     {
-        return false; // Night approval rule removed
+        $startStr = session('stylist_booking.start_time');
+        $endStr = session('stylist_booking.end_time');
+        if (!$startStr || !$endStr) {
+            return false;
+        }
+
+        $start = Carbon::parse($startStr);
+        $end = Carbon::parse($endStr);
+
+        // 9 PM (21:00) – 8 AM (08:00): any overlap requires admin approval
+        $ninePM = Carbon::createFromTime(21, 0, 0);
+        $eightAM = Carbon::createFromTime(8, 0, 0);
+
+        return $start->gte($ninePM)
+            || $start->lt($eightAM)
+            || $end->gt($ninePM)
+            || $end->lte($eightAM);
     }
 
     public function calculateTotal(): float

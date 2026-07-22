@@ -1,9 +1,11 @@
 <x-mail::message>
-# Booking Confirmed
+# Booking Received — Pending Approval
 
 Hello {{ $booking->user ? $booking->user->name : $booking->guest_name }},
 
-Your workspace booking at Eladé Studio has been successfully confirmed.
+Thank you for your booking request at Eladé Studio.
+
+Your requested time falls within overnight hours (**9 PM – 8 AM**), so it has been submitted for **admin approval**. You will receive another email once it has been reviewed.
 
 **Booking Ref:** #{{ $booking->id }}
 **Date:** {{ $booking->start_datetime->timezone('Europe/London')->format('l, jS F Y') }}
@@ -15,18 +17,8 @@ Your workspace booking at Eladé Studio has been successfully confirmed.
 @if($booking->setup_type && $booking->setup_type !== 'any')
 **Required Setup:** {{ $booking->setup_type === 'makeup' ? 'Make-up Chair' : 'Hair Stylist Chair' }}
 @endif
-@if((float) $booking->total_amount > 0)
-**Amount:** £{{ number_format((float) $booking->total_amount, 2) }}
-@endif
 
-@if($booking->user_id)
-You can amend or cancel this booking from **My Bookings** in your account.
-@else
-Want to amend or cancel your booking? Create an account with us using this email address:
-<x-mail::button :url="$registerUrl">
-Create Account
-</x-mail::button>
-@endif
+If approved, you will be asked to complete payment to secure your reservation.
 
 Thanks,<br>
 Eladé Studio

@@ -5,8 +5,12 @@ Hello {{ $booking->user ? $booking->user->name : $booking->guest_name }},
 
 Good news! Your overnight workspace booking at Eladé Studio has been approved by our admin team.
 
-**Date:** {{ \Carbon\Carbon::parse($booking->start_datetime)->format('l, jS F Y') }}
-**Time:** {{ \Carbon\Carbon::parse($booking->start_datetime)->format('g:i A') }} - {{ \Carbon\Carbon::parse($booking->end_datetime)->format('g:i A') }}
+**Date:** {{ \Carbon\Carbon::parse($booking->start_datetime)->timezone('Europe/London')->format('l, jS F Y') }}
+**Time (UK):** {{ \Carbon\Carbon::parse($booking->start_datetime)->timezone('Europe/London')->format('g:i A') }} - {{ \Carbon\Carbon::parse($booking->end_datetime)->timezone('Europe/London')->format('g:i A') }}
+**Booking Ref:** #{{ $booking->id }}
+@if($booking->chairs->isNotEmpty())
+**Chair(s):** {{ $booking->chairs->pluck('name')->join(', ') }}
+@endif
 
 To secure your reservation, please complete your payment within the next 15 minutes. 
 If payment is not received, the reservation will automatically expire.

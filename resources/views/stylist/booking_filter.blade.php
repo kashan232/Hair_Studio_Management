@@ -176,6 +176,7 @@
 
     .card-title-mixed {
         text-transform: uppercase;
+        margin-bottom: 0.14em;
     }
 
     .card-title-by {
@@ -473,18 +474,7 @@
     </div>
 
     <div style="text-align: center; font-size: 0.9rem; color: var(--app-muted); margin-bottom: 4rem; font-weight: 300;">
-        @if($minHourly)
-            Hourly from £{{ number_format($minHourly, 2) }}
-        @else
-            Hourly rates set per chair
-        @endif
-        &nbsp;&bull;&nbsp;
-        @if($minDaily)
-            Daily from £{{ number_format($minDaily, 2) }}
-        @else
-            Daily rates set per chair
-        @endif
-        &nbsp;&bull;&nbsp; Monthly Bundles available
+        Hourly From £15.65  •  Daily From £99  •  Monthly From £295
     </div>
 
     <div class="info-section">
