@@ -37,9 +37,14 @@ class HairstylistRegistrationController extends Controller
             'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         ]);
 
-        // Link past guest bookings to this new user account
+        // Only claim still-relevant guest bookings for this email (upcoming / active).
+        // Do not pull in old past guest checkouts onto a brand-new account.
         \App\Models\Booking::whereNull('user_id')
-            ->where('guest_email', $user->email)
+            ->whereNotNull('guest_email')
+            ->where('guest_email', '!=', '')
+            ->whereRaw('LOWER(guest_email) = ?', [strtolower($user->email)])
+            ->whereIn('status', ['confirmed', 'pending_payment', 'pending_approval'])
+            ->where('start_datetime', '>=', now()->startOfDay())
             ->update(['user_id' => $user->id]);
 
         Auth::login($user);

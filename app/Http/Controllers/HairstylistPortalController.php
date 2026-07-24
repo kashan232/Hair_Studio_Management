@@ -1009,14 +1009,15 @@ class HairstylistPortalController extends Controller
         $start = Carbon::parse($startStr);
         $end = Carbon::parse($endStr);
 
-        // 9 PM (21:00) – 8 AM (08:00): any overlap requires admin approval
+        // 9 PM (21:00) to 8 PM (20:00): any overlap requires admin approval
         $ninePM = Carbon::createFromTime(21, 0, 0);
-        $eightAM = Carbon::createFromTime(8, 0, 0);
+        $eightPM = Carbon::createFromTime(20, 0, 0);
 
         return $start->gte($ninePM)
-            || $start->lt($eightAM)
+            || $start->lte($eightPM)
             || $end->gt($ninePM)
-            || $end->lte($eightAM);
+            || $end->lte($eightPM)
+            || $start->gt($end);
     }
 
     public function calculateTotal(): float

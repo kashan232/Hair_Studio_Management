@@ -104,33 +104,102 @@ class BookingController extends Controller
             'status' => 'required|in:pending_payment,confirmed,cancelled',
         ]);
 
-        $booking = Booking::findOrFail($id);
-        $booking->status = $request->status;
+        $booking = Booking::with(['user', 'chairs'])->findOrFail($id);
+        
+        $status = $request->status;
+        // If admin approves but no payment is needed (fully paid via package)
+        if ($status === 'pending_payment' && $booking->total_amount <= 0) {
+            $status = 'confirmed';
+        }
 
-        if ($request->status === 'pending_payment') {
-            $booking->expires_at = now()->addMinutes(15);
-        } elseif ($request->status === 'cancelled' || $request->status === 'confirmed') {
+        $booking->status = $status;
+
+        if ($status === 'pending_payment') {
+            $booking->expires_at = now()->addMinutes(30);
+        } elseif ($status === 'cancelled' || $status === 'confirmed') {
             $booking->expires_at = null;
         }
 
         $booking->save();
 
         $message = 'Booking status updated successfully.';
-        if ($request->status === 'pending_payment') {
+        $flashType = 'success';
+
+        if ($status === 'pending_payment') {
             $message = 'Booking approved. Stylist can now pay.';
-            try {
-                $emailToSend = $booking->user ? $booking->user->email : $booking->guest_email;
-                if ($emailToSend) {
-                    Mail::to($emailToSend)->send(new BookingApprovedPaymentRequired($booking));
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to send booking approval email: ' . $e->getMessage());
+            $emailResult = $this->sendApprovalEmail($booking);
+
+            if (!$emailResult['sent']) {
+                $flashType = 'error';
+                $message = 'Booking approved, but the approval email could not be sent to the customer. '
+                    . ($emailResult['error'] ?: 'Please check mail settings (MAIL_USERNAME / MAIL_PASSWORD) and resend.');
+            } else {
+                $message = 'Booking approved. Approval email sent to ' . $emailResult['email'] . '.';
             }
+        } elseif ($status === 'confirmed' && $request->status === 'pending_payment') {
+            $message = 'Booking approved and auto-confirmed (fully covered by package).';
+            try {
+                $emailToSend = $booking->guest_email ?: $booking->user?->email;
+                if ($emailToSend) {
+                    \Illuminate\Support\Facades\Mail::to($emailToSend)
+                        ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                        ->send(new \App\Mail\BookingConfirmed($booking));
+                }
+            } catch (\Throwable $e) {}
         } elseif ($request->status === 'cancelled') {
             $message = 'Booking rejected and cancelled.';
+            try {
+                $emailToSend = $booking->guest_email ?: $booking->user?->email;
+                if ($emailToSend) {
+                    \Illuminate\Support\Facades\Mail::to($emailToSend)
+                        ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                        ->send(new \App\Mail\BookingRejected($booking));
+                    $message .= ' Rejection email sent.';
+                }
+            } catch (\Throwable $e) {}
         }
 
-        return redirect()->route('bookings.index')->with('success', $message);
+        return redirect()->route('bookings.index')->with($flashType, $message);
+    }
+
+    /**
+     * Notify customer that overnight booking was approved and payment is required.
+     *
+     * @return array{sent: bool, email: ?string, error: ?string}
+     */
+    private function sendApprovalEmail(Booking $booking): array
+    {
+        $booking->loadMissing(['user', 'chairs']);
+
+        $emailToSend = strtolower(trim((string) (
+            $booking->user?->email
+            ?: $booking->guest_email
+        )));
+
+        if ($emailToSend === '') {
+            \Illuminate\Support\Facades\Log::warning('Booking approval email skipped: no recipient', [
+                'booking_id' => $booking->id,
+            ]);
+
+            return ['sent' => false, 'email' => null, 'error' => 'No customer email on this booking.'];
+        }
+
+        try {
+            Mail::to($emailToSend)->send(new BookingApprovedPaymentRequired($booking));
+
+            return ['sent' => true, 'email' => $emailToSend, 'error' => null];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send booking approval email: ' . $e->getMessage(), [
+                'booking_id' => $booking->id,
+                'email' => $emailToSend,
+            ]);
+
+            $hint = str_contains($e->getMessage(), '534') || str_contains($e->getMessage(), '535')
+                ? 'Gmail rejected the SMTP login — create a new App Password for eladebookings@gmail.com and update MAIL_PASSWORD in .env.'
+                : $e->getMessage();
+
+            return ['sent' => false, 'email' => $emailToSend, 'error' => $hint];
+        }
     }
 
     /**
@@ -181,10 +250,51 @@ class BookingController extends Controller
 
     public function payBalance($id)
     {
-        $booking = Booking::with('user')->findOrFail($id);
+        $booking = Booking::with(['user', 'chairs'])->findOrFail($id);
 
         if ($booking->status !== 'pending_payment') {
             return redirect()->route('stylist.book')->with('booking_error', 'This booking cannot be paid right now.');
+        }
+
+        $pricingChair = $booking->chairs->first();
+        $pricingRate = null;
+        $pricingRateLabel = 'hour';
+        if ($pricingChair) {
+            if ($booking->duration_hours >= 13 && $pricingChair->price_daily > 0) {
+                $pricingRate = $pricingChair->price_daily;
+                $pricingRateLabel = 'day';
+            } else {
+                $pricingRate = $pricingChair->price_hourly;
+            }
+        }
+        
+        $packageHoursUsed = $booking->package_hours_used ?? 0;
+        $rawTotal = $booking->total_amount;
+        $packageDiscount = 0;
+        if ($pricingRate && $packageHoursUsed > 0) {
+            // Approximating the package discount
+            if ($pricingRateLabel === 'day' && $packageHoursUsed >= 13) {
+                $packageDiscount = $pricingRate;
+            } else {
+                $packageDiscount = $pricingRate * $packageHoursUsed;
+            }
+            $rawTotal += $packageDiscount;
+        }
+
+        // Auto-confirm if balance is 0 or less (e.g. package covered it all)
+        if ($booking->total_amount <= 0) {
+            $booking->status = 'confirmed';
+            $booking->expires_at = null;
+            $booking->save();
+            try {
+                $emailToSend = $booking->guest_email ?: $booking->user?->email;
+                if ($emailToSend) {
+                    \Illuminate\Support\Facades\Mail::to($emailToSend)
+                        ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                        ->send(new \App\Mail\BookingConfirmed($booking));
+                }
+            } catch (\Throwable $e) {}
+            return redirect()->route('stylist.my_bookings')->with('success', 'Your booking is confirmed (fully covered by package).');
         }
 
         if ($booking->expires_at && $booking->expires_at < now()) {
@@ -193,7 +303,9 @@ class BookingController extends Controller
             return redirect()->route('stylist.book')->with('booking_error', 'Your booking reservation has expired due to timeout. Please try booking again.');
         }
 
-        return view('stylist.pay_balance', compact('booking'));
+        return view('stylist.pay_balance', compact(
+            'booking', 'pricingChair', 'pricingRate', 'pricingRateLabel', 'rawTotal', 'packageHoursUsed', 'packageDiscount'
+        ));
     }
 
     public function processBalancePayment(Request $request, $id)

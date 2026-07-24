@@ -19,11 +19,17 @@
 
 
 
-<filter id="chair-green" x="-20%" y="-20%" width="140%" height="140%">
+    <filter id="chair-green" x="-20%" y="-20%" width="140%" height="140%">
       <feFlood flood-color="#17b081" result="flood"/>
       <feComposite in="flood" in2="SourceAlpha" operator="in" result="mask"/>
       <feBlend in="mask" in2="SourceGraphic" mode="multiply"/>
       <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#17b081" flood-opacity="0.6"/>
+    </filter>
+    <filter id="chair-selected" x="-20%" y="-20%" width="140%" height="140%">
+      <feFlood flood-color="#461111" result="flood"/>
+      <feComposite in="flood" in2="SourceAlpha" operator="in" result="mask"/>
+      <feBlend in="mask" in2="SourceGraphic" mode="multiply"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#461111" flood-opacity="0.8"/>
     </filter>
     @php
         $multiChairSplit = $avail['status'] === 'multi_chair' ? $avail['schedule'] : [];
@@ -47,10 +53,11 @@
             $isMultiAssigned = in_array($cid, $multiChairSplit);
             $isAvailable = in_array($cid, $availableChairIds);
             $isSelected = ($avail['status'] === 'single_chair' && $isAvailable) || ($avail['status'] === 'multi_chair' && $isMultiAssigned);
+            $isAssigned = $assignedChair == $cid;
             $chairName = $allChairs[$cid] ?? 'Chair ' . $cid;
         @endphp
         
-        <use id="chair-{{ $cid }}" x="{{ $data['x'] }}" y="{{ $data['y'] }}" xlink:href="{{ $data['href'] }}" @if($isSelected) filter="url(#chair-green)" @endif/>
+        <use id="chair-{{ $cid }}" x="{{ $data['x'] }}" y="{{ $data['y'] }}" xlink:href="{{ $data['href'] }}" @if($isAssigned) filter="url(#chair-selected)" @elseif($isSelected) filter="url(#chair-green)" @endif/>
         <text x="{{ $data['x'] > 1500 ? $data['x'] + 430 : $data['x'] - 50 }}" y="{{ $data['y'] + 200 }}" font-size="60" font-family="Arial, sans-serif" fill="#333333" font-weight="bold" text-anchor="{{ $data['x'] > 1500 ? 'start' : 'end' }}" style="pointer-events:none;">{{ $loop->iteration }}</text>
     @endforeach
 

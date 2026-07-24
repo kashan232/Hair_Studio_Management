@@ -495,9 +495,9 @@
         </div>
     </div>
 
-    <div class="top-profile-bar" style="background: var(--app-surface, #ffffff); border-bottom: 1px solid var(--app-line, #efe4dc); padding: 0.85rem 1.25rem;">
-        <div class="top-profile-inner" style="max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-            <div class="profile-info" style="display: flex; align-items: center; gap: 0.85rem; min-width: 0; flex: 1;">
+    <div class="top-profile-bar" style="background: var(--app-surface, #ffffff); border-bottom: 1px solid var(--app-line, #efe4dc); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: center;">
+        <div class="top-profile-inner" style="max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; flex-direction: column; width: 100%;">
+            <div class="profile-info" style="display: flex; align-items: center; justify-content: center; gap: 0.85rem; min-width: 0; width: 100%;">
                 <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 45px; width: auto; object-fit: contain;">
             </div>
             @if(Auth::check())

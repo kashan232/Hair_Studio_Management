@@ -406,7 +406,7 @@
     }
     .summary-line:last-child { border-bottom: none; padding-bottom: 0; }
     .summary-line span:first-child { color: var(--app-muted); font-weight: 600; }
-    .summary-line span:last-child { text-align: right; }
+    .summary-line span:last-child { text-align: left; }
 
     .step-5-actions {
         display: flex;
@@ -943,7 +943,7 @@
             </div>
             @if($isOvernight)
                 <div class="summary-line" style="border:none;margin-top:0.5rem;color:#d84315;">
-                    <span style="font-size:0.8rem;line-height:1.4;">🌙 Your booking falls between 9 PM and 8 AM. This requires admin approval.</span>
+                    <span style="font-size:0.8rem;line-height:1.4;">🌙 Your requested booking time falls outside standard hours (9 PM–8 AM) and requires administrative approval before it can be confirmed.</span>
                 </div>
             @endif
         </div>
@@ -1291,6 +1291,8 @@
         if (selectedInput) selectedInput.value = chairId;
 
         highlightAvailableChairs();
+        const selEl = document.getElementById('chair-' + chairId);
+        if (selEl) selEl.setAttribute('filter', 'url(#chair-selected)');
 
         updateChairDetailsBox(chairId);
 

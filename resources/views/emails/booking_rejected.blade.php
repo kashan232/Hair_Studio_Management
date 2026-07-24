@@ -1,9 +1,9 @@
 <x-mail::message>
-# Booking Approved - Payment Required
+# Booking Request Rejected
 
 Hello {{ $booking->user ? $booking->user->name : $booking->guest_name }},
 
-Good news! Your overnight workspace booking at Eladé Studio has been approved by our admin team.
+We regret to inform you that your overnight workspace booking request at Eladé Studio could not be approved at this time.
 
 **Date:** {{ \Carbon\Carbon::parse($booking->start_datetime)->timezone('Europe/London')->format('l, jS F Y') }}
 **Time (UK):** {{ \Carbon\Carbon::parse($booking->start_datetime)->timezone('Europe/London')->format('g:i A') }} - {{ \Carbon\Carbon::parse($booking->end_datetime)->timezone('Europe/London')->format('g:i A') }}
@@ -12,12 +12,7 @@ Good news! Your overnight workspace booking at Eladé Studio has been approved b
 **Chair(s):** {{ $booking->chairs->pluck('name')->join(', ') }}
 @endif
 
-To secure your reservation, please complete your payment within the next 30 minutes. 
-If payment is not received, the reservation will automatically expire.
-
-<x-mail::button :url="$payUrl" color="success">
-Pay £{{ number_format($booking->total_amount, 2) }} Now
-</x-mail::button>
+If you have any questions or need to discuss alternative booking times, please feel free to reach out to us.
 
 Thanks,<br>
 Eladé Studio

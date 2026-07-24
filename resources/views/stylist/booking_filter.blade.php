@@ -90,10 +90,15 @@
     .header-section {
         text-align: center;
         margin-bottom: 3.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .header-logo {
+        display: block;
         height: 60px;
-        margin-bottom: 2.5rem;
+        width: auto;
+        margin: 0 auto 2.5rem;
     }
     .header-title {
         font-family: 'Bebas Neue', sans-serif;
@@ -321,8 +326,10 @@
         text-align: center;
     }
     .footer-logo {
+        display: block;
         height: 40px;
-        margin-bottom: 1rem;
+        width: auto;
+        margin: 0 auto 1rem;
         opacity: 0.8;
     }
     .footer-copyright {
@@ -411,7 +418,7 @@
     </div>
     
     <div class="header-section">
-        <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio" class="header-logo">
+        <img src="{{ asset('images/brand_logo.svg') }}?v=2" alt="Eladé Studio" class="header-logo">
         <h1 class="header-title">Book Your Session</h1>
         <p class="header-subtitle">Choose how you'd like to reserve your space at Eladé Studios</p>
     </div>
@@ -533,7 +540,7 @@
 
     <!-- Simple Footer -->
     <div class="simple-footer">
-        <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio" class="footer-logo">
+        <img src="{{ asset('images/brand_logo.svg') }}?v=2" alt="Eladé Studio" class="footer-logo">
         <div class="footer-copyright">
             &copy; {{ date('Y') }} Eladé Studios. All rights reserved.
         </div>

@@ -74,7 +74,20 @@
     </div>
     @endif
     
-    <p style="text-align:center;color:var(--app-muted);font-size:0.9rem;margin-bottom:2rem;">Your overnight booking has been approved! Please complete your payment to lock in your reservation.</p>
+    <p style="text-align:center;color:var(--app-muted);font-size:0.9rem;margin-bottom:2rem;">Your booking has been approved! Please complete payment to secure your reservation.</p>
+
+    @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
+        <div class="alert alert-success" style="border-radius: 8px; margin-bottom: 1.5rem; background-color: #f1f8e9; border: 1px solid #c5e1a5; color: #33691e; padding: 1rem;">
+            <h5 class="mb-1" style="font-weight: 600; margin-top:0;">Package Applied!</h5>
+            <p class="mb-0" style="margin-bottom:0;">You are using <strong>{{ $packageHoursUsed }}</strong> of your prepaid package hours for this booking.
+            @if($booking->total_amount > 0)
+                You only need to pay for the extra hours.
+            @else
+                This booking is fully covered by your package!
+            @endif
+            </p>
+        </div>
+    @endif
 
     <div class="summary-card">
         <div class="summary-line"><span>Booking ID</span><span>#{{ $booking->id }}</span></div>
@@ -91,9 +104,37 @@
     </div>
     <div id="coupon-message" class="coupon-msg"></div>
 
-    <div class="total-highlight">
-        <span class="total-highlight-label">Amount due</span>
-        <span class="total-highlight-amount" id="final-amount-display">£{{ number_format($booking->total_amount, 2) }}</span>
+    <div class="total-highlight" style="display: flex; flex-direction: column; align-items: stretch; padding: 1.25rem;">
+        @if($pricingChair)
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Chair</span>
+            <span style="font-size: 1rem; font-weight: 700; color: #fff;">{{ $pricingChair->name }}</span>
+        </div>
+        @endif
+        @if($pricingRate !== null)
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Rate</span>
+            <span style="font-size: 1rem; font-weight: 700; color: #fff;">£{{ number_format($pricingRate, 2) }} / {{ $pricingRateLabel }}</span>
+        </div>
+        @endif
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Booking Value</span>
+            <span style="font-size: 1.1rem; font-weight: 700; color: #fff;">£{{ number_format($rawTotal, 2) }}</span>
+        </div>
+
+        @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: #a5d6a7; text-transform: uppercase; letter-spacing: 1px;">Package ({{ $packageHoursUsed }} hrs)</span>
+            <span style="font-size: 1.1rem; font-weight: 700; color: #a5d6a7;">-£{{ number_format($packageDiscount, 2) }}</span>
+        </div>
+        @endif
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 0.75rem 0;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="total-highlight-label" style="margin-bottom: 0;">Amount due</span>
+            <span class="total-highlight-amount" id="final-amount-display" style="margin-bottom: 0; font-size: 2rem;">£{{ number_format($booking->total_amount, 2) }}</span>
+        </div>
     </div>
 
     <div class="stripe-card-wrap">
