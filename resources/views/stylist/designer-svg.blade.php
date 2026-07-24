@@ -26,10 +26,10 @@
       <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#17b081" flood-opacity="0.6"/>
     </filter>
     <filter id="chair-selected" x="-20%" y="-20%" width="140%" height="140%">
-      <feFlood flood-color="#461111" result="flood"/>
+      <feFlood flood-color="#c8e6c9" result="flood"/>
       <feComposite in="flood" in2="SourceAlpha" operator="in" result="mask"/>
       <feBlend in="mask" in2="SourceGraphic" mode="multiply"/>
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#461111" flood-opacity="0.8"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c8e6c9" flood-opacity="0.8"/>
     </filter>
     @php
         $multiChairSplit = $avail['status'] === 'multi_chair' ? $avail['schedule'] : [];
