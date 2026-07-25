@@ -474,6 +474,11 @@ class HairstylistPortalController extends Controller
         }
 
         $user = $this->getOrCreateUser($request);
+        
+        if ($user) {
+            $this->syncAdminBookingTotals($user->email);
+        }
+
         $this->createBookingRecord($user, 'pending_approval');
         session(['stylist_booking.completed' => true]);
 

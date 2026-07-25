@@ -708,6 +708,15 @@
                                 ->count();
             @endphp
             <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap: wrap; justify-content: center;">
+                @php
+                    $activePackage = App\Models\UserPackage::where('user_id', auth()->id())->where('status', 'active')->where('hours_remaining', '>', 0)->first();
+                @endphp
+                @if($activePackage)
+                    <div style="background: var(--app-accent-dark); color: #fff; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700; padding: 0 1rem; border-radius: 6px; font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; height: 40px; box-sizing: border-box;">
+                        <span style="width: 8px; height: 8px; background: #4caf50; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #4caf50;"></span>
+                        {{ intval($activePackage->hours_remaining) == $activePackage->hours_remaining ? intval($activePackage->hours_remaining) : $activePackage->hours_remaining }} HRS
+                    </div>
+                @endif
                 <a href="{{ route('stylist.packages.index') }}" class="btn-logout" style="text-decoration:none; border-color: var(--salon-gold); color: var(--app-accent-dark);">
                     My Packages
                 </a>
