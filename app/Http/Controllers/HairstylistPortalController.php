@@ -90,7 +90,7 @@ class HairstylistPortalController extends Controller
             $rawTotal = $amendPricing['raw_total'];
             $computedTotal = $amendPricing['amount_due'];
             $packageHoursUsed = $amendPricing['package_hours_used'];
-        } elseif ($user && $duration > 0 && $type !== 'daily') {
+        } elseif ($user && $duration > 0) {
             $packageBalance = $user->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -133,7 +133,7 @@ class HairstylistPortalController extends Controller
                 $rawTotal = $amendPricing['raw_total'];
                 $computedTotal = $amendPricing['amount_due'];
                 $packageHoursUsed = $amendPricing['package_hours_used'];
-            } elseif ($user && $duration > 0 && $type !== 'daily') {
+            } elseif ($user && $duration > 0) {
                 $packageBalance = $user->package_balance;
                 if ($packageBalance > 0) {
                     $packageHoursUsed = min($packageBalance, $duration);
@@ -338,7 +338,7 @@ class HairstylistPortalController extends Controller
             $total = $amendPricing['amount_due'];
             $packageHoursUsed = $amendPricing['package_hours_used'];
             $bookingTotal = $amendPricing['booking_total'];
-        } elseif ($user && $duration > 0 && $bookingType !== 'daily') {
+        } elseif ($user && $duration > 0) {
             $packageBalance = $user->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -523,7 +523,7 @@ class HairstylistPortalController extends Controller
         $type = session('stylist_booking.type', 'hourly');
         $customer = User::where('email', $customerEmail)->first();
 
-        if ($customer && $duration > 0 && $type !== 'daily') {
+        if ($customer && $duration > 0) {
             $packageBalance = $customer->package_balance;
             if ($packageBalance > 0) {
                 $packageHoursUsed = min($packageBalance, $duration);
@@ -1205,7 +1205,7 @@ class HairstylistPortalController extends Controller
         $oldTotal = (float) $oldBooking->total_amount;
         $oldType = ((int) $oldBooking->duration_hours >= 12) ? 'daily' : 'hourly';
         $rawTotal = $this->calculateTotal();
-        $packageBalance = ($user && $type !== 'daily')
+        $packageBalance = $user
             ? (int) $user->package_balance + (int) $oldBooking->package_hours_used
             : 0;
 
