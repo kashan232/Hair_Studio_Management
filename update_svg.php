@@ -1,6 +1,6 @@
 <?php
 $orig = file_get_contents('resources/views/stylist/designer-svg.blade.php');
-$new = file_get_contents('C:\Users\Admin\Downloads\chairs.svg');
+$new = file_get_contents('C:\Users\Admin\Downloads\chairs (1).svg');
 
 // 1. Get the blade logic from the original file.
 $blade_logic_start = strpos($orig, '    @php');
@@ -28,22 +28,16 @@ $new_defs_end = strpos($new, '</defs>');
 $part1 = substr($new, 0, $new_defs_end); // Everything up to just before </defs>
 $part2 = substr($new, $new_defs_end);    // Everything from </defs> onwards
 
-// We also need to strip out the static <use> tags from $part2, because blade logic handles them.
-$first_use = strpos($part2, '<use');
-if ($first_use !== false) {
-    // Keep everything from </defs> to the first <use>
-    $backgrounds = substr($part2, 0, $first_use);
-} else {
-    $backgrounds = $part2;
-    $svg_end = strpos($backgrounds, '</svg>');
-    if ($svg_end !== false) {
-        $backgrounds = substr($backgrounds, 0, $svg_end);
-    }
-}
+// Remove ALL <use> tags from $part2 to form $backgrounds
+$backgrounds = preg_replace('/<use[^>]+>/', '', $part2);
 $backgrounds = str_replace('</svg>', '', $backgrounds);
 
 // Change id="bg" to id="elade_map"
 $part1 = str_replace('<svg id="bg"', '<svg id="elade_map"', $part1);
+$part1 = preg_replace('/width="[^"]+"/', 'width="100%"', $part1, 1);
+$part1 = preg_replace('/height="[^"]+"/', 'height="100%"', $part1, 1);
+$part1 = preg_replace('/viewBox="([^"]+)"/', 'viewBox="$1" preserveAspectRatio="xMidYMid meet"', $part1, 1);
+
 
 // Assemble the final content!
 $final_content = $part1 . "\n" . $filters . "\n" . $backgrounds . "\n" . $blade_logic;

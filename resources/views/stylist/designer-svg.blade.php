@@ -31,6 +31,15 @@
   <rect class="cls-2" x="368" y="936" width="677" height="1509"/>
   <rect class="cls-2" x="916" y="1396" width="1089" height="1169"/>
   
+  
+  
+  
+  
+  
+  
+  <rect class="cls-2" x="911" y="1260" width="254" height="185"/>
+
+
     @php
         $multiChairSplit = $avail['status'] === 'multi_chair' ? $avail['schedule'] : [];
         $assignedChair = $assignedChair ?? ($avail['status'] === 'single_chair' ? $avail['chair_id'] : null);
