@@ -1,104 +1,52 @@
 <?php
-$new_svg_path = 'C:\Users\Admin\Downloads\chairs 8 (1).svg';
-$blade_path = 'c:\xampp\htdocs\Hair_Studio_Management\resources\views\stylist\designer-svg.blade.php';
+$orig = file_get_contents('resources/views/stylist/designer-svg.blade.php');
+$new = file_get_contents('C:\Users\Admin\Downloads\chairs.svg');
 
-$lines = file($new_svg_path);
-$static_svg = implode("", array_slice($lines, 0, 15));
+// 1. Get the blade logic from the original file.
+$blade_logic_start = strpos($orig, '    @php');
+if ($blade_logic_start === false) {
+    $blade_logic_start = strpos($orig, '@php');
+}
+$blade_logic = substr($orig, $blade_logic_start);
 
-$filter_def = '
-    <filter id="chair-green" x="-20%" y="-20%" width="140%" height="140%">
-      <feFlood flood-color="#17b081" result="flood"/>
-      <feComposite in="flood" in2="SourceAlpha" operator="in" result="mask"/>
-      <feBlend in="mask" in2="SourceGraphic" mode="multiply"/>
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#17b081" flood-opacity="0.6"/>
-    </filter>
-';
-$static_svg .= $filter_def;
+// 2. Get the filters from the original file.
+$filter_start = strpos($orig, '<filter id="chair-green"');
+// Find the first </defs> AFTER the filters. We can search from $filter_start
+$filter_end = strpos($orig, '</defs>', $filter_start);
 
-$blade_logic = <<<'EOD'
-    @php
-        $multiChairSplit = $avail['status'] === 'multi_chair' ? $avail['schedule'] : [];
-        $assignedChair = $avail['status'] === 'single_chair' ? $avail['chair_id'] : null;
+// Wait! If there is NO </defs> between <filter> and @php, then the filters just go until @php
+$filter_block = substr($orig, $filter_start, $blade_logic_start - $filter_start);
+// We want to just capture the <filter> blocks exactly.
+// Since there's only two filters, let's just use string extraction more robustly.
+$filter_end = strpos($orig, '</filter>', $filter_start);
+$filter_end = strpos($orig, '</filter>', $filter_end + 1); // Second filter
+$filter_end += strlen('</filter>');
+$filters = substr($orig, $filter_start, $filter_end - $filter_start);
 
-        $allChairs = \App\Models\Chair::pluck('name', 'id')->toArray();
-        $chairData = [
-            1 => ['x' => 365, 'y' => 1019, 'href' => '#image'],
-            2 => ['x' => 365, 'y' => 1529, 'href' => '#image'],
-            3 => ['x' => 365, 'y' => 2039, 'href' => '#image'],
-            4 => ['x' => 1115, 'y' => 1529, 'href' => '#image-2'],
-            5 => ['x' => 1115, 'y' => 1988, 'href' => '#image-2'],
-            6 => ['x' => 1523, 'y' => 1529, 'href' => '#image'],
-            7 => ['x' => 1523, 'y' => 1988, 'href' => '#image']
-        ];
-    @endphp
+// 3. Process the new SVG
+$new_defs_end = strpos($new, '</defs>');
+$part1 = substr($new, 0, $new_defs_end); // Everything up to just before </defs>
+$part2 = substr($new, $new_defs_end);    // Everything from </defs> onwards
 
-    @foreach($chairData as $cid => $data)
-        @php
-            $isMultiAssigned = in_array($cid, $multiChairSplit);
-            $isSelected = ($avail['status'] === 'single_chair' && $cid == $assignedChair) || ($avail['status'] === 'multi_chair' && $isMultiAssigned);
-            $chairName = $allChairs[$cid] ?? 'Chair ' . $cid;
-        @endphp
-        
-        <use id="chair-{{ $cid }}" x="{{ $data['x'] }}" y="{{ $data['y'] }}" xlink:href="{{ $data['href'] }}" @if($isSelected) filter="url(#chair-green)" @endif/>
-        <text x="{{ $data['x'] > 1000 ? $data['x'] + 430 : $data['x'] - 50 }}" y="{{ $data['y'] + 200 }}" font-size="60" font-family="Arial, sans-serif" fill="#333333" font-weight="bold" text-anchor="{{ $data['x'] > 1000 ? 'start' : 'end' }}" style="pointer-events:none;">{{ $loop->iteration }}</text>
-    @endforeach
+// We also need to strip out the static <use> tags from $part2, because blade logic handles them.
+$first_use = strpos($part2, '<use');
+if ($first_use !== false) {
+    // Keep everything from </defs> to the first <use>
+    $backgrounds = substr($part2, 0, $first_use);
+} else {
+    $backgrounds = $part2;
+    $svg_end = strpos($backgrounds, '</svg>');
+    if ($svg_end !== false) {
+        $backgrounds = substr($backgrounds, 0, $svg_end);
+    }
+}
+$backgrounds = str_replace('</svg>', '', $backgrounds);
 
-    @foreach($chairData as $cid => $data)
-        @php
-            $isMultiAssigned = in_array($cid, $multiChairSplit);
-            $isSelected = ($avail['status'] === 'single_chair' && $cid == $assignedChair) || ($avail['status'] === 'multi_chair' && $isMultiAssigned);
-            $chairName = $allChairs[$cid] ?? 'Chair ' . $cid;
-        @endphp
-        
-        @if($isSelected)
-            @php
-                if($avail['status'] === 'multi_chair') {
-                    $hourIndex = array_search($cid, $multiChairSplit);
-                    $startHour = \Carbon\Carbon::parse(session('stylist_booking.start_time'))->addHours($hourIndex)->format('g:i A');
-                    $endHour = \Carbon\Carbon::parse(session('stylist_booking.start_time'))->addHours($hourIndex + 1)->format('g:i A');
-                    $hourLabel = ($hourIndex == 0) ? '1st Hour' : (($hourIndex == 1) ? '2nd Hour' : 'Hour '.($hourIndex+1));
-                } else {
-                    $startHour = \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('g:i A');
-                    $endHour = \Carbon\Carbon::parse(session('stylist_booking.end_time'))->format('g:i A');
-                    $hourLabel = 'Full Duration';
-                }
-            @endphp
-            <rect x="{{ $data['x'] - 20 }}" y="{{ $data['y'] - 120 }}" width="560" height="100" fill="#fff" rx="16" filter="drop-shadow(0px 8px 20px rgba(0,0,0,0.15))"/>
-            <text x="{{ $data['x'] + 10 }}" y="{{ $data['y'] - 75 }}" font-size="32" fill="#111" font-weight="bold">{{ $chairName }}: {{ $startHour }} - {{ $endHour }}</text>
-            <text x="{{ $data['x'] + 10 }}" y="{{ $data['y'] - 40 }}" font-size="28" fill="#666">({{ $hourLabel }})</text>
-        @endif
-    @endforeach
-    @if($avail['status'] === 'multi_chair' && count($multiChairSplit) > 1)
-        <!-- Arrow Defs -->
-        <defs>
-            <marker id="arrowhead" markerWidth="15" markerHeight="10.5" refX="13.5" refY="5.25" orient="auto">
-                <polygon points="0 0, 15 5.25, 0 10.5" fill="#17b081" />
-            </marker>
-        </defs>
-        
-        @for($i = 0; $i < count($multiChairSplit) - 1; $i++)
-            @php
-                $fromCid = $multiChairSplit[$i];
-                $toCid = $multiChairSplit[$i+1];
-                if (isset($chairData[$fromCid]) && isset($chairData[$toCid])) {
-                    $fromData = $chairData[$fromCid];
-                    $toData = $chairData[$toCid];
-                    
-                    // Chair center is roughly x + 204, y + 199
-                    $fromX = $fromData['x'] + 204;
-                    $fromY = $fromData['y'] + 199;
-                    $toX = $toData['x'] + 204;
-                    $toY = $toData['y'] + 199;
-                }
-            @endphp
-            @if(isset($fromX))
-                <!-- A nice thick dashed arrow -->
-                <line x1="{{ $fromX }}" y1="{{ $fromY }}" x2="{{ $toX }}" y2="{{ $toY }}" stroke="#17b081" stroke-width="12" stroke-dasharray="24,14" marker-end="url(#arrowhead)" style="filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.3));" />
-            @endif
-        @endfor
-    @endif
-</svg>
-EOD;
+// Change id="bg" to id="elade_map"
+$part1 = str_replace('<svg id="bg"', '<svg id="elade_map"', $part1);
 
-file_put_contents($blade_path, $static_svg . $blade_logic);
-echo "Done replacing SVG\n";
+// Assemble the final content!
+$final_content = $part1 . "\n" . $filters . "\n" . $backgrounds . "\n" . $blade_logic;
+
+file_put_contents('resources/views/stylist/designer-svg.blade.php', $final_content);
+echo "SUCCESS!";
