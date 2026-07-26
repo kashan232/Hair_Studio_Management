@@ -1067,12 +1067,7 @@
     @if($step === 4)
         @if(!empty($amendPricing))
             <div style="border-radius: 8px; margin-bottom: 1.5rem; background: #fff; border: 1px solid var(--app-line); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--app-text);">
-                <strong>Amending booking</strong> — original {{ $amendPricing['old_duration'] }} hr{{ $amendPricing['old_duration'] > 1 ? 's' : '' }}, £{{ number_format($amendPricing['old_total'], 2) }} already paid.
-                @if($computedTotal <= 0)
-                    No additional payment is required for this change.
-                @else
-                    You only pay for the extra hours at the hourly rate.
-                @endif
+                Amending a booking will adjust your remaining prepaid hours accordingly.
             </div>
         @endif
 
