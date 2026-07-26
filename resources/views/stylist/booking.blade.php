@@ -1076,9 +1076,9 @@
         @endif
 
         @if(isset($packageHoursUsed) && $packageHoursUsed > 0)
-            <div class="alert alert-success" style="border-radius: 8px; margin-bottom: 1.5rem; background-color: #f1f8e9; border: 1px solid #c5e1a5; color: #33691e;">
+            <div class="alert alert-success" style="border-radius: 8px; margin-bottom: 1.5rem; background-color: #f1f8e9; border: 1px solid #c5e1a5; color: #33691e; padding: 1.25rem;">
                 <h5 class="mb-1" style="font-weight: 600;">Package Applied!</h5>
-                <p class="mb-0">You are using <strong>{{ $packageHoursUsed }}</strong> of your prepaid package hours for this booking.
+                <p class="mb-0">This booking uses <strong>{{ $packageHoursUsed }}</strong>hours from your prepaid package and is fully covered – no additional charge applies
                 @if($computedTotal > 0)
                     You only need to pay for the remaining time.
                 @else
