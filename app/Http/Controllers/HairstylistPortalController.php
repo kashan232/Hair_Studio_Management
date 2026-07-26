@@ -849,7 +849,7 @@ class HairstylistPortalController extends Controller
 
         return redirect()
             ->route('stylist.book', ['step' => 1, 'type' => $type])
-            ->with('booking_success', 'Amending Booking #' . $booking->id . '. Choose a new date & time — your old booking will be replaced when you confirm.');
+            ->with('booking_success', 'Amending Booking ' . $booking->id . '. Select a new date and time below – this will replace your current booking once confirmed.');
     }
 
     /**

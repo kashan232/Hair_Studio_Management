@@ -164,6 +164,7 @@
         color: #2e7d32;
         font-size: 0.82rem;
         border-radius: 8px;
+        text-align: center;
     }
 
     .stepper-wrap {
