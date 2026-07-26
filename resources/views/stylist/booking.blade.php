@@ -1185,7 +1185,7 @@
                 @endif
                 @guest
                     <div style="background: #fff3cd; color: #856404; padding: 0.85rem; border-radius: 8px; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid #ffeeba;">
-                        <strong>Guest Booking:</strong> Please take a screenshot of this confirmation page and reference number to show to studio staff upon arrival.
+                        <strong>Guest Booking</strong> – Please note your booking reference number. Your booking confirmation has been emailed to you. Please check your spam/junk folder if it doesn't appear in your inbox shortly.
                     </div>
                 @endguest
             @endif
