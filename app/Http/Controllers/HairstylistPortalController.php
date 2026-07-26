@@ -826,9 +826,13 @@ class HairstylistPortalController extends Controller
         $booking = Booking::where('id', $id)->where('user_id', $user->id)->with('chairs')->firstOrFail();
 
         if (!$this->bookingCanBeAmended($booking)) {
+            $message = $this->bookingCancelBlockReason($booking);
+            if ($message === 'This booking cannot be cancelled.' && \Carbon\Carbon::parse($booking->start_datetime)->lte(now()->addHours(24))) {
+                $message = 'Bookings cannot be amended within 24 hours of the start time.';
+            }
             return redirect()
                 ->route('stylist.my_bookings')
-                ->with('error', $this->bookingCancelBlockReason($booking) ?: 'This booking cannot be amended.');
+                ->with('error', $message ?: 'This booking cannot be amended.');
         }
 
         session()->forget('stylist_booking');
@@ -872,7 +876,7 @@ class HairstylistPortalController extends Controller
     private function bookingCanBeAmended(Booking $booking): bool
     {
         return $this->bookingCanBeCancelled($booking)
-            && Carbon::parse($booking->start_datetime)->isFuture();
+            && \Carbon\Carbon::parse($booking->start_datetime)->gt(now()->addHours(24));
     }
 
     private function bookingCancelBlockReason(Booking $booking): string

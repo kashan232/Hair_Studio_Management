@@ -947,10 +947,12 @@
                     <span>£{{ number_format($pricingRate, 2) }} / {{ $pricingRateLabel }}</span>
                 </div>
             @endif
+            @if(!session()->has('stylist_booking.amend_booking_id'))
             <div class="summary-line" style="border-bottom:none;">
                 <span><strong>Total</strong></span>
                 <span><strong>£{{ number_format($rawTotal ?? 0, 2) }}</strong></span>
             </div>
+            @endif
             @if($isOvernight)
                 <div class="summary-line" style="border:none;margin-top:0.5rem;color:#d84315;">
                     <span style="font-size:0.8rem;line-height:1.4;">🌙 Your requested booking time falls outside standard hours (9 PM–8 AM) and requires administrative approval before it can be confirmed.</span>
@@ -960,6 +962,13 @@
 
         <form method="POST" action="{{ route('stylist.book.details') }}" class="details-form" id="confirm-form">
             @csrf
+            @if(session()->has('stylist_booking.amend_booking_id'))
+                <input type="hidden" name="name" value="{{ old('name', $user?->name ?? ($guestDetails['name'] ?? 'Guest')) }}">
+                <input type="hidden" name="email" value="{{ old('email', $user?->email ?? ($guestDetails['email'] ?? 'guest@example.com')) }}">
+                <input type="hidden" name="mobile" value="{{ old('mobile', preg_replace('/[^0-9]/', '', $user?->mobile ?? ($guestDetails['mobile'] ?? '00000000000'))) }}">
+                <input type="hidden" name="agree_terms" value="on">
+                <input type="hidden" name="consent_photography" value="1">
+            @else
             <p class="hint">Enter your details to complete booking. Your account will be created if you are new.</p>
 
             <div class="form-field">
@@ -1055,6 +1064,7 @@
                 <a href="https://eladeuk.com/privacy-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Privacy Policy</a>. You can also view our 
                 <a href="https://eladeuk.com/cookies-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Cookie Policy</a>.
             </div>
+            @endif
         </form>
         
         @if($user)

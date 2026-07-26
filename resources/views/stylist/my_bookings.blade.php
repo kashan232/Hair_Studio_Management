@@ -507,7 +507,7 @@
                     $hoursUntilStart = ($startAt->getTimestamp() - now()->getTimestamp()) / 3600;
                     $canManage = in_array($b->status, ['pending_payment', 'pending_approval'], true)
                         || ($b->status === 'confirmed' && $startAt->isFuture());
-                    $canAmend = $canManage && $startAt->isFuture();
+                    $canAmend = $canManage && $startAt->gt(now()->addHours(24));
                     $refundEligible = $b->status === 'confirmed'
                         && (float) $b->total_amount > 0
                         && $startAt->gt(now()->addHours(24));
