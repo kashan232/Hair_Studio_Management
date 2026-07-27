@@ -1075,6 +1075,75 @@
     @endif
 
     @if($step === 4)
+        <div class="schedule-panel" style="margin-bottom: 1.5rem;">
+            <div class="schedule-panel-title">Member Agreement</div>
+            <p style="text-align: center; color: var(--app-muted); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">Please review and sign our member agreement. You can skip for now, but a signed agreement is required before you can make any booking.</p>
+            
+            <div style="background: var(--app-bg); border: 1px solid var(--app-line); border-radius: 8px; padding: 1.5rem; max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--app-text); line-height: 1.6;">
+                  <h4 style="margin-top: 0; color: #461111; font-weight: 600; text-align: center; border-bottom: 1px solid #efe4dc; padding-bottom: 0.5rem; margin-bottom: 1rem;">Member Terms &amp; Conditions</h4>
+                  
+                  <strong style="display: block; color: #461111; font-size: 0.95rem; margin-bottom: 0.25rem;">1. PARTIES</strong>
+                  This Agreement is made between:<br>
+                  (1) <strong>Eladé UK Ltd</strong>, trading as Eladé Studio, a company registered in England and Wales, whose registered and trading address is 4-10 North Road, London N7 9EY ("Eladé Studio", "we", "us", or "our"); and<br>
+                  (2) The individual named in the applicable booking or registration process ("the Professional", "you", or "your"),<br>
+                  (each a "Party" and together the "Parties").
+                  
+                  <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">2. BACKGROUND</strong>
+                  <strong>2.1</strong> Eladé Studio operates premises equipped with chairs and related facilities suitable for hair, beauty, grooming and creative services.<br>
+                  <strong>2.2</strong> The Professional is an independent practitioner who wishes to use such a chair to carry on their own business.<br>
+                  <strong>2.3</strong> This Agreement sets out the terms on which Eladé Studio grants the Professional permission to do so.
+                  
+                  <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">3. GRANT OF RIGHTS</strong>
+                  <strong>3.1</strong> In consideration of the fees payable under this Agreement, Eladé Studio grants the Professional a personal, non-exclusive, non-transferable licence to use a designated chair within the Eladé Studio premises ("the Chair").<br>
+                  <strong>3.2</strong> The Chair shall be made available on an hourly, daily, or block-hour basis, as selected by the Professional at the time of booking.<br>
+                  <strong>3.3</strong> The licence granted under this Agreement is solely for the purpose of enabling the Professional to carry on their own independent hair, beauty, grooming or creative services business.
+                  
+                  <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">4. NATURE OF THE RELATIONSHIP</strong>
+                  <strong>4.1</strong> Nothing in this Agreement shall be construed as creating a relationship of employment, partnership, agency, or joint venture between Eladé Studio and the Professional.<br>
+                  <strong>4.2</strong> This Agreement does not grant the Professional any tenancy, right of exclusive possession, or long-term right to occupy any part of the premises.<br>
+                  <strong>4.3</strong> The Professional acknowledges and agrees that they operate as a self-employed individual or independent business, and are solely responsible for:
+                  <ul style="margin-top: 0.25rem; padding-left: 1.5rem; margin-bottom: 0;">
+                      <li>their own clients;</li>
+                      <li>their own pricing;</li>
+                      <li>their own marketing;</li>
+                      <li>their own insurance arrangements;</li>
+                      <li>their own tax affairs; and</li>
+                      <li>their own professional conduct,</li>
+                  </ul>
+                  each as further set out below.
+                  
+                  <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">5. RELATIONSHIP TO OTHER TERMS</strong>
+                  <strong>5.1</strong> This Agreement operates alongside, and is to be read together with, Eladé Studio's Terms &amp; Conditions and Booking &amp; Cancellation Policy, insofar as they relate to the employment status and independent business relationship of the Professional.
+              </div>
+
+            <form method="POST" action="{{ route('stylist.book.agreement') }}" id="agreement-form">
+                @csrf
+                <div style="background: #fff; border: 1px solid var(--app-line); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Your signature</div>
+                    <div style="border: 1px dashed var(--app-line); border-radius: 6px; background: #fafafa; position: relative;">
+                        <canvas id="signature-pad" style="width: 100%; height: 150px; cursor: crosshair;"></canvas>
+                        <div style="position: absolute; bottom: 10px; right: 10px;">
+                            <button type="button" id="clear-signature" style="background: none; border: none; color: var(--app-muted); font-size: 0.75rem; text-decoration: underline; cursor: pointer;">Clear signature</button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="agreement_signature" id="agreement_signature">
+                
+                <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.8rem; color: var(--app-text); margin-bottom: 1.5rem; cursor: pointer;">
+                    <input type="checkbox" name="agreement_confirm" required style="margin-top: 2px;">
+                    <span>I confirm I have read and accept the Eladé Studio member agreement, and that the signature above is my own.</span>
+                </label>
+            </form>
+        </div>
+
+        <nav style="display:flex; justify-content:space-between; margin-top:2rem;">
+            <button type="button" class="btn-app btn-app-prev" onclick="window.history.back()">Back</button>
+            <button type="button" id="submit-agreement-btn" class="btn-app btn-app-next">Accept & Sign Agreement &rarr;</button>
+        </nav>
+    @endif
+
+    @if($step === 5)
         @if(!empty($amendPricing))
             <div style="border-radius: 8px; margin-bottom: 1.5rem; background: #fff; border: 1px solid var(--app-line); padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--app-text);">
                 Amending a booking will adjust your remaining prepaid hours accordingly.
@@ -1172,7 +1241,7 @@
         </button>
     @endif
 
-    @if($step === 5)
+    @if($step === 6)
         <div class="confirmed-icon">
             @if(session('stylist_booking.availability_state.status') === 'pending_approval' || $isOvernight)
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:#f57c00;width:32px;height:32px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -1239,7 +1308,7 @@
             $isAdminBookingStep = !empty($guestDetails['is_admin_booking']);
             $step3SubmitLabel = $isOvernight
                 ? 'Submit for Approval'
-                : ($isAdminBookingStep ? 'Confirm Booking' : 'Payment');
+                : ($isAdminBookingStep ? 'Confirm Booking' : 'Agreement');
         @endphp
         <button type="submit" form="confirm-form" class="btn-app btn-app-next" id="step3-submit-btn">
             {!! $step3SubmitLabel !!}
@@ -1553,7 +1622,7 @@
 @endif
 
 {{-- ===== STRIPE PAYMENT (Step 4 only) ===== --}}
-@if(isset($step) && $step === 4)
+@if(isset($step) && $step === 5)
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 (function() {
@@ -1677,7 +1746,49 @@
 })();
 </script>
 @endif
+@if(isset($step) && $step === 4)
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('signature-pad');
+    if (canvas) {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
 
+        const signaturePad = new SignaturePad(canvas, {
+            penColor: 'rgb(70, 17, 17)'
+        });
 
+        document.getElementById('clear-signature').addEventListener('click', function() {
+            signaturePad.clear();
+        });
+
+        document.getElementById('submit-agreement-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (signaturePad.isEmpty()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Signature Required',
+                    text: 'Please provide your signature to accept the agreement.',
+                    confirmButtonColor: '#461111'
+                });
+                return;
+            }
+            
+            const form = document.getElementById('agreement-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            document.getElementById('agreement_signature').value = signaturePad.toDataURL();
+            form.submit();
+        });
+    }
+});
+</script>
+@endif
 
 @endsection

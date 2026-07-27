@@ -19,6 +19,13 @@ Your workspace booking at Eladé Studio has been successfully confirmed.
 **Amount:** £{{ number_format((float) $booking->total_amount, 2) }}
 @endif
 
+@if($booking->agreement_signature)
+---
+**Member Agreement Accepted**
+<br>
+<img src="{{ $booking->agreement_signature }}" alt="Signature" style="max-height: 100px; max-width: 100%; border: 1px solid #efe4dc; padding: 10px; background: #fff;">
+@endif
+
 @if($booking->user_id)
 You can amend or cancel this booking from **My Bookings** in your account.
 @else

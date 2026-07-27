@@ -23,6 +23,7 @@ class Booking extends Model
         'status',
         'setup_type',
         'consent_photography',
+        'agreement_signature',
         'coupon_code',
         'discount_amount',
         'expires_at',

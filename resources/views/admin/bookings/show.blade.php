@@ -466,6 +466,14 @@
                                 <span class="k">Setup</span>
                                 <span class="v">{{ $setupLabel }}</span>
                             </div>
+                            @if($booking->agreement_signature)
+                            <div class="rf-row" style="grid-template-columns: 1fr; border-top: 1px solid #f3eee6; border-bottom: 0; padding-top: 1rem; margin-top: 0.5rem;">
+                                <div>
+                                    <span class="k" style="color: var(--rf-wine); display: block; margin-bottom: 0.5rem;">Member Agreement Accepted &amp; Signed</span>
+                                    <img src="{{ $booking->agreement_signature }}" alt="Signature" style="max-height: 100px; max-width: 100%; border: 1px solid var(--rf-line); padding: 5px; background: #fff; border-radius: 4px;">
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
 

@@ -572,6 +572,15 @@
                                 </span>
                             </div>
                             @endif
+                            @if($b->agreement_signature)
+                            <div class="b-detail-item" style="grid-column: 1 / -1; margin-top: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--app-line);">
+                                <span class="b-detail-label">Member Agreement</span>
+                                <div style="margin-top: 0.5rem;">
+                                    <span style="font-size: 0.8rem; color: var(--app-text); display: block; margin-bottom: 0.5rem;">Agreement Accepted &amp; Signed</span>
+                                    <img src="{{ $b->agreement_signature }}" alt="Signature" style="max-height: 80px; max-width: 100%; border: 1px solid var(--app-line); padding: 5px; background: #fff; border-radius: 4px;">
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
                     

@@ -38,7 +38,7 @@ class HairstylistPortalController extends Controller
      ───────────────────────────────────────────── */
     public function booking(Request $request): View|RedirectResponse
     {
-        $step = max(1, min(5, (int) $request->query('step', 1)));
+        $step = max(1, min(6, (int) $request->query('step', 1)));
         $type = $request->query('type');
         $user = $request->user();
 
@@ -73,8 +73,9 @@ class HairstylistPortalController extends Controller
             1 => ['label' => 'Schedule', 'title' => 'Select Date & Duration'],
             2 => ['label' => 'Options',  'title' => 'Review Availability'],
             3 => ['label' => 'Details',  'title' => 'Your Details'],
-            4 => ['label' => 'Payment',  'title' => 'Secure Payment'],
-            5 => ['label' => 'Done',     'title' => 'Booking Confirmed!'],
+            4 => ['label' => 'Agreement', 'title' => 'Member Agreement'],
+            5 => ['label' => 'Payment',  'title' => 'Secure Payment'],
+            6 => ['label' => 'Done',     'title' => 'Booking Confirmed!'],
         ];
 
         $availabilityState = session('stylist_booking.availability_state');
@@ -312,6 +313,18 @@ class HairstylistPortalController extends Controller
         return redirect()->route('stylist.book', ['step' => 4]);
     }
 
+    public function confirmAgreement(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'agreement_signature' => 'required|string',
+            'agreement_confirm' => 'accepted'
+        ]);
+
+        session(['stylist_booking.agreement_signature' => $request->agreement_signature]);
+
+        return redirect()->route('stylist.book', ['step' => 5]);
+    }
+
     public function createPaymentIntent(Request $request): JsonResponse
     {
         if (!session('stylist_booking.start_date')) {
@@ -458,14 +471,14 @@ class HairstylistPortalController extends Controller
         $this->createBookingRecord($user, 'confirmed');
         session(['stylist_booking.completed' => true]);
 
-        return redirect()->route('stylist.book', ['step' => 5])
+        return redirect()->route('stylist.book', ['step' => 6])
             ->with('booking_success', 'Payment successful! Your workspace is confirmed.');
     }
 
     private function processPendingApproval(Request $request): RedirectResponse
     {
         if (session('stylist_booking.completed')) {
-            return redirect()->route('stylist.book', ['step' => 5]);
+            return redirect()->route('stylist.book', ['step' => 6]);
         }
 
         if (!$this->verifyChairsAreFree()) {
@@ -482,14 +495,14 @@ class HairstylistPortalController extends Controller
         $this->createBookingRecord($user, 'pending_approval');
         session(['stylist_booking.completed' => true]);
 
-        return redirect()->route('stylist.book', ['step' => 5])
+        return redirect()->route('stylist.book', ['step' => 6])
             ->with('booking_success', 'Booking submitted. Pending Admin Approval for overnight hours.');
     }
 
     private function processAdminBooking(Request $request): RedirectResponse
     {
         if (session('stylist_booking.completed')) {
-            return redirect()->route('stylist.book', ['step' => 5]);
+            return redirect()->route('stylist.book', ['step' => 6]);
         }
 
         if (!session('stylist_booking.start_date')) {
@@ -505,7 +518,7 @@ class HairstylistPortalController extends Controller
         $this->createBookingRecord($user, 'confirmed');
         session(['stylist_booking.completed' => true]);
 
-        return redirect()->route('stylist.book', ['step' => 5])
+        return redirect()->route('stylist.book', ['step' => 6])
             ->with('booking_success', 'Booking confirmed for customer.');
     }
 
@@ -582,6 +595,7 @@ class HairstylistPortalController extends Controller
             'status' => $status,
             'setup_type' => session('stylist_booking.setup_type', 'hair'),
             'consent_photography' => session('stylist_booking.consent_photography', false),
+            'agreement_signature' => session('stylist_booking.agreement_signature'),
             'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
 
