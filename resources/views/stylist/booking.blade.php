@@ -960,7 +960,7 @@
             @endif
         </div>
 
-        <form method="POST" action="{{ route('stylist.book.details') }}" class="details-form" id="confirm-form">
+        <form method="POST" action="{{ route('stylist.book.details') }}" class="{{ session()->has('stylist_booking.amend_booking_id') ? '' : 'details-form' }}" id="confirm-form">
             @csrf
             @if(session()->has('stylist_booking.amend_booking_id'))
                 <input type="hidden" name="name" value="{{ old('name', $user?->name ?? ($guestDetails['name'] ?? 'Guest')) }}">
@@ -1260,11 +1260,11 @@
                         <strong>Booking Ref: #{{ session('stylist_booking.final_booking_id') }}</strong>
                     </div>
                 @endif
-                @guest
+                @if(!session('was_amend_booking'))
                     <div style="background: #fff3cd; color: #856404; padding: 0.85rem; border-radius: 8px; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid #ffeeba;">
-                        <strong>Guest Booking</strong> – Please note your booking reference number. Your booking confirmation has been emailed to you. Please check your spam/junk folder if it doesn't appear in your inbox shortly.
+                        <strong>@guest Guest Booking @else Booking Confirmation @endguest</strong> – Please note your booking reference number. Your booking confirmation has been emailed to you. Please check your spam/junk folder if it doesn't appear in your inbox shortly.
                     </div>
-                @endguest
+                @endif
             @endif
             
             <div class="summary-line"><span>Start</span><span>{{ \Carbon\Carbon::parse(session('stylist_booking.start_date'))->format('D d M Y') }} &bull; {{ \Carbon\Carbon::parse(session('stylist_booking.start_time'))->format('h:i A') }}</span></div>

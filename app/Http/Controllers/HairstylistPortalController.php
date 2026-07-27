@@ -454,7 +454,7 @@ class HairstylistPortalController extends Controller
         }
 
         if (session('stylist_booking.completed')) {
-            return redirect()->route('stylist.book', ['step' => 5]);
+            return redirect()->route('stylist.book', ['step' => 6]);
         }
 
         if (!session('stylist_booking.start_date')) {
@@ -568,6 +568,7 @@ class HairstylistPortalController extends Controller
                 app(BookingCancellationService::class)->cancel($oldBooking, false);
             }
             session()->forget('stylist_booking.amend_booking_id');
+            session()->flash('was_amend_booking', true);
         }
 
         $totalAmount = session('stylist_booking.final_total', $this->calculateTotal());
@@ -577,6 +578,19 @@ class HairstylistPortalController extends Controller
             if ($amendPricing['amount_due'] <= 0 && !empty($amendPricing['original_payment_intent'])) {
                 $paymentIntentId = $amendPricing['original_payment_intent'];
             }
+        }
+
+        $signatureData = session('stylist_booking.agreement_signature');
+        $signaturePath = null;
+        if ($signatureData && \Illuminate\Support\Str::startsWith($signatureData, 'data:image')) {
+            list($type, $data) = explode(';', $signatureData);
+            list(, $data)      = explode(',', $data);
+            $data = base64_decode($data);
+            $filename = 'signatures/' . uniqid() . '.png';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $data);
+            $signaturePath = $filename;
+        } else {
+            $signaturePath = $signatureData;
         }
 
         $booking = Booking::create([
@@ -595,7 +609,7 @@ class HairstylistPortalController extends Controller
             'status' => $status,
             'setup_type' => session('stylist_booking.setup_type', 'hair'),
             'consent_photography' => session('stylist_booking.consent_photography', false),
-            'agreement_signature' => session('stylist_booking.agreement_signature'),
+            'agreement_signature' => $signaturePath,
             'expires_at' => $status === 'pending_payment' ? now()->addMinutes(15) : null,
         ]);
 

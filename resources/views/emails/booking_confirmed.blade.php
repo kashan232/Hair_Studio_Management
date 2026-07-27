@@ -23,7 +23,7 @@ Your workspace booking at Eladé Studio has been successfully confirmed.
 ---
 **Member Agreement Accepted**
 <br>
-<img src="{{ $booking->agreement_signature }}" alt="Signature" style="max-height: 100px; max-width: 100%; border: 1px solid #efe4dc; padding: 10px; background: #fff;">
+<img src="{{ \Illuminate\Support\Str::startsWith($booking->agreement_signature, 'data:image') ? $booking->agreement_signature : asset('storage/' . $booking->agreement_signature) }}" alt="Signature" style="max-height: 100px; max-width: 100%; border: 1px solid #efe4dc; padding: 10px; background: #fff;">
 @endif
 
 @if($booking->user_id)

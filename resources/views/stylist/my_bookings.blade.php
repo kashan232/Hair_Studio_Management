@@ -577,7 +577,7 @@
                                 <span class="b-detail-label">Member Agreement</span>
                                 <div style="margin-top: 0.5rem;">
                                     <span style="font-size: 0.8rem; color: var(--app-text); display: block; margin-bottom: 0.5rem;">Agreement Accepted &amp; Signed</span>
-                                    <img src="{{ $b->agreement_signature }}" alt="Signature" style="max-height: 80px; max-width: 100%; border: 1px solid var(--app-line); padding: 5px; background: #fff; border-radius: 4px;">
+                                    <img src="{{ \Illuminate\Support\Str::startsWith($b->agreement_signature, 'data:image') ? $b->agreement_signature : asset('storage/' . $b->agreement_signature) }}" alt="Signature" style="max-height: 80px; max-width: 100%; border: 1px solid var(--app-line); padding: 5px; background: #fff; border-radius: 4px;">
                                 </div>
                             </div>
                             @endif
