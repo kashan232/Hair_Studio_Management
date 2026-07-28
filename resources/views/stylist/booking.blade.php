@@ -1046,8 +1046,9 @@
                 <input type="checkbox" id="agree_terms" name="agree_terms" required style="margin-top: 0.25rem; width: 18px; height: 18px; accent-color: var(--app-accent-dark); cursor: pointer;">
                 <label for="agree_terms" style="font-size: 0.8rem; line-height: 1.5; color: var(--app-text); cursor: pointer;">
                     I have read, understood and agree to the Eladé UK 
-                    <a href="https://eladeuk.com/terms-and-conditions" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Terms & Conditions</a> and 
-                    <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Booking & Cancellation Policy</a>, 
+                    <a href="https://eladeuk.com/terms-and-conditions" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Terms & Conditions</a>, 
+                    <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Booking & Cancellation Policy</a> and 
+                    <a href="https://eladeuk.com/chair-booking-terms" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Chair Booking Terms</a>, 
                     including the 24-hour cancellation and rescheduling terms.
                 </label>
             </div>
