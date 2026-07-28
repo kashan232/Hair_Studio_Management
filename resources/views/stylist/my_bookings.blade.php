@@ -577,7 +577,20 @@
                                 <span class="b-detail-label">Member Agreement</span>
                                 <div style="margin-top: 0.5rem;">
                                     <span style="font-size: 0.8rem; color: var(--app-text); display: block; margin-bottom: 0.5rem;">Agreement Accepted &amp; Signed</span>
-                                    <img src="{{ \Illuminate\Support\Str::startsWith($b->agreement_signature, 'data:image') ? $b->agreement_signature : asset('storage/' . $b->agreement_signature) }}" alt="Signature" style="max-height: 80px; max-width: 100%; border: 1px solid var(--app-line); padding: 5px; background: #fff; border-radius: 4px;">
+                                    @php
+                                        $sigStr = $b->agreement_signature;
+                                        $imgSrc = '';
+                                        if (\Illuminate\Support\Str::startsWith($sigStr, 'data:image')) {
+                                            $imgSrc = $sigStr;
+                                        } else if (\Illuminate\Support\Facades\Storage::disk('public')->exists($sigStr)) {
+                                            $mime = \Illuminate\Support\Facades\Storage::disk('public')->mimeType($sigStr);
+                                            $data = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($sigStr));
+                                            $imgSrc = "data:{$mime};base64,{$data}";
+                                        } else {
+                                            $imgSrc = asset('storage/' . $sigStr);
+                                        }
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" alt="Signature" style="max-height: 80px; max-width: 100%; border: 1px solid var(--app-line); padding: 5px; background: #fff; border-radius: 4px;">
                                 </div>
                             </div>
                             @endif

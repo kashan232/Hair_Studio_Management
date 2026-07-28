@@ -470,7 +470,20 @@
                             <div class="rf-row" style="grid-template-columns: 1fr; border-top: 1px solid #f3eee6; border-bottom: 0; padding-top: 1rem; margin-top: 0.5rem;">
                                 <div>
                                     <span class="k" style="color: var(--rf-wine); display: block; margin-bottom: 0.5rem;">Member Agreement Accepted &amp; Signed</span>
-                                    <img src="{{ \Illuminate\Support\Str::startsWith($booking->agreement_signature, 'data:image') ? $booking->agreement_signature : asset('storage/' . $booking->agreement_signature) }}" alt="Signature" style="max-height: 100px; max-width: 100%; border: 1px solid var(--rf-line); padding: 5px; background: #fff; border-radius: 4px;">
+                                    @php
+                                        $sigStr = $booking->agreement_signature;
+                                        $imgSrc = '';
+                                        if (\Illuminate\Support\Str::startsWith($sigStr, 'data:image')) {
+                                            $imgSrc = $sigStr;
+                                        } else if (\Illuminate\Support\Facades\Storage::disk('public')->exists($sigStr)) {
+                                            $mime = \Illuminate\Support\Facades\Storage::disk('public')->mimeType($sigStr);
+                                            $data = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($sigStr));
+                                            $imgSrc = "data:{$mime};base64,{$data}";
+                                        } else {
+                                            $imgSrc = asset('storage/' . $sigStr);
+                                        }
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" alt="Signature" style="max-height: 100px; max-width: 100%; border: 1px solid var(--rf-line); padding: 5px; background: #fff; border-radius: 4px;">
                                 </div>
                             </div>
                             @endif

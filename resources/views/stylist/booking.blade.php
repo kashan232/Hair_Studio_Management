@@ -1080,7 +1080,7 @@
             <div class="schedule-panel-title">Member Agreement</div>
             <p style="text-align: center; color: var(--app-muted); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">Please review and sign our member agreement. A signed agreement is required before you can make any booking.</p>
             
-            <div style="background: var(--app-bg); border: 1px solid var(--app-line); border-radius: 8px; padding: 1.5rem; max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--app-text); line-height: 1.6;">
+            <div style="background: var(--app-bg); border: 1px solid var(--app-line); border-radius: 8px; padding: 1.5rem; max-height: 35vh; min-height: 150px; overflow-y: auto; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--app-text); line-height: 1.6;">
                   <h4 style="margin-top: 0; color: #461111; font-weight: 600; text-align: center; border-bottom: 1px solid #efe4dc; padding-bottom: 0.5rem; margin-bottom: 1rem;">Member Agreement</h4>
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-bottom: 0.25rem;">1. PARTIES</strong>
