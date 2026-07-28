@@ -1080,7 +1080,7 @@
             <p style="text-align: center; color: var(--app-muted); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">Please review and sign our member agreement. You can skip for now, but a signed agreement is required before you can make any booking.</p>
             
             <div style="background: var(--app-bg); border: 1px solid var(--app-line); border-radius: 8px; padding: 1.5rem; max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--app-text); line-height: 1.6;">
-                  <h4 style="margin-top: 0; color: #461111; font-weight: 600; text-align: center; border-bottom: 1px solid #efe4dc; padding-bottom: 0.5rem; margin-bottom: 1rem;">Member Terms &amp; Conditions</h4>
+                  <h4 style="margin-top: 0; color: #461111; font-weight: 600; text-align: center; border-bottom: 1px solid #efe4dc; padding-bottom: 0.5rem; margin-bottom: 1rem;">Member Agreement</h4>
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-bottom: 0.25rem;">1. PARTIES</strong>
                   This Agreement is made between:<br>
@@ -1101,15 +1101,13 @@
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">4. NATURE OF THE RELATIONSHIP</strong>
                   <strong>4.1</strong> Nothing in this Agreement shall be construed as creating a relationship of employment, partnership, agency, or joint venture between Eladé Studio and the Professional.<br>
                   <strong>4.2</strong> This Agreement does not grant the Professional any tenancy, right of exclusive possession, or long-term right to occupy any part of the premises.<br>
-                  <strong>4.3</strong> The Professional acknowledges and agrees that they operate as a self-employed individual or independent business, and are solely responsible for:
-                  <ul style="margin-top: 0.25rem; padding-left: 1.5rem; margin-bottom: 0;">
-                      <li>their own clients;</li>
-                      <li>their own pricing;</li>
-                      <li>their own marketing;</li>
-                      <li>their own insurance arrangements;</li>
-                      <li>their own tax affairs; and</li>
-                      <li>their own professional conduct,</li>
-                  </ul>
+                  <strong>4.3</strong> The Professional acknowledges and agrees that they operate as a self-employed individual or independent business, and are solely responsible for:<br>
+                  (a) their own clients;<br>
+                  (b) their own pricing;<br>
+                  (c) their own marketing;<br>
+                  (d) their own insurance arrangements;<br>
+                  (e) their own tax affairs; and<br>
+                  (f) their own professional conduct,<br>
                   each as further set out below.
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">5. RELATIONSHIP TO OTHER TERMS</strong>
