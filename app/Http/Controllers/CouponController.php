@@ -59,6 +59,11 @@ class CouponController extends Controller
             return response()->json(['error' => 'Invalid coupon code.'], 400);
         }
 
+        $bookingType = session('stylist_booking.type');
+        if ($bookingType && $bookingType !== 'hourly') {
+            return response()->json(['error' => 'Discount codes are only valid for hourly bookings.'], 400);
+        }
+
         if (!$coupon->is_active) {
             return response()->json(['error' => 'This coupon is no longer active.'], 400);
         }

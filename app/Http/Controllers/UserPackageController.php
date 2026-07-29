@@ -38,18 +38,7 @@ class UserPackageController extends Controller
         $couponCode = $request->input('coupon_code');
 
         if ($couponCode) {
-            $coupon = \App\Models\Coupon::where('code', strtoupper(trim($couponCode)))->first();
-            if ($coupon && $coupon->isValidNow()) {
-                if ($coupon->hasBeenUsedBy(auth()->user(), auth()->user()?->email)) {
-                    return response()->json(['error' => 'This coupon has already been used with this email address.'], 400);
-                }
-
-                $discount = $coupon->calculateDiscount($finalAmount);
-                $finalAmount -= $discount;
-                session(['package_checkout_coupon' => $coupon->code, 'package_checkout_discount' => $discount]);
-            } else {
-                return response()->json(['error' => 'Invalid or expired coupon.'], 400);
-            }
+            return response()->json(['error' => 'Discount codes are only valid for hourly chair bookings.'], 400);
         } else {
             session()->forget('package_checkout_coupon');
             session()->forget('package_checkout_discount');
