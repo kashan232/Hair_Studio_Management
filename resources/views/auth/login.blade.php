@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Log in or create account | Eladé Studio</title>
+    <title>Flexible Chair Rental Salon For Independent Stylists In London</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
 
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
@@ -588,7 +588,7 @@
 
                 <div class="divider">or</div>
 
-                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">Book Chair as Guest</a>
+                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">BOOK CHAIR AS A GUEST</a>
             </form>
 
             <!-- REGISTER FORM -->
@@ -629,7 +629,7 @@
 
                 <div class="divider">or</div>
 
-                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">Book Chair as Guest</a>
+                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">BOOK CHAIR AS A GUEST</a>
             </form>
         </div>
 
