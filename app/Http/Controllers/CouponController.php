@@ -66,9 +66,16 @@ class CouponController extends Controller
             $bookingType = $request->input('booking_type');
         }
 
-        if ($bookingType && !$coupon->isApplicableTo($bookingType)) {
-            $serviceName = $bookingType === 'hourly' ? 'hourly bookings' : ($bookingType === 'daily' ? 'daily bookings' : 'monthly packages');
-            return response()->json(['error' => "This discount code is not valid for {$serviceName}."], 400);
+        if ($bookingType) {
+            if (!$coupon->isApplicableTo($bookingType)) {
+                $serviceName = $bookingType === 'hourly' ? 'hourly bookings' : ($bookingType === 'daily' ? 'daily bookings' : 'monthly packages');
+                return response()->json(['error' => "This discount code is not valid for {$serviceName}."], 400);
+            }
+        } else {
+            // Unknown booking type, only allow 'all' coupons
+            if (!$coupon->isApplicableTo('unknown')) {
+                return response()->json(['error' => "This discount code cannot be used here."], 400);
+            }
         }
 
         if (!$coupon->is_active) {

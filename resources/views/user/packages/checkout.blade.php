@@ -198,7 +198,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ code: code, total_amount: {{ $package->price }} })
+                    body: JSON.stringify({ code: code, total_amount: {{ $package->price }}, booking_type: 'package' })
                 });
                 
                 const data = await res.json();
