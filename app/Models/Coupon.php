@@ -18,6 +18,7 @@ class Coupon extends Model
         'expires_at',
         'is_active',
         'is_reusable',
+        'applicable_to',
     ];
 
     protected $casts = [
@@ -36,6 +37,14 @@ class Coupon extends Model
     public function isValidNow(): bool
     {
         return $this->is_active && $this->expires_at->gte(Carbon::today());
+    }
+
+    public function isApplicableTo(?string $type): bool
+    {
+        if ($this->applicable_to === 'all') {
+            return true;
+        }
+        return $this->applicable_to === $type;
     }
 
     /**

@@ -23,6 +23,7 @@ class CouponController extends Controller
             'expires_at' => 'required|date',
             'is_active' => 'boolean',
             'is_reusable' => 'boolean',
+            'applicable_to' => 'required|in:all,hourly,daily,package',
         ]);
 
         Coupon::create([
@@ -32,6 +33,7 @@ class CouponController extends Controller
             'expires_at' => $request->expires_at,
             'is_active' => $request->has('is_active'),
             'is_reusable' => $request->has('is_reusable'),
+            'applicable_to' => $request->applicable_to,
         ]);
 
         return redirect()->route('coupons.index')->with('success', 'Coupon created successfully.');
@@ -59,9 +61,14 @@ class CouponController extends Controller
             return response()->json(['error' => 'Invalid coupon code.'], 400);
         }
 
-        $bookingType = session('stylist_booking.type');
-        if ($bookingType && $bookingType !== 'hourly') {
-            return response()->json(['error' => 'Discount codes are only valid for hourly bookings.'], 400);
+        $bookingType = session('stylist_booking.type'); // 'hourly' or 'daily'
+        if ($request->has('booking_type')) {
+            $bookingType = $request->input('booking_type');
+        }
+
+        if ($bookingType && !$coupon->isApplicableTo($bookingType)) {
+            $serviceName = $bookingType === 'hourly' ? 'hourly bookings' : ($bookingType === 'daily' ? 'daily bookings' : 'monthly packages');
+            return response()->json(['error' => "This discount code is not valid for {$serviceName}."], 400);
         }
 
         if (!$coupon->is_active) {

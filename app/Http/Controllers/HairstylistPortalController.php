@@ -368,14 +368,13 @@ class HairstylistPortalController extends Controller
         $guestEmail = session('stylist_booking.guest.email') ?: $user?->email;
 
         if ($request->has('coupon_code') && $total > 0) {
-            if (session('stylist_booking.type') === 'hourly') {
-                $code = strtoupper(trim($request->coupon_code));
-                $coupon = \App\Models\Coupon::where('code', $code)->first();
-                if ($coupon && $coupon->isValidNow() && !$coupon->hasBeenUsedBy($user, $guestEmail)) {
-                    $discount = $coupon->calculateDiscount($total);
-                    $total = $total - $discount;
-                    $couponCode = $code;
-                }
+            $code = strtoupper(trim($request->coupon_code));
+            $coupon = \App\Models\Coupon::where('code', $code)->first();
+            $bookingType = session('stylist_booking.type'); // hourly or daily
+            if ($coupon && $coupon->isValidNow() && $coupon->isApplicableTo($bookingType) && !$coupon->hasBeenUsedBy($user, $guestEmail)) {
+                $discount = $coupon->calculateDiscount($total);
+                $total = $total - $discount;
+                $couponCode = $code;
             }
         }
 

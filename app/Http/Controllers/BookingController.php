@@ -320,10 +320,11 @@ class BookingController extends Controller
         $discountAmount = 0;
 
         if ($request->has('coupon_code')) {
-            if ($booking->type !== 'hourly') {
-                return response()->json(['error' => 'Discount codes are only valid for hourly bookings.'], 400);
-            }
             $coupon = \App\Models\Coupon::where('code', $request->coupon_code)->first();
+            if ($coupon && !$coupon->isApplicableTo($booking->type)) {
+                $serviceName = $booking->type === 'hourly' ? 'hourly bookings' : 'daily bookings';
+                return response()->json(['error' => "This discount code is not valid for {$serviceName}."], 400);
+            }
             $email = $booking->guest_email ?: $booking->user?->email;
             if ($coupon && $coupon->isValidNow() && !$coupon->hasBeenUsedBy($booking->user, $email)) {
                 $discountAmount = $coupon->calculateDiscount((float) $finalAmount);

@@ -166,6 +166,7 @@
                             <tr>
                                 <th>Code</th>
                                 <th>Discount</th>
+                                <th>Applies To</th>
                                 <th>Type</th>
                                 <th>Expiry Date</th>
                                 <th>Status</th>
@@ -182,6 +183,17 @@
                                             £{{ number_format($coupon->discount_value, 2) }}
                                         @else
                                             {{ $coupon->discount_value }}%
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($coupon->applicable_to == 'hourly')
+                                            <span class="badge bg-info">Hourly</span>
+                                        @elseif($coupon->applicable_to == 'daily')
+                                            <span class="badge bg-warning text-dark">Daily</span>
+                                        @elseif($coupon->applicable_to == 'package')
+                                            <span class="badge bg-secondary">Packages</span>
+                                        @else
+                                            <span class="badge bg-success">All Services</span>
                                         @endif
                                     </td>
                                     <td>
@@ -240,6 +252,15 @@
                     <div class="mb-3">
                         <label class="form-label text-uppercase fw-semibold" style="font-size: 0.75rem; color: #8c7e6c; letter-spacing: 1px;">Coupon Code</label>
                         <input type="text" name="code" class="form-control" style="border-radius: 0; background: #faf8f5;" required placeholder="e.g. SUMMER2026">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-uppercase fw-semibold" style="font-size: 0.75rem; color: #8c7e6c; letter-spacing: 1px;">Applies To</label>
+                        <select name="applicable_to" class="form-select" style="border-radius: 0; background: #faf8f5;" required>
+                            <option value="all">All Services</option>
+                            <option value="hourly">Hourly Bookings Only</option>
+                            <option value="daily">Daily Bookings Only</option>
+                            <option value="package">Monthly Bundles / Packages Only</option>
+                        </select>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">

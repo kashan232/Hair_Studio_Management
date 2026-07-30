@@ -249,7 +249,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({ coupon_code: appliedCoupon })
+                body: JSON.stringify({ coupon_code: appliedCoupon, booking_type: 'package' })
             });
             const data = await response.json();
             
