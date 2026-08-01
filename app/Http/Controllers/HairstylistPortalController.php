@@ -548,7 +548,7 @@ class HairstylistPortalController extends Controller
         }
 
         session([
-            'stylist_booking.final_total' => max($total, 0),
+            'stylist_booking.final_total' => 0,
             'stylist_booking.package_hours_used' => $packageHoursUsed,
         ]);
     }
