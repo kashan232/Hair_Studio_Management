@@ -142,7 +142,7 @@ class BookingController extends Controller
                 $emailToSend = $booking->guest_email ?: $booking->user?->email;
                 if ($emailToSend) {
                     \Illuminate\Support\Facades\Mail::to($emailToSend)
-                        ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                        ->bcc('eladeukstudio@gmail.com')
                         ->send(new \App\Mail\BookingConfirmed($booking));
                 }
             } catch (\Throwable $e) {}
@@ -152,7 +152,7 @@ class BookingController extends Controller
                 $emailToSend = $booking->guest_email ?: $booking->user?->email;
                 if ($emailToSend) {
                     \Illuminate\Support\Facades\Mail::to($emailToSend)
-                        ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                        ->bcc('eladeukstudio@gmail.com')
                         ->send(new \App\Mail\BookingRejected($booking));
                     $message .= ' Rejection email sent.';
                 }
@@ -290,7 +290,7 @@ class BookingController extends Controller
                 $emailToSend = $booking->guest_email ?: $booking->user?->email;
                 if ($emailToSend) {
                     \Illuminate\Support\Facades\Mail::to($emailToSend)
-                        ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                        ->bcc('eladeukstudio@gmail.com')
                         ->send(new \App\Mail\BookingConfirmed($booking));
                 }
             } catch (\Throwable $e) {}

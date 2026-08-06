@@ -709,7 +709,7 @@ class HairstylistPortalController extends Controller
                 : new BookingConfirmed($booking);
 
             Mail::to($emailToSend)
-                ->bcc(config('mail.from.address', 'eladebookings@gmail.com'))
+                ->bcc('eladeukstudio@gmail.com')
                 ->send($mailable);
         } catch (\Throwable $e) {
             // Retry without BCC if the provider rejects the combined message
