@@ -19,6 +19,8 @@ class DashboardController extends Controller
             ->whereIn('status', ['confirmed', 'completed'])
             ->sum('total_amount');
             
+        $today_revenue += \App\Models\UserPackage::whereDate('created_at', $today)->sum('price_paid');
+            
         $active_stylists = User::where(function($q) {
             $q->where('role', 'hairstylist')
               ->orWhereHas('roleRelation', function($query) {
@@ -100,9 +102,12 @@ class DashboardController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
             $categories[] = $date->format('D');
-            $data[] = Booking::whereDate('start_datetime', $date)
+            $bookingRevenue = Booking::whereDate('start_datetime', $date)
                 ->whereIn('status', ['confirmed', 'completed'])
                 ->sum('total_amount');
+            $packageRevenue = \App\Models\UserPackage::whereDate('created_at', $date)
+                ->sum('price_paid');
+            $data[] = $bookingRevenue + $packageRevenue;
         }
         
         return [

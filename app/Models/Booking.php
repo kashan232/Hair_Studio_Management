@@ -21,6 +21,7 @@ class Booking extends Model
         'refunded_amount',
         'refunded_at',
         'status',
+        'is_amendment',
         'setup_type',
         'consent_photography',
         'agreement_signature',

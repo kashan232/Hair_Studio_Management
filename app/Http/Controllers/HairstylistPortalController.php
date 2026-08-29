@@ -608,6 +608,7 @@ class HairstylistPortalController extends Controller
             'coupon_code' => session('stylist_booking.coupon_code'),
             'discount_amount' => session('stylist_booking.discount', 0),
             'status' => $status,
+            'is_amendment' => $amendId ? true : false,
             'setup_type' => session('stylist_booking.setup_type', 'hair'),
             'consent_photography' => session('stylist_booking.consent_photography', false),
             'agreement_signature' => $signaturePath,

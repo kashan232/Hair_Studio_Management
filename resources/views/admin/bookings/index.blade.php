@@ -107,6 +107,12 @@
                                                 @if($b->coupon_code)
                                                     <br><small class="text-success"><i class="fe fe-tag"></i> {{ $b->coupon_code }} (-£{{ number_format((float) $b->discount_amount, 2) }})</small>
                                                 @endif
+                                                @if($b->package_hours_used > 0)
+                                                    <br><span class="badge bg-info mt-1" style="font-size: 0.65rem;"><i class="fe fe-package"></i> Bundle Used ({{ $b->package_hours_used }} hrs)</span>
+                                                @endif
+                                                @if($b->is_amendment)
+                                                    <br><span class="badge bg-secondary mt-1" style="font-size: 0.65rem;"><i class="fe fe-edit"></i> Amended Booking</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 @forelse($b->chairs as $c)

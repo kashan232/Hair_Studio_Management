@@ -534,6 +534,18 @@
                                 <span class="b-detail-label">Duration</span>
                                 <span class="b-detail-val">{{ $b->duration_hours }} Hours</span>
                             </div>
+                            @if($b->package_hours_used > 0)
+                            <div class="b-detail-item">
+                                <span class="b-detail-label">Bundle Used</span>
+                                <span class="b-detail-val text-info">{{ $b->package_hours_used }} Hours</span>
+                            </div>
+                            @endif
+                            @if($b->is_amendment)
+                            <div class="b-detail-item">
+                                <span class="b-detail-label">Booking Type</span>
+                                <span class="b-detail-val text-muted">Amended</span>
+                            </div>
+                            @endif
                             @if($b->status === 'confirmed' && $startAt->isFuture())
                             <div class="b-detail-item">
                                 <span class="b-detail-label">Starts in (UK)</span>
