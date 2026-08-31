@@ -289,12 +289,13 @@
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
-                    <div class="kpi-card">
-                        <div class="kpi-icon" style="background: rgba(155,89,182,0.1); color: var(--accent-purple);">
-                            <i class="fe fe-user-check"></i>
+                    <div class="kpi-card" title="Customers who couldn't book this month because all chairs were occupied">
+                        <div class="kpi-icon" style="background: rgba(231,76,60,0.1); color: #e74c3c;">
+                            <i class="fe fe-alert-triangle"></i>
                         </div>
-                        <div class="kpi-value">{{ $stats['total_users'] }}</div>
-                        <div class="kpi-label">Portal Admin Accounts</div>
+                        <div class="kpi-value">{{ $stats['missed_bookings_month'] ?? 0 }}</div>
+                        <div class="kpi-label">Missed Bookings (No Capacity)</div>
+                        <div style="font-size: 0.65rem; color: #999; margin-top: 5px;">This Month</div>
                     </div>
                 </div>
             </div>

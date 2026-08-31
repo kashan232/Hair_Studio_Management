@@ -688,44 +688,46 @@ class HairstylistPortalController extends Controller
 
     private function sendBookingConfirmationEmail(Booking $booking, $user = null, array $guestDetails = []): void
     {
-        try {
-            $booking->loadMissing(['user', 'chairs']);
-
-            $emailToSend = strtolower(trim((string) (
-                ($guestDetails['email'] ?? null)
-                ?: $booking->guest_email
-                ?: $user?->email
-                ?: $booking->user?->email
-            )));
-
-            if ($emailToSend === '') {
-                \Illuminate\Support\Facades\Log::warning('Booking confirmation skipped: no recipient email', [
-                    'booking_id' => $booking->id,
-                ]);
-                return;
-            }
-
-            $mailable = $booking->status === 'pending_approval'
-                ? new BookingPendingApproval($booking)
-                : new BookingConfirmed($booking);
-
-            Mail::to($emailToSend)
-                ->bcc('eladeukstudio@gmail.com')
-                ->send($mailable);
-        } catch (\Throwable $e) {
-            // Retry without BCC if the provider rejects the combined message
+        app()->terminating(function () use ($booking, $user, $guestDetails) {
             try {
+                $booking->loadMissing(['user', 'chairs']);
+
+                $emailToSend = strtolower(trim((string) (
+                    ($guestDetails['email'] ?? null)
+                    ?: $booking->guest_email
+                    ?: $user?->email
+                    ?: $booking->user?->email
+                )));
+
+                if ($emailToSend === '') {
+                    \Illuminate\Support\Facades\Log::warning('Booking confirmation skipped: no recipient email', [
+                        'booking_id' => $booking->id,
+                    ]);
+                    return;
+                }
+
                 $mailable = $booking->status === 'pending_approval'
                     ? new BookingPendingApproval($booking)
                     : new BookingConfirmed($booking);
-                Mail::to($emailToSend)->send($mailable);
-            } catch (\Throwable $retryError) {
-                \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation email: ' . $retryError->getMessage(), [
-                    'booking_id' => $booking->id,
-                    'first_error' => $e->getMessage(),
-                ]);
+
+                Mail::to($emailToSend)
+                    ->bcc('eladeukstudio@gmail.com')
+                    ->send($mailable);
+            } catch (\Throwable $e) {
+                // Retry without BCC if the provider rejects the combined message
+                try {
+                    $mailable = $booking->status === 'pending_approval'
+                        ? new BookingPendingApproval($booking)
+                        : new BookingConfirmed($booking);
+                    Mail::to($emailToSend)->send($mailable);
+                } catch (\Throwable $retryError) {
+                    \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation email: ' . $retryError->getMessage(), [
+                        'booking_id' => $booking->id,
+                        'first_error' => $e->getMessage(),
+                    ]);
+                }
             }
-        }
+        });
     }
 
     private function getOrCreateUser(Request $request)
@@ -1004,6 +1006,15 @@ class HairstylistPortalController extends Controller
                 'schedule' => $usedChairs // Store array of chair IDs per hour for visual mapping
             ];
         }
+
+        // LOG CAPACITY BOTTLENECK HERE
+        // If we reach here, neither a single chair nor multi-chair combination is available for the requested time.
+        \App\Models\MissedBooking::create([
+            'requested_date' => $start->toDateString(),
+            'requested_time' => $start->toTimeString(),
+            'duration_hours' => $durationHours,
+            'user_id' => auth()->id() ?? null,
+        ]);
 
         // 3. Find Nearest Available Slot
         $nextSlot = $start->copy();

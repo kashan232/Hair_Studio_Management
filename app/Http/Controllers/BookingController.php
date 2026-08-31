@@ -373,15 +373,17 @@ class BookingController extends Controller
 
         $booking->save();
 
-        try {
-            $emailToSend = $booking->guest_email ?: $booking->user?->email;
-            if ($emailToSend) {
-                \Illuminate\Support\Facades\Mail::to($emailToSend)
-                    ->send(new \App\Mail\BookingConfirmed($booking->fresh(['user', 'chairs'])));
+        app()->terminating(function () use ($booking) {
+            try {
+                $emailToSend = $booking->guest_email ?: $booking->user?->email;
+                if ($emailToSend) {
+                    \Illuminate\Support\Facades\Mail::to($emailToSend)
+                        ->send(new \App\Mail\BookingConfirmed($booking->fresh(['user', 'chairs'])));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation after balance payment: ' . $e->getMessage());
             }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to send booking confirmation after balance payment: ' . $e->getMessage());
-        }
+        });
 
         return view('stylist.pay_balance_success', compact('booking'));
     }

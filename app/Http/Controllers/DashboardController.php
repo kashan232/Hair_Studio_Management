@@ -41,6 +41,8 @@ class DashboardController extends Controller
             'today_revenue' => $today_revenue,
             'total_customers' => $total_customers,
             'total_users' => User::count(),
+            'missed_bookings_month' => \App\Models\MissedBooking::whereMonth('requested_date', now()->month)
+                                        ->whereYear('requested_date', now()->year)->count(),
             
             // Stylists info (Dynamic status based on active confirmed bookings today)
             'stylists' => User::where(function($q) {
