@@ -50,7 +50,7 @@
         .main-container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 4rem 2rem;
+            padding: 1rem 2rem;
         }
 
         /* Header area */
@@ -165,10 +165,9 @@
 
         /* ===== LOGIN STEPPER (Matches booking.blade.php) ===== */
         .stepper-wrap {
-            padding: 1rem 1rem 0.5rem;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 0.5rem 1rem 0;
             overflow-x: auto;
-            margin-bottom: 3rem;
+            margin-bottom: 0.75rem;
             width: 100%;
         }
         
@@ -495,7 +494,7 @@
         </div>
     </div>
 
-    <div class="top-profile-bar" style="background: var(--app-surface, #ffffff); border-bottom: 1px solid var(--app-line, #efe4dc); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: center;">
+    <div class="top-profile-bar" style="background: var(--app-surface, #ffffff); border-bottom: 1px solid var(--app-line, #efe4dc); padding: 0.5rem 1.25rem; display: flex; align-items: center; justify-content: center;">
         <div class="top-profile-inner" style="max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; flex-direction: column; width: 100%;">
             <div class="profile-info" style="display: flex; align-items: center; justify-content: center; gap: 0.85rem; min-width: 0; width: 100%;">
                 <img src="{{ asset('images/brand_logo.svg') }}" alt="Studio Logo" style="height: 45px; width: auto; object-fit: contain;">
@@ -556,40 +555,53 @@
             </div>
         </div>
 
-        <h1 class="page-title">Log in or create account</h1>
-        <p class="page-subtitle">Enter your details to sign in or to create an account.</p>
+        <h1 class="page-title" style="font-size: 1.6rem; font-weight: 700; text-transform: none; margin-top: 0.25rem; margin-bottom: 0.25rem; letter-spacing: normal;">Complete your booking</h1>
+        <p class="page-subtitle" style="font-size: 1rem; color: #666; margin-bottom: 0.75rem;">Choose how you would like to continue.</p>
 
         <div class="auth-form-wrap">
             <!-- LOGIN FORM -->
-            <form id="login-form" class="auth-form active ajaxForm" method="POST" action="{{ route('login') }}">
-                @csrf
-                
-                <div class="input-group">
-                    <label for="login-email">Email *</label>
-                    <input type="email" name="email" id="login-email" required>
+            <div id="login-form" class="auth-form active">
+                <div class="guest-booking-box" style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 1rem; text-align: center; margin-bottom: 0.75rem; background: #fafafa;">
+                    <span style="background: #461111; color: #fff; font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Fastest Option</span>
+                    <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0.5rem 0 0.25rem 0; color: #000;">Book chair as a guest</h2>
+                    <p style="color: #666; margin-bottom: 0.75rem; font-size: 0.85rem;">No account needed.</p>
+                    <a href="{{ route('stylist.book') }}" class="btn-submit" style="display: block; text-decoration: none; border-radius: 6px; text-transform: none; font-weight: 500; font-size: 0.95rem; padding: 0.75rem; background: #461111; transition: background 0.3s;">Continue as guest &rarr;</a>
                 </div>
 
-                <div class="input-group">
-                    <label for="login-password">Password *</label>
-                    <input type="password" name="password" id="login-password" required>
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
-                    @endif
-                </div>
+                <div class="divider" style="margin: 0.75rem 0; font-size: 0.85rem; text-transform: none; color: #888;">Already have an account?</div>
 
-                <div class="input-group" style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="remember-me" name="remember" style="width: auto;">
-                    <label for="remember-me" style="margin: 0; font-weight: 500; font-size: 0.9rem;">Remember me</label>
-                </div>
+                <h2 style="text-align: center; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem;">Log in</h2>
 
-                <button type="submit" class="btn-submit">Continue</button>
-                
-                <a class="switch-link" data-target="register">Create a new account</a>
+                <form class="ajaxForm" method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    <div class="input-group" style="margin-bottom: 0.5rem;">
+                        <label for="login-email" style="margin-bottom: 0.2rem; font-size: 0.85rem;">Email</label>
+                        <input type="email" name="email" id="login-email" required style="border-radius: 4px; padding: 0.65rem;">
+                    </div>
 
-                <div class="divider">or</div>
+                    <div class="input-group" style="margin-bottom: 0.5rem;">
+                        <label for="login-password" style="margin-bottom: 0.2rem; font-size: 0.85rem;">Password</label>
+                        <input type="password" name="password" id="login-password" required style="border-radius: 4px; padding: 0.65rem;">
+                    </div>
 
-                <a href="{{ route('stylist.book') }}" class="btn-outline-guest">BOOK CHAIR AS A GUEST</a>
-            </form>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                            <input type="checkbox" id="remember-me" name="remember" style="width: auto;">
+                            <label for="remember-me" style="margin: 0; font-weight: 400; font-size: 0.85rem;">Remember me</label>
+                        </div>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="forgot-link" style="margin-top: 0; text-decoration: underline; color: #666; font-size: 0.85rem;">Forgot password?</a>
+                        @endif
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="background: #fff; color: #461111; border: 1px solid #461111; border-radius: 6px; text-transform: none; font-weight: 600; font-size: 0.95rem; padding: 0.75rem; margin-top: 0; transition: background 0.3s;">Log in and continue</button>
+                    
+                    <div style="text-align: center; margin-top: 0.75rem;">
+                        <a class="switch-link" data-target="register" style="font-weight: normal; margin-top: 0; text-decoration: underline; color: #333; display: inline-block;">Create an account</a>
+                    </div>
+                </form>
+            </div>
 
             <!-- REGISTER FORM -->
             <form id="register-form" class="auth-form ajaxForm" method="POST" action="{{ route('register.hairstylist') }}">
@@ -663,8 +675,8 @@
                     $('.page-title').text('Create an account');
                     $('.page-subtitle').text('Join Eladé Studio to book your workspace.');
                 } else {
-                    $('.page-title').text('Log in or create account');
-                    $('.page-subtitle').text('Enter your details to sign in or to create an account.');
+                    $('.page-title').text('Complete your booking');
+                    $('.page-subtitle').text('Choose how you would like to continue.');
                 }
             });
 
