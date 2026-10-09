@@ -448,6 +448,56 @@
             }
         }
 
+        /* Custom Responsive Adjustments */
+        .auth-form-wrap { max-width: 650px; }
+        .responsive-page-title { font-size: 26px !important; }
+        .responsive-page-subtitle { font-size: 15px !important; margin-bottom: 20px !important; }
+        
+        .guest-booking-box { 
+            padding: 16px !important; 
+            margin-bottom: 20px !important; 
+            border: 1px solid #e5e5e5; 
+            border-radius: 8px; 
+            text-align: center; 
+            background: #fafafa;
+        }
+        .guest-heading-responsive { font-size: 22px !important; margin: 8px 0 2px 0 !important; }
+        .guest-desc-responsive { margin-bottom: 12px !important; font-size: 14px; line-height: 1.2; }
+        
+        .guest-btn-responsive { 
+            height: 44px !important; 
+            display: flex !important; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 15px !important; 
+            padding: 0 !important; 
+        }
+
+        .form-input-responsive { 
+            height: 44px !important; 
+            padding: 0 12px !important;
+            border-radius: 4px;
+            border: 1px solid #d1d1d1;
+            width: 100%;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .form-input-responsive:focus { border-color: #000; }
+        
+        .section-spacing { margin-bottom: 20px !important; }
+
+        @media (max-width: 600px) {
+            .auth-form-wrap { width: calc(100% - 32px); margin: 0 auto; }
+            .responsive-page-title { font-size: 22px !important; }
+            .responsive-page-subtitle { margin-bottom: 16px !important; font-size: 14px !important; }
+            .guest-booking-box { padding: 12px !important; margin-bottom: 16px !important; }
+            .guest-heading-responsive { font-size: 20px !important; margin: 6px 0 2px 0 !important; }
+            .guest-desc-responsive { margin-bottom: 10px !important; font-size: 13px !important; }
+            .guest-btn-responsive { height: 42px !important; font-size: 14px !important; }
+            .form-input-responsive { height: 44px !important; }
+            .section-spacing { margin-bottom: 12px !important; }
+        }
     </style>
 </head>
 
@@ -555,52 +605,57 @@
             </div>
         </div>
 
-        <h1 class="page-title" style="font-size: 1.6rem; font-weight: 700; text-transform: none; margin-top: 0.25rem; margin-bottom: 0.25rem; letter-spacing: normal;">Complete your booking</h1>
-        <p class="page-subtitle" style="font-size: 1rem; color: #666; margin-bottom: 0.75rem;">Choose how you would like to continue.</p>
+        <h1 class="page-title responsive-page-title" style="font-weight: 700; text-transform: none; margin-top: 0.25rem; margin-bottom: 0.25rem; letter-spacing: normal;">Complete your booking</h1>
+        <p class="page-subtitle responsive-page-subtitle" style="color: #666; margin-bottom: 0.75rem;">Choose how you would like to continue.</p>
 
         <div class="auth-form-wrap">
             <!-- LOGIN FORM -->
             <div id="login-form" class="auth-form active">
-                <div class="guest-booking-box" style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 1rem; text-align: center; margin-bottom: 0.75rem; background: #fafafa;">
-                    <span style="background: #461111; color: #fff; font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Fastest Option</span>
-                    <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0.5rem 0 0.25rem 0; color: #000;">Book chair as a guest</h2>
-                    <p style="color: #666; margin-bottom: 0.75rem; font-size: 0.85rem;">No account needed.</p>
-                    <a href="{{ route('stylist.book') }}" class="btn-submit" style="display: block; text-decoration: none; border-radius: 6px; text-transform: none; font-weight: 500; font-size: 0.95rem; padding: 0.75rem; background: #461111; transition: background 0.3s;">Continue as guest &rarr;</a>
+                <div class="guest-booking-box">
+                    <span style="background: #461111; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Fastest Option</span>
+                    <h2 class="guest-heading-responsive" style="font-weight: 700; color: #000;">Book chair as a guest</h2>
+                    <p class="guest-desc-responsive" style="color: #666;">No account needed.</p>
+                    <a href="{{ route('stylist.book') }}" class="btn-submit guest-btn-responsive" style="text-decoration: none; border-radius: 6px; text-transform: none; font-weight: 500; background: #461111; transition: background 0.3s; width: 100%; box-sizing: border-box;">Continue as guest &rarr;</a>
                 </div>
 
-                <div class="divider" style="margin: 0.75rem 0; font-size: 0.85rem; text-transform: none; color: #888;">Already have an account?</div>
+                <div id="login-toggle-container" class="section-spacing" style="text-align: center;">
+                    <span style="color: #666; font-size: 15px;">Already have an account?</span> 
+                    <a href="#" id="toggle-login-btn" style="color: #461111; font-weight: 600; text-decoration: underline; margin-left: 5px; cursor: pointer;">Log in</a>
+                </div>
 
-                <h2 style="text-align: center; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem;">Log in</h2>
+                <div id="login-section" style="display: none;">
+                    <div class="divider section-spacing" style="font-size: 14px; text-transform: none; color: #888;">Log in to your account</div>
 
-                <form class="ajaxForm" method="POST" action="{{ route('login') }}">
-                    @csrf
-                    
-                    <div class="input-group" style="margin-bottom: 0.5rem;">
-                        <label for="login-email" style="margin-bottom: 0.2rem; font-size: 0.85rem;">Email</label>
-                        <input type="email" name="email" id="login-email" required style="border-radius: 4px; padding: 0.65rem;">
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 0.5rem;">
-                        <label for="login-password" style="margin-bottom: 0.2rem; font-size: 0.85rem;">Password</label>
-                        <input type="password" name="password" id="login-password" required style="border-radius: 4px; padding: 0.65rem;">
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
-                            <input type="checkbox" id="remember-me" name="remember" style="width: auto;">
-                            <label for="remember-me" style="margin: 0; font-weight: 400; font-size: 0.85rem;">Remember me</label>
+                    <form class="ajaxForm" method="POST" action="{{ route('login') }}">
+                        @csrf
+                        
+                        <div class="input-group" style="margin-bottom: 16px;">
+                            <label for="login-email" style="margin-bottom: 6px; font-size: 14px;">Email</label>
+                            <input type="email" name="email" id="login-email" required class="form-input-responsive">
                         </div>
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="forgot-link" style="margin-top: 0; text-decoration: underline; color: #666; font-size: 0.85rem;">Forgot password?</a>
-                        @endif
-                    </div>
 
-                    <button type="submit" class="btn-submit" style="background: #fff; color: #461111; border: 1px solid #461111; border-radius: 6px; text-transform: none; font-weight: 600; font-size: 0.95rem; padding: 0.75rem; margin-top: 0; transition: background 0.3s;">Log in and continue</button>
-                    
-                    <div style="text-align: center; margin-top: 0.75rem;">
-                        <a class="switch-link" data-target="register" style="font-weight: normal; margin-top: 0; text-decoration: underline; color: #333; display: inline-block;">Create an account</a>
-                    </div>
-                </form>
+                        <div class="input-group" style="margin-bottom: 16px;">
+                            <label for="login-password" style="margin-bottom: 6px; font-size: 14px;">Password</label>
+                            <input type="password" name="password" id="login-password" required class="form-input-responsive">
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                                <input type="checkbox" id="remember-me" name="remember" style="width: auto;">
+                                <label for="remember-me" style="margin: 0; font-weight: 400; font-size: 14px;">Remember me</label>
+                            </div>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="forgot-link" style="margin-top: 0; text-decoration: underline; color: #666; font-size: 14px;">Forgot password?</a>
+                            @endif
+                        </div>
+
+                        <button type="submit" class="btn-submit guest-btn-responsive" style="background: #fff; color: #461111; border: 1px solid #461111; border-radius: 6px; text-transform: none; font-weight: 600; margin-top: 0; transition: background 0.3s; width: 100%; box-sizing: border-box;">Log in and continue</button>
+                        
+                        <div style="text-align: center; margin-top: 16px;">
+                            <a class="switch-link" data-target="register" style="font-weight: normal; margin-top: 0; text-decoration: underline; color: #333; display: inline-block; font-size: 14px;">Create an account</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- REGISTER FORM -->
@@ -678,6 +733,13 @@
                     $('.page-title').text('Complete your booking');
                     $('.page-subtitle').text('Choose how you would like to continue.');
                 }
+            });
+
+            // Toggle login section
+            $('#toggle-login-btn').on('click', function(e) {
+                e.preventDefault();
+                $('#login-toggle-container').slideUp(200);
+                $('#login-section').slideDown(300);
             });
 
             // Check URL for tab parameter
