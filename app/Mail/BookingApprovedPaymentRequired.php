@@ -33,7 +33,7 @@ class BookingApprovedPaymentRequired extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Action Required: Booking Approved - Eladé Studio',
+            subject: 'Action Required: Booking Approved - Elade Studio',
         );
     }
 

@@ -33,7 +33,7 @@ class BookingConfirmed extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Booking Confirmed - Eladé Studio',
+            subject: 'Booking Confirmed - Elade Studio',
         );
     }
 

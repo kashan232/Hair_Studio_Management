@@ -1045,7 +1045,7 @@
             <div style="margin-top: 1.5rem; display: flex; align-items: flex-start; gap: 0.6rem;">
                 <input type="checkbox" id="agree_terms" name="agree_terms" required style="margin-top: 0.25rem; width: 18px; height: 18px; accent-color: var(--app-accent-dark); cursor: pointer;">
                 <label for="agree_terms" style="font-size: 0.8rem; line-height: 1.5; color: var(--app-text); cursor: pointer;">
-                    I have read, understood and agree to the Eladé UK 
+                    I have read, understood and agree to the Elade UK 
                     <a href="https://eladeuk.com/terms-and-conditions" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Terms & Conditions</a>, 
                     <a href="https://eladeuk.com/bookings-and-cancellation-policy" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Booking & Cancellation Policy</a> and 
                     <a href="https://eladeuk.com/chair-booking-terms" target="_blank" style="color: var(--app-accent-dark); text-decoration: underline; font-weight: 600;">Chair Booking Terms</a>, 
@@ -1085,22 +1085,22 @@
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-bottom: 0.25rem;">1. PARTIES</strong>
                   This Agreement is made between:<br>
-                  (1) <strong>Eladé UK Ltd</strong>, trading as Eladé Studio, a company registered in England and Wales, whose registered and trading address is 4-10 North Road, London N7 9EY ("Eladé Studio", "we", "us", or "our"); and<br>
+                  (1) <strong>Elade UK Ltd</strong>, trading as Elade Studio, a company registered in England and Wales, whose registered and trading address is 4-10 North Road, London N7 9EY ("Elade Studio", "we", "us", or "our"); and<br>
                   (2) The individual named in the applicable booking or registration process ("the Professional", "you", or "your"),<br>
                   (each a "Party" and together the "Parties").
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">2. BACKGROUND</strong>
-                  <strong>2.1</strong> Eladé Studio operates premises equipped with chairs and related facilities suitable for hair, beauty, grooming and creative services.<br>
+                  <strong>2.1</strong> Elade Studio operates premises equipped with chairs and related facilities suitable for hair, beauty, grooming and creative services.<br>
                   <strong>2.2</strong> The Professional is an independent practitioner who wishes to use such a chair to carry on their own business.<br>
-                  <strong>2.3</strong> This Agreement sets out the terms on which Eladé Studio grants the Professional permission to do so.
+                  <strong>2.3</strong> This Agreement sets out the terms on which Elade Studio grants the Professional permission to do so.
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">3. GRANT OF RIGHTS</strong>
-                  <strong>3.1</strong> In consideration of the fees payable under this Agreement, Eladé Studio grants the Professional a personal, non-exclusive, non-transferable licence to use a designated chair within the Eladé Studio premises ("the Chair").<br>
+                  <strong>3.1</strong> In consideration of the fees payable under this Agreement, Elade Studio grants the Professional a personal, non-exclusive, non-transferable licence to use a designated chair within the Elade Studio premises ("the Chair").<br>
                   <strong>3.2</strong> The Chair shall be made available on an hourly, daily, or block-hour basis, as selected by the Professional at the time of booking.<br>
                   <strong>3.3</strong> The licence granted under this Agreement is solely for the purpose of enabling the Professional to carry on their own independent hair, beauty, grooming or creative services business.
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">4. NATURE OF THE RELATIONSHIP</strong>
-                  <strong>4.1</strong> Nothing in this Agreement shall be construed as creating a relationship of employment, partnership, agency, or joint venture between Eladé Studio and the Professional.<br>
+                  <strong>4.1</strong> Nothing in this Agreement shall be construed as creating a relationship of employment, partnership, agency, or joint venture between Elade Studio and the Professional.<br>
                   <strong>4.2</strong> This Agreement does not grant the Professional any tenancy, right of exclusive possession, or long-term right to occupy any part of the premises.<br>
                   <strong>4.3</strong> The Professional acknowledges and agrees that they operate as a self-employed individual or independent business, and are solely responsible for:<br>
                   (a) their own clients;<br>
@@ -1112,7 +1112,7 @@
                   each as further set out below.
                   
                   <strong style="display: block; color: #461111; font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.25rem;">5. RELATIONSHIP TO OTHER TERMS</strong>
-                  <strong>5.1</strong> This Agreement operates alongside, and is to be read together with, Eladé Studio's Terms &amp; Conditions and Booking &amp; Cancellation Policy, insofar as they relate to the employment status and independent business relationship of the Professional.
+                  <strong>5.1</strong> This Agreement operates alongside, and is to be read together with, Elade Studio's Terms &amp; Conditions and Booking &amp; Cancellation Policy, insofar as they relate to the employment status and independent business relationship of the Professional.
               </div>
 
             <form method="POST" action="{{ route('stylist.book.agreement') }}" id="agreement-form">
@@ -1131,7 +1131,7 @@
                 
                 <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.8rem; color: var(--app-text); margin-bottom: 1.5rem; cursor: pointer;">
                     <input type="checkbox" name="agreement_confirm" required style="margin-top: 2px;">
-                    <span>I confirm I have read and accept the Eladé Studio member agreement, and that the signature above is my own.</span>
+                    <span>I confirm I have read and accept the Elade Studio member agreement, and that the signature above is my own.</span>
                 </label>
             </form>
         </div>

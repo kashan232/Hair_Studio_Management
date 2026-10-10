@@ -418,9 +418,9 @@
     </div>
     
     <div class="header-section">
-        <img src="{{ asset('images/brand_logo.svg') }}?v=2" alt="Eladé Studio" class="header-logo">
+        <img src="{{ asset('images/brand_logo.svg') }}?v=2" alt="Elade Studio" class="header-logo">
         <h1 class="header-title">Book Your Session</h1>
-        <p class="header-subtitle">Choose how you'd like to reserve your space at Eladé Studios</p>
+        <p class="header-subtitle">Choose how you'd like to reserve your space at Elade Studios</p>
     </div>
 
     <div class="cards-grid">
@@ -488,9 +488,9 @@
         
         <!-- About Section (Centered) -->
         <div class="about-block">
-            <h2 class="about-title">About Eladé</h2>
+            <h2 class="about-title">About Elade</h2>
             <p class="about-text">
-                Eladé is a flexible workspace for beauty professionals, designed for stylists who want the freedom to book by the hour, day, week, or month. 
+                Elade is a flexible workspace for beauty professionals, designed for stylists who want the freedom to book by the hour, day, week, or month. 
             </p>
             <p class="about-text">
                 Located near Kings Cross, London, our studio provides a professional environment for appointments, content creation, education, consultations, and client experiences without the commitment of a traditional salon rental model.
@@ -506,7 +506,7 @@
                     Location
                 </h3>
                 <p>
-                    <strong>Eladé</strong><br>
+                    <strong>Elade</strong><br>
                     G13 (Ground Floor)<br>
                     4–10 North Road<br>
                     London<br>
@@ -540,9 +540,9 @@
 
     <!-- Simple Footer -->
     <div class="simple-footer">
-        <img src="{{ asset('images/brand_logo.svg') }}?v=2" alt="Eladé Studio" class="footer-logo">
+        <img src="{{ asset('images/brand_logo.svg') }}?v=2" alt="Elade Studio" class="footer-logo">
         <div class="footer-copyright">
-            &copy; {{ date('Y') }} Eladé Studios. All rights reserved.
+            &copy; {{ date('Y') }} Elade Studios. All rights reserved.
         </div>
     </div>
 

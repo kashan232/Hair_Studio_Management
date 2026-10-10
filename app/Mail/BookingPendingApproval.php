@@ -20,7 +20,7 @@ class BookingPendingApproval extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Booking Received — Pending Approval | Eladé Studio',
+            subject: 'Booking Received — Pending Approval | Elade Studio',
         );
     }
 

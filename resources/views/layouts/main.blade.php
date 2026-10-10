@@ -12,10 +12,10 @@
         content="admin template, Dashmaster admin template, dashboard template, flat admin template, responsive admin template, web app">
 
     <!-- FAVICON -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
     <!-- TITLE -->
-    <title>Eladé Studio - Premium Salon Dashboard</title>
+    <title>Elade Studio - Premium Salon Dashboard</title>
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{{ asset('assets/css/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
@@ -46,7 +46,7 @@
 
     <!--{ Pre-loder start }-->
     <div id="global-loader" style="display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #fffcf2;">
-        <img src="{{ asset('images/brand_logo.svg') }}" class="loader-img" alt="Eladé Studio" style="animation: loader-pulse 1.5s infinite ease-in-out; width: 120px; height: auto; margin-bottom: 20px;">
+        <img src="{{ asset('images/brand_logo.svg') }}" class="loader-img" alt="Elade Studio" style="animation: loader-pulse 1.5s infinite ease-in-out; width: 120px; height: auto; margin-bottom: 20px;">
         <div class="premium-spinner"></div>
     </div>
     <style>

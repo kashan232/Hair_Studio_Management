@@ -274,7 +274,7 @@
 <div class="success-wrapper">
     <div class="success-card">
         <!-- Brand Logo -->
-        <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio" class="brand-logo">
+        <img src="{{ asset('images/brand_logo.svg') }}" alt="Elade Studio" class="brand-logo">
 
         <div class="icon-wrapper">
             <div class="icon-circle">

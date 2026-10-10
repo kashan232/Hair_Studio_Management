@@ -31,7 +31,7 @@ class BookingRejected extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Booking Request Rejected - Eladé Studio',
+            subject: 'Booking Request Rejected - Elade Studio',
         );
     }
 

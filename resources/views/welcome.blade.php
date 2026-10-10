@@ -13,7 +13,7 @@
         content="admin template, Dashmaster admin template, dashboard template, flat admin template, responsive admin template, web app">
 
     <!-- FAVICON -->
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/images/brand/favicon.ico">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
     <!-- TITLE -->
     <title>Dashmaster – Bootstrap 5 Admin & Dashboard Template </title>

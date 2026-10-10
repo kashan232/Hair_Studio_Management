@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Reset Password | Eladé Studio</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}">
+    <title>Reset Password | Elade Studio</title>
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -204,13 +204,13 @@
     <div class="side-menu-overlay" id="side-menu-overlay"></div>
     <div class="side-menu" id="side-menu">
         <div class="side-menu-header">
-            <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio" style="height: 40px; width: auto;">
+            <img src="{{ asset('images/brand_logo.svg') }}" alt="Elade Studio" style="height: 40px; width: auto;">
             <div class="close-menu" id="close-menu"><i class="zmdi zmdi-close"></i></div>
         </div>
         
         <div class="side-menu-content">
             <div class="side-welcome-box">
-                <p>"Eladé is a flexible workspace for beauty professionals, designed for stylists who want the freedom to book by the hour, day, week, or month. Located near Kings Cross, London, our studio provides a professional environment for appointments, content creation, education, consultations, and client experiences without the commitment of a traditional salon rental model."</p>
+                <p>"Elade is a flexible workspace for beauty professionals, designed for stylists who want the freedom to book by the hour, day, week, or month. Located near Kings Cross, London, our studio provides a professional environment for appointments, content creation, education, consultations, and client experiences without the commitment of a traditional salon rental model."</p>
             </div>
             
             <h4>Contact Details</h4>
@@ -219,7 +219,7 @@
                 <div class="info-icon-wrap"><i class="zmdi zmdi-pin"></i></div>
                 <div class="info-details">
                     <strong>Location</strong>
-                    Eladé<br>G13 (Ground Floor)<br>4–10 North Road<br>London<br>N7 9EY<br>United Kingdom
+                    Elade<br>G13 (Ground Floor)<br>4–10 North Road<br>London<br>N7 9EY<br>United Kingdom
                 </div>
             </div>
             
@@ -244,7 +244,7 @@
     <header class="top-nav">
         <i class="zmdi zmdi-menu menu-icon"></i>
         <div class="logo">
-            <img src="{{ asset('images/brand_logo.svg') }}" alt="Eladé Studio">
+            <img src="{{ asset('images/brand_logo.svg') }}" alt="Elade Studio">
         </div>
     </header>
 

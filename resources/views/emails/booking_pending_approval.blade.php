@@ -3,7 +3,7 @@
 
 Hello {{ $booking->user ? $booking->user->name : $booking->guest_name }},
 
-Thank you for your booking request at Eladé Studio.
+Thank you for your booking request at Elade Studio.
 
 Your requested time falls within overnight hours (**9 PM – 8 AM**), so it has been submitted for **admin approval**. You will receive another email once it has been reviewed.
 
@@ -32,5 +32,5 @@ Your requested time falls within overnight hours (**9 PM – 8 AM**), so it has 
 If approved, you will be asked to complete payment to secure your reservation.
 
 Thanks,<br>
-Eladé Studio
+Elade Studio
 </x-mail::message>

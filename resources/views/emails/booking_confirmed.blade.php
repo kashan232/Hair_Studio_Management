@@ -3,7 +3,7 @@
 
 Hello {{ $booking->user ? $booking->user->name : $booking->guest_name }},
 
-Your workspace booking at Eladé Studio has been successfully confirmed.
+Your workspace booking at Elade Studio has been successfully confirmed.
 
 **Booking Ref:** #{{ $booking->id }}
 **Date:** {{ $booking->start_datetime->timezone('Europe/London')->format('l, jS F Y') }}
@@ -40,5 +40,5 @@ Create Account
 @endif
 
 Thanks,<br>
-Eladé Studio
+Elade Studio
 </x-mail::message>
